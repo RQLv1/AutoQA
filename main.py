@@ -2,9 +2,9 @@ from pathlib import Path
 from textwrap import dedent
 
 from api_client import call_text_model
-from config import MAX_ROUNDS, MODEL_ANALYSIS, QUESTION_LOG_PATH
-from parsing import parse_option_letter
-from pipeline import generate_questions, save_round_questions, try_solve_question
+from config import MAX_ROUNDS, MODEL_ANALYSIS, MODEL_SOLVE_FINAL, QUESTION_LOG_PATH
+from parsing import parse_option_letter_optional
+from pipeline import run_episode, save_round_questions, try_solve_question
 from prompts import build_analysis_prompt
 
 
@@ -108,34 +108,47 @@ Cyclic Tests for Photochromism and Discoloration: The LED device (18 W, λ = 365
     log_path = Path(QUESTION_LOG_PATH)
     for round_idx in range(1, MAX_ROUNDS + 1):
         print(f"\n=== 第 {round_idx} 轮生成 ===")
-        stage_one, stage_two, stage_three, stage_final = generate_questions(
-            context,
-            image_path,
-            feedback,
-            previous_final_question,
-        )
-        save_round_questions(log_path, round_idx, stage_one, stage_two, stage_three, stage_final)
-        previous_final_question = stage_final.question
+        stop_reason = None
+        solver_letter = None
+        reflect_feedback = None
+
+        episode = run_episode(context, image_path, feedback, previous_final_question)
+        previous_final_question = episode.stage_final.question
 
         try:
-            solver_raw, solver_letter = try_solve_question(context, stage_final.question, image_path)
-            standard_letter = parse_option_letter(stage_final.answer)
+            solver_raw, solver_letter = try_solve_question(
+                context, episode.stage_final.question, image_path, MODEL_SOLVE_FINAL
+            )
+            standard_letter = parse_option_letter_optional(episode.stage_final.answer)
+            if not standard_letter:
+                stop_reason = "standard_answer_parse_failed"
+            elif solver_letter != standard_letter:
+                stop_reason = "solver_incorrect"
+            else:
+                analysis_prompt = build_analysis_prompt(
+                    episode.stage_final.question, episode.stage_final.answer, solver_raw
+                )
+                feedback = call_text_model(analysis_prompt, MODEL_ANALYSIS)
+                reflect_feedback = feedback.strip()
+                print("难度提升指引:", feedback)
+                if previous_feedback is not None and reflect_feedback == previous_feedback:
+                    stop_reason = "feedback_converged"
+                previous_feedback = reflect_feedback
         except Exception as exc:  # noqa: BLE001
-            print(f"求解阶段失败，终止: {exc}")
-            break
+            stop_reason = f"solve_error: {exc}"
 
-        if solver_letter != standard_letter:
-            print("求解模型未能正确作答，循环结束。")
-            break
+        save_round_questions(
+            log_path,
+            round_idx,
+            episode,
+            solver_final_pred=solver_letter,
+            reflect_feedback=reflect_feedback,
+            stop_reason=stop_reason,
+        )
 
-        analysis_prompt = build_analysis_prompt(stage_final.question, stage_final.answer, solver_raw)
-        feedback = call_text_model(analysis_prompt, MODEL_ANALYSIS)
-        normalized_feedback = feedback.strip()
-        print("难度提升指引:", feedback)
-        if previous_feedback is not None and normalized_feedback == previous_feedback:
-            print("难度提升指引已收敛，停止。")
+        if stop_reason:
+            print(f"轮次终止原因: {stop_reason}")
             break
-        previous_feedback = normalized_feedback
     else:
         print("已达到最大轮次，停止。")
 

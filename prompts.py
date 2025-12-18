@@ -1,19 +1,38 @@
 from textwrap import dedent
 
-from schema import StageResult
+from schema import StepResult
 
 
-def build_initial_prompt(context: str, feedback: str, previous_question: str | None) -> str:
+def build_fact_extraction_prompt(context_with_lines: str, max_facts: int) -> str:
+    return dedent(
+        f"""
+        你需要从下述文档中抽取最多 {max_facts} 条可用于出题的关键事实。
+        要求:
+        - 每条事实简洁明确，便于出题与验证。
+        - 标注出处的行号区间，例如 "L12-L18"。
+        - 只输出 JSON 数组，格式为:
+          [{{"fact": "...", "source": "L12-L18"}}, ...]
+
+        文档(已加行号):
+        {context_with_lines.strip()}
+        """
+    ).strip()
+
+
+def build_stage1_step_prompt(
+    context: str, feedback: str, previous_question: str | None
+) -> str:
     extra = f"\n提升难度指引: {feedback.strip()}" if feedback else ""
     previous = f"\n上一轮最终问题: {previous_question.strip()}" if previous_question else ""
     return dedent(
         f"""
-        你需要围绕图片“中心区域”的视觉要素设计一个高难度的单选题（MCQ）。
-        请在上一轮最终问题的基础上进行升级或变形，保持题干可由图片与文档推导得到。
-        步骤:
-        1) 先描述图片中央最关键的结构/现象，并指出它与整体的关系。
-        2) 基于该视觉锚点提出题干，题干必须包含 A-D 四个选项。
-        3) 正确答案需要在下述文档内容中找到依据，同时必须依赖图片理解而非纯文本记忆。
+        你需要围绕图片“中心区域”的视觉锚点，生成一个多跳题的第1步子问题(单选题)。
+        要求:
+        - 题干包含 A-D 四个选项。
+        - 题干必须首先依赖图片中心视觉锚点，必要时可结合文档。
+        - 输出 evidence(JSON)，包含 doc_spans 与 image_regions。
+        - modal_use 只能是 image/text/both。
+        - cross_modal_bridge 表示是否必须同时使用图文。
         {extra}{previous}
 
         文档内容:
@@ -22,78 +41,191 @@ def build_initial_prompt(context: str, feedback: str, previous_question: str | N
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
         <answer>正确选项字母，并用10-20字解释</answer>
+        <evidence>{{"doc_spans": ["L12-L18"], "image_regions": ["中心区域..."]}}</evidence>
+        <modal_use>image/text/both</modal_use>
+        <cross_modal_bridge>true/false</cross_modal_bridge>
         """
     ).strip()
 
 
-def build_revision_prompt(context: str, first: StageResult, feedback: str) -> str:
-    extra = f"\n提升难度指引: {feedback.strip()}" if feedback else ""
-    return dedent(
-        f"""
-        这是第一步生成的问题与答案:
-        问题: {first.question}
-        答案: {first.answer}
-
-        请继续围绕图片中心视觉锚点，增加一层额外推理，生成更难的单选题:
-        - 新题需要在题干中显式提到第一次题目的视觉锚点，然后引入文档中的另一个关键要点形成因果/对比关系。
-        - 题干必须包含 A-D 选项，且答案可在文档中找到确切依据。
-        {extra}
-
-        文档内容:
-        {context.strip()}
-
-        只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
-        <answer>正确选项字母，并用10-20字解释</answer>
-        """
-    ).strip()
-
-
-def build_third_prompt(context: str, second: StageResult, feedback: str) -> str:
-    extra = f"\n提升难度指引: {feedback.strip()}" if feedback else ""
-    return dedent(
-        f"""
-        这是第二步生成的问题与答案:
-        问题: {second.question}
-        答案: {second.answer}
-        {extra}
-
-        请继续围绕图片中心视觉锚点，增加一层额外推理，生成更难的单选题:
-        - 新题需要在题干中显式提到第二步题目的视觉锚点，然后引入文档中的另一个关键要点形成因果/对比关系。
-        - 题干必须包含 A-D 选项，且答案可在文档中找到确切依据。
-
-        文档内容:
-        {context.strip()}
-
-        只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
-        <answer>正确选项字母，并用10-20字解释</answer>
-        """
-    ).strip()
-
-
-def build_final_prompt(
-    context: str, first: StageResult, second: StageResult, third: StageResult, feedback: str
+def build_stage2_step_prompt(
+    context: str,
+    previous_step: StepResult,
+    fact_hint: str,
+    feedback: str,
+    force_cross_modal: bool,
 ) -> str:
     extra = f"\n提升难度指引: {feedback.strip()}" if feedback else ""
+    cross_modal = "必须跨模态桥接(同时依赖图与文)。" if force_cross_modal else "可以跨模态桥接。"
     return dedent(
         f"""
-        你需要把前三步的逻辑链路整合成一个“多步推理”的高难度单选题（MCQ），
-        要求回答必须先识别图片中心视觉信息，再结合文档内容得出答案。
+        这是上一步的子问题与答案:
+        问题: {previous_step.question}
+        答案: {previous_step.answer}
 
-        前三步结果:
-        1) 问题: {first.question}
-           答案: {first.answer}
-        2) 问题: {second.question}
-           答案: {second.answer}
-        3) 问题: {third.question}
-           答案: {third.answer}
+        现在生成第2步子问题(单选题)，需在视觉锚点基础上引入新的文档关键点形成推理。
+        - 新问题必须使用新的文档关键点: {fact_hint}
+        - {cross_modal}
+        - 题干包含 A-D 选项，答案可在文档中定位。
         {extra}
 
-        生成新题的要求:
-        - 题干引导考生先定位图片中央的关键结构，再利用文档信息完成多步推理。
-        - 选项 A-D 需要设置迷惑项，只有经过多步推理才能排除。
-        - 答案需要在文档中找到依据，但必须依赖图片中心信息才能确认。
+        文档内容:
+        {context.strip()}
+
+        只输出以下格式:
+        <question>题干，包含 A-D 选项</question>
+        <answer>正确选项字母，并用10-20字解释</answer>
+        <evidence>{{"doc_spans": ["L12-L18"], "image_regions": ["中心区域..."]}}</evidence>
+        <modal_use>image/text/both</modal_use>
+        <cross_modal_bridge>true/false</cross_modal_bridge>
+        """
+    ).strip()
+
+
+def build_stage3_step_prompt(
+    context: str,
+    previous_step: StepResult,
+    fact_hint: str,
+    feedback: str,
+    force_cross_modal: bool,
+) -> str:
+    extra = f"\n提升难度指引: {feedback.strip()}" if feedback else ""
+    cross_modal = "必须跨模态桥接(同时依赖图与文)。" if force_cross_modal else "可以跨模态桥接。"
+    return dedent(
+        f"""
+        这是上一步的子问题与答案:
+        问题: {previous_step.question}
+        答案: {previous_step.answer}
+
+        现在生成第3步子问题(单选题)，继续引入新的文档关键点形成更深推理。
+        - 新问题必须使用新的文档关键点: {fact_hint}
+        - {cross_modal}
+        - 题干包含 A-D 选项，答案可在文档中定位。
+        {extra}
+
+        文档内容:
+        {context.strip()}
+
+        只输出以下格式:
+        <question>题干，包含 A-D 选项</question>
+        <answer>正确选项字母，并用10-20字解释</answer>
+        <evidence>{{"doc_spans": ["L12-L18"], "image_regions": ["中心区域..."]}}</evidence>
+        <modal_use>image/text/both</modal_use>
+        <cross_modal_bridge>true/false</cross_modal_bridge>
+        """
+    ).strip()
+
+
+def build_extend_step_prompt(
+    context: str,
+    previous_step: StepResult,
+    fact_hint: str,
+    feedback: str,
+    force_cross_modal: bool,
+) -> str:
+    extra = f"\n提升难度指引: {feedback.strip()}" if feedback else ""
+    cross_modal = "必须跨模态桥接(同时依赖图与文)。" if force_cross_modal else "可以跨模态桥接。"
+    return dedent(
+        f"""
+        这是上一步的子问题与答案:
+        问题: {previous_step.question}
+        答案: {previous_step.answer}
+
+        请继续扩链生成新的子问题(单选题)，要求:
+        - 使用新的文档关键点或新的视觉关系: {fact_hint}
+        - {cross_modal}
+        - 题干包含 A-D 选项，答案可在文档中定位。
+        {extra}
+
+        文档内容:
+        {context.strip()}
+
+        只输出以下格式:
+        <question>题干，包含 A-D 选项</question>
+        <answer>正确选项字母，并用10-20字解释</answer>
+        <evidence>{{"doc_spans": ["L12-L18"], "image_regions": ["中心区域..."]}}</evidence>
+        <modal_use>image/text/both</modal_use>
+        <cross_modal_bridge>true/false</cross_modal_bridge>
+        """
+    ).strip()
+
+
+def build_revise_prompt(
+    context: str,
+    step: StepResult,
+    reason: str,
+    fact_hint: str,
+    force_cross_modal: bool,
+) -> str:
+    cross_modal = "必须跨模态桥接(同时依赖图与文)。" if force_cross_modal else "可以跨模态桥接。"
+    return dedent(
+        f"""
+        需要修订以下子问题(单选题)，原因: {reason}
+        原问题: {step.question}
+        原答案: {step.answer}
+        原 evidence: {step.evidence}
+        原 modal_use: {step.modal_use}
+        原 cross_modal_bridge: {step.cross_modal_bridge}
+
+        修订要求:
+        - {cross_modal}
+        - 使用新的文档关键点或明确证据: {fact_hint}
+        - 题干包含 A-D 选项，答案唯一且可验证。
+
+        文档内容:
+        {context.strip()}
+
+        只输出以下格式:
+        <question>题干，包含 A-D 选项</question>
+        <answer>正确选项字母，并用10-20字解释</answer>
+        <evidence>{{"doc_spans": ["L12-L18"], "image_regions": ["中心区域..."]}}</evidence>
+        <modal_use>image/text/both</modal_use>
+        <cross_modal_bridge>true/false</cross_modal_bridge>
+        """
+    ).strip()
+
+
+def build_final_compress_prompt(context: str, steps: list[StepResult], feedback: str) -> str:
+    extra = f"\n提升难度指引: {feedback.strip()}" if feedback else ""
+    step_lines = []
+    for step in steps:
+        step_lines.append(
+            f"- Step {step.k}: Q={step.question} | A={step.answer} | evidence={step.evidence}"
+        )
+    step_block = "\n".join(step_lines)
+    return dedent(
+        f"""
+        你需要把下述多步推理链压缩成一个高难度单选题(MCQ)。
+        要求:
+        - 不要显式提“第一步/第二步”，把中间结论隐式化。
+        - 必须依赖图片中心视觉信息并结合文档完成推理。
+        - 题干包含 A-D 选项，且唯一正确答案。
+        {extra}
+
+        推理链:
+        {step_block}
+
+        文档内容:
+        {context.strip()}
+
+        只输出以下格式:
+        <question>题干，包含 A-D 选项</question>
+        <answer>正确选项字母，并用10-20字解释</answer>
+        """
+    ).strip()
+
+
+def build_final_revise_prompt(context: str, final_question: str, final_answer: str, reason: str) -> str:
+    return dedent(
+        f"""
+        需要修订最终题(单选题)，原因: {reason}
+        原题: {final_question}
+        原答案: {final_answer}
+
+        修订要求:
+        - 避免单模态捷径，必须同时依赖图文。
+        - 题干包含 A-D 选项，且唯一正确答案。
+        - 干扰项同类同粒度且合理。
 
         文档内容:
         {context.strip()}
