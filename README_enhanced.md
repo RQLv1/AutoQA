@@ -2,8 +2,8 @@
 
 AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用多轮迭代生成**高难度、可验证、强多模态依赖**的单选题（MCQ），并通过“求解模型 + 反思模型 + 过程裁判（可选）”闭环提升难度。
 
-> **注意：本强化版保持入口与主要模块命名不变**（仍以 `main.py / config.py / api_client.py / prompts.py / pipeline.py / parsing.py / schema.py` 为主）。
-> 为了可维护性，建议将原先集中在 `pipeline.py` 的逻辑进一步拆分为 `pipeline_*.py` 小模块，但仍通过 `pipeline.py` 统一对外导出接口。
+> **注意：本强化版保持入口不变**（`main.py`）。
+> 当前实现已拆分为目录包：`utils/`（配置/解析/API/schema）、`pipeline/`（episode/logging/solvers/facts）、`steps/`（每轮扩链）、`graph/`（Graph Mode）、`prompts/`（提示词）。
 
 ---
 
@@ -25,7 +25,7 @@ AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用�
 
 入口：`main.py`
 
-每一轮（`MAX_ROUNDS`）执行一个 Episode，由 `pipeline.py`（门面模块）统一编排。对外仍保留“阶段式日志写法”（Stage1/2/3/Final + Solve/Analysis），但在内部新增 **Extension Loop**，并可选启用 **Graph Mode**（路径采样驱动）。
+每一轮（`MAX_ROUNDS`）执行一个 Episode，由 `pipeline/`（门面包，`from pipeline import run_episode`）统一编排。对外仍保留“阶段式日志写法”（Stage1/2/3/Final + Solve/Analysis），但在内部新增 **Extension Loop**，并可选启用 **Graph Mode**（路径采样驱动）。
 
 ### 0) 预处理：图文锚点、chunk 与候选事实
 
@@ -35,7 +35,7 @@ AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用�
   - Prompt 提取：从 chunk 抽取“关键点/事实片段”（fact candidates，带 span/段落索引）。
   - Graph Mode：从 chunk 抽取 `(entity1, relation, entity2)` 三元组并挂载 `source_chunk_id`，构建 Local KG。
 
-> 说明：当前实现可继续把文本关键点抽取放在 `pipeline_facts.py`；若启用 Graph Mode，可新增 `pipeline_graph.py` 负责 chunk→triplets→KG。
+> 说明：当前实现把文本关键点抽取放在 `pipeline/pipeline_facts.py`；Graph Mode 使用 `graph/pipeline_graph.py` 负责 chunk→triplets→KG。
 
 ### 1) Extension Loop（多次扩链：Prompt-driven 或 Graph Mode 产出 steps）
 
@@ -152,25 +152,25 @@ Revise 目标：
 **核心（保持不变）**
 
 - `main.py`：主入口；读取图片、准备文档上下文、控制多轮循环与停止条件
-- `config.py`：模型与运行参数配置（可用环境变量覆盖）
-- `api_client.py`：OpenAI 兼容接口调用（文本/视觉）
-- `prompts.py`：Stage1/2/3/Final + extend/revise/judge 等 prompt 构建
-- `pipeline.py`：门面模块（对外导出 `run_episode/save_round_questions/try_solve_question`）
-- `parsing.py`：`<question>/<answer>` 标签提取、选项字母解析（建议扩展 evidence 标签）
-- `schema.py`：`StageResult / StepResult / EpisodeResult` 数据结构
+- `utils/config.py`：模型与运行参数配置（可用环境变量覆盖）
+- `utils/api_client.py`：OpenAI 兼容接口调用（文本/视觉）
+- `prompts/`：Stage1/2/3/Final + extend/revise/judge 等 prompt 构建
+- `pipeline/`：门面包（对外导出 `run_episode/save_round_questions/try_solve_question`）
+- `utils/parsing.py`：`<question>/<answer>` 标签提取、选项字母解析（建议扩展 evidence 标签）
+- `utils/schema.py`：`StageResult / StepResult / EpisodeResult` 数据结构
 
 **建议拆分（便于演进，但不要求一次到位）**
 
-- `pipeline_episode.py`：Episode 编排（steps → revise → compress → final solve → logging）
-- `pipeline_steps.py`：Extension Loop（step 生成/校验/必要 revise）与 `StepResult` 构造
-- `pipeline_facts.py`：文档 fact candidates 抽取与提示格式化
-- `pipeline_solvers.py`：求解器调用、答案判定、难度指标评估
-- `pipeline_logging.py`：日志落盘（JSONL + 人类可读 JSON）
+- `pipeline/pipeline_episode.py`：Episode 编排（steps → revise → compress → final solve → logging）
+- `steps/`：Extension Loop（step 生成/校验/必要 revise）与 `StepResult` 构造
+- `pipeline/pipeline_facts.py`：文档 fact candidates 抽取与提示格式化
+- `pipeline/pipeline_solvers.py`：求解器调用、答案判定、难度指标评估
+- `pipeline/pipeline_logging.py`：日志落盘（JSONL + 人类可读 JSON）
 
 **论文思路落地的可选增强模块（推荐逐步加）**
 
-- `pipeline_graph.py`：chunk → triplets → Local KG（节点/边挂载 source_chunk_id）
-- `pipeline_path_sampling.py`：随机化 BFS 路径采样（支持 “distinct source chunk” 约束）
+- `graph/pipeline_graph.py`：chunk → triplets → Local KG（节点/边挂载 source_chunk_id）
+- `graph/pipeline_path_sampling.py`：随机化 BFS 路径采样（支持 “distinct source chunk” 约束）
 - `pipeline_verify.py`：1-hop / multi-hop 的 verifier（可复用 `MODEL_JUDGE`）
 - `pipeline_shortcut.py`：捷径边检测（是否存在 head↔tail 直接证据导致伪多跳）
 - `text_chunker.py`：段落/词数切分与 span 映射工具
@@ -180,7 +180,7 @@ Revise 目标：
 
 ## 配置（环境变量覆盖，兼容你当前变量名）
 
-默认值见 `config.py`。
+默认值见 `utils/config.py`。
 
 你当前已有：
 
@@ -273,7 +273,7 @@ python main.py
 
 ---
 
-## Prompt 设计要点（在 prompts.py 内落地）
+## Prompt 设计要点（在 prompts/ 内落地）
 
 ### 1) 1-hop 子问题生成（Graph Mode / 也可用于 Prompt-driven 的 step 生成）
 
@@ -308,6 +308,6 @@ python main.py
 ## 与旧版 Stage1/2/3/Final 的兼容说明
 
 - 旧版仍然可以只跑 Stage1→Stage2→Stage3→Final
-- 强化版在 `pipeline_steps.py` 中把 Stage2/Stage3 当作“扩链模板”循环调用，从而实现 `step_3..K`
+- 强化版在 `steps/` 中把 Stage2/Stage3 当作“扩链模板”循环调用，从而实现 `step_3..K`
 - 日志仍保留 Stage1/2/3/Final，新增 `steps` 不影响旧工具读取
 - 若启用 Graph Mode：可把“采样路径+生成 1-hop”当作 `steps` 的来源，后续 revise/compress/solve/logging 流程保持不变

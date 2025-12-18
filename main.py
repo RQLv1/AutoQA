@@ -1,11 +1,11 @@
 from pathlib import Path
 from textwrap import dedent
 
-from api_client import call_text_model
-from config import MAX_ROUNDS, MODEL_ANALYSIS, MODEL_SOLVE_FINAL, QUESTION_LOG_PATH
-from parsing import parse_option_letter_optional
 from pipeline import run_episode, save_round_questions, try_solve_question
 from prompts import build_analysis_prompt
+from utils.api_client import call_text_model
+from utils.config import MAX_ROUNDS, MODEL_ANALYSIS, MODEL_SOLVE_FINAL, QUESTION_LOG_PATH
+from utils.parsing import parse_option_letter_optional
 
 
 def main() -> None:
@@ -118,7 +118,8 @@ Cyclic Tests for Photochromism and Discoloration: The LED device (18 W, λ = 365
         print("步骤链路:")
         for step in episode.steps:
             print(f"- Step {step.k} 问题:\n{step.question}")
-            print(f"  答案: {step.answer}")
+            print(f"  答案字母: {step.answer_letter}")
+            print(f"  答案短语: {step.answer_text}")
             print(f"  evidence: {step.evidence}")
             print(
                 "  modal_use:",

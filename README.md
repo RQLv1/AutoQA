@@ -1,11 +1,9 @@
-
-
 # AutoQA（强化版）：基于图文上下文的高难度 MCQ 自动生成（保持现有工程结构）
 
 AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用多轮迭代生成**高难度、可验证、强多模态依赖**的单选题（MCQ），并通过“求解模型 + 反思模型 + 过程裁判（可选）”闭环提升难度。
 
-> **注意：本强化版保持入口与主要模块命名不变**（仍以 `main.py / config.py / api_client.py / prompts.py / pipeline.py / parsing.py / schema.py` 为主）。
-> 当前实现为了可维护性，将原先集中在 `pipeline.py` 的逻辑进一步拆分为 `pipeline_*.py` 小模块，但仍通过 `pipeline.py` 统一对外导出接口：
+> **注意：本强化版保持入口不变**（`main.py`）。
+> 目前项目按职责拆分为目录包：`utils/`（配置/解析/API/schema）、`pipeline/`（episode/logging/solvers/facts 门面）、`steps/`（每轮扩链）、`graph/`（Graph Mode）、`prompts/`（提示词）。
 >
 > - 把原 Stage1/2/3 变成 **可循环复用的 step 模板**（multi-hop extension）
 > - 在每轮内支持多次扩链、必要时 revise、最终 compress
@@ -31,14 +29,14 @@ AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用�
 
 入口：`main.py`
 
-每一轮（`MAX_ROUNDS`）执行一个 Episode，由 `pipeline.py`（门面模块）统一编排。整体仍保留“阶段式日志写法”（Stage1/2/3/Final + Solve/Analysis），但在内部新增 **Extension Loop**：
+每一轮（`MAX_ROUNDS`）执行一个 Episode，由 `pipeline/`（门面包，`from pipeline import run_episode`）统一编排。整体仍保留“阶段式日志写法”（Stage1/2/3/Final + Solve/Analysis），但在内部新增 **Extension Loop**：
 
 ### 0) 预处理：图文锚点与候选事实
 
 - 从图片生成**视觉锚点**（中心区域对象/符号/结构/关系）与候选描述（anchor candidates）
 - 从文档上下文抽取**关键点/事实片段**（fact candidates，附带 span/段落索引）
 
-> 说明：当前实现的预处理位于 `pipeline_facts.py`（从文档抽取 fact candidates），视觉锚点主要通过 Stage prompt 引导输出。
+> 说明：当前实现的预处理位于 `pipeline/pipeline_facts.py`（从文档抽取 fact candidates），视觉锚点主要通过 Stage prompt 引导输出。
 >
 > - 视觉锚点：由 Stage1 prompt 引导模型“只围绕中心区域锚点描述”即可
 > - 文档关键点：用文本模型从上下文抽取若干关键句或要点（带行号/段落索引）
@@ -52,7 +50,8 @@ AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用�
 在一个 Episode 内，允许多次扩链 `step_k (k=0..K)`，每步产出一个 `StepResult`：
 
 - `question`: 子问题（中间问题，不一定是最终 MCQ）
-- `answer`: 子问题答案（必须可在上下文中定位）
+- `answer_text`: 子问题答案的短实体/短短语（必须可在上下文中定位）
+- `answer_letter`: 若该 step 本身是 MCQ，对应正确选项字母（A/B/C/D）
 - `evidence`: 证据定位（doc span/段落索引；可选 image 区域描述）
 - `modal_use`: image/text/both
 - `cross_modal_bridge`: bool（是否跨模态桥接）
@@ -68,7 +67,7 @@ AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用�
   - 要么换新的视觉锚点（同一中心区域内不同关系/符号/标注）
   - 并且至少一次 `cross_modal_bridge=true`（可由 judge 检测并强制 revise）
 
-> 这样你无需新增 `agent.py` 文件：Agent 决策逻辑集中在 Episode/Step 编排中（`pipeline_episode.py / pipeline_steps.py`），并由 `pipeline.py` 统一导出。
+> 这样你无需新增 `agent.py` 文件：Agent 决策逻辑集中在 Episode/Step 编排中（`pipeline/pipeline_episode.py / steps/`），并由 `pipeline/` 统一导出。
 
 ---
 
@@ -112,8 +111,8 @@ Revise 目标：
 
 > **实现方式（不增加新的“业务层级”文件）**：
 >
-> - 在 `prompts.py` 增加一个 `build_revise_prompt(...)`
-> - 在 `pipeline_steps.py`（step revise）与 `pipeline_episode.py`（final revise）中当触发条件成立时调用 revise，并覆盖草稿
+> - 在 `prompts/` 增加一个 `build_revise_prompt(...)`
+> - 在 `steps/`（step revise）与 `pipeline/pipeline_episode.py`（final revise）中当触发条件成立时调用 revise，并覆盖草稿
 
 ---
 
@@ -121,9 +120,9 @@ Revise 目标：
 
 当达到阈值后，把多步链路压缩成一个最终 MCQ：
 
-- 将部分中间结论“隐式化”（不直接明说）
-- 仅保留必要背景 + 终局问题
-- 输出仍保持你现有格式：`<question>...</question><answer>...</answer>`（答案为 A/B/C/D）
+- [ ] 将部分中间结论“隐式化”（不直接明说）
+- [ ] 仅保留必要背景 + 终局问题
+- [ ] 输出仍保持你现有格式：`<question>...</question><answer>...</answer>`（答案为 A/B/C/D）
 
 ---
 
@@ -154,17 +153,19 @@ Revise 目标：
 ## 目录结构（保持你当前结构）
 
 - `main.py`：主入口；读取图片、准备文档上下文、控制多轮循环与停止条件
-- `config.py`：模型与运行参数配置（可用环境变量覆盖）
-- `api_client.py`：OpenAI 兼容接口调用（文本/视觉）
-- `prompts.py`：Stage1/2/3/Final + revise/judge（可选）等 prompt 构建
-- `pipeline.py`：门面模块（对外导出 `run_episode/save_round_questions/try_solve_question`）
-- `pipeline_episode.py`：Episode 编排（steps → compress → final revise → difficulty 评估）
-- `pipeline_steps.py`：Extension Loop（step 生成/校验/必要 revise）与 `StageResult` 派生
-- `pipeline_facts.py`：文档 fact candidates 抽取与提示格式化
-- `pipeline_solvers.py`：求解器调用、答案判定、难度指标评估
-- `pipeline_logging.py`：日志落盘（JSONL + 人类可读 JSON）
-- `parsing.py`：`<question>/<answer>` 标签提取、选项字母解析（可扩展 evidence 标签）
-- `schema.py`：`StageResult / StepResult / EpisodeResult` 数据结构
+- `utils/config.py`：模型与运行参数配置（可用环境变量覆盖）
+- `utils/api_client.py`：OpenAI 兼容接口调用（文本/视觉）
+- `prompts/`：Stage1/2/3/Final + extend/revise/judge 等 prompt 构建
+- `pipeline/`：门面包（对外导出 `run_episode/save_round_questions/try_solve_question`）
+- `pipeline/pipeline_episode.py`：Episode 编排（steps → compress → final revise → difficulty 评估）
+- `steps/`：每轮的 Extension Loop（step 生成/校验/必要 revise），并提供 `derive_stage_results/step_to_dict`
+- `pipeline/pipeline_facts.py`：文档 fact candidates 抽取与提示格式化
+- `pipeline/pipeline_solvers.py`：求解器调用、答案判定、难度指标评估
+- `pipeline/pipeline_logging.py`：日志落盘（JSONL + 人类可读 JSON）
+- `graph/pipeline_graph.py`：Graph Mode：chunk 切分、三元组抽取、Local KG 构建（可选）
+- `graph/pipeline_path_sampling.py`：Graph Mode：路径采样（可选）
+- `utils/parsing.py`：`<question>/<answer>` 标签提取、选项字母解析（可扩展 evidence 标签）
+- `utils/schema.py`：`StageResult / StepResult / EpisodeResult` 数据结构
 
 > 你之前列的 `agent.py/difficulty.py/evidence.py/utils.py` 仍属于“可进一步增强项”，当前以 `pipeline_*.py` 的拆分方式完成同等职责划分。
 
@@ -179,7 +180,7 @@ Revise 目标：
 python main.py
 ```
 
-运行时会在每一轮打印过程信息：step 链路（题目/答案/evidence）、最终题、以及各求解器输出。
+运行时会在每一轮打印过程信息：step 链路（题目/答案字母/答案短语/evidence）、最终题、以及各求解器输出。
 
 ## 配置（环境变量覆盖，兼容你当前变量名）
 
@@ -211,6 +212,18 @@ python main.py
 
 * `MODEL_JUDGE`：捷径/证据/干扰项检测模型（默认可复用 `MODEL_ANALYSIS`）
 
+### 验证（可选）
+
+* `VERIFY_STRICT`：是否启用更严格的校验（如答案泄露粗检），默认 `false`
+
+### Graph Mode（可选，默认不启用）
+
+* `ENABLE_GRAPH_MODE`：是否启用 Local KG + 路径采样（默认 `false`，已实现基础版本）
+* `DOC_CHUNK_WORDS`：文本 chunk 目标词数（默认 160）
+* `REQUIRE_DISTINCT_SOURCES`：路径每跳必须来自不同 chunk（默认 `true`）
+* `PATH_SAMPLER`：路径采样器名称（默认 `rbfs`）
+* `MAX_SHORTCUT_EDGES`：允许的捷径边数量（默认 0）
+
 ---
 
 ## 输出与日志（JSONL + JSON）
@@ -225,18 +238,22 @@ python main.py
 * `round`
 * `stage_1` / `stage_2` / `stage_3` / `stage_final`：保留阶段字段（兼容阶段式回看）
 * `steps`: `StepResult[]`（新增，记录 step_0..K）
+* `final_question` / `final_answer`：最终题题面与答案（与 `stage_final` 冗余，便于直取）
 * `difficulty_metrics`：
   * `medium_correct`, `strong_correct`
   * `difficulty_score`, `cross_modal_used`, `num_hops`
 * `solver_final_pred`（A/B/C/D）
+* `solver_final_raw`（最终求解器原始输出，用于排查解析问题）
 * `reflect_feedback`（三条可执行指引）
 * `stop_reason`
+* `judge_flags`（预留：Episode 级汇总 flags）
 
 ### `StepResult`（新增/扩展 schema 建议）
 
 * `k`
 * `question`
-* `answer`
+* `answer_text`（短实体/短短语）
+* `answer_letter`（A/B/C/D；若该 step 是 MCQ）
 * `evidence`：
   * `doc_spans`: [start,end] 或 段落/行号
   * `image_regions`: bbox/区域描述（若可用）
@@ -247,7 +264,7 @@ python main.py
 
 ---
 
-## Prompt 设计要点（在 prompts.py 内落地）
+## Prompt 设计要点（在 prompts/ 内落地）
 
 ### Stage1（视觉锚点）
 
@@ -258,7 +275,7 @@ python main.py
 
 * 每次引入“新的文档关键点/新关系”，并明确证据 span
 * 强制至少一次 `cross_modal_bridge=true`
-* 输出结构化字段：`question/answer/evidence/modal_use/cross_modal_bridge`
+* 输出结构化字段：`question/answer_letter/answer_text/evidence/modal_use/cross_modal_bridge`
 
 ### Final（Compress）
 
@@ -280,5 +297,5 @@ python main.py
 ## 与旧版 Stage1/2/3/Final 的兼容说明
 
 * 旧版仍然可以只跑 Stage1→Stage2→Stage3→Final
-* 强化版在 `pipeline_steps.py` 中把 Stage2/Stage3 当作“扩链模板”循环调用，从而实现 `step_3..K`
+* 强化版在 `steps/` 中把 Stage2/Stage3 当作“扩链模板”循环调用，从而实现 `step_3..K`
 * 日志仍保留 Stage1/2/3/Final，新增 `steps` 不影响旧工具读取

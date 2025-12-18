@@ -3,12 +3,14 @@
 ## Project Structure & Module Organization
 
 - `main.py`: entrypoint for the multi-round MCQ generation workflow.
-- `config.py`: runtime configuration (models, rounds, log path).
-- `api_client.py`: OpenAI-compatible client helpers (vision/text calls).
-- `prompts.py`: prompt builders for each stage.
-- `pipeline.py`: stage orchestration (generate, solve, logging).
-- `parsing.py`: response parsing (`<question>`, `<answer>`, option letter).
-- `schema.py`: shared data types (`StageResult`).
+- `utils/config.py`: runtime configuration (models, rounds, log path).
+- `utils/api_client.py`: OpenAI-compatible client helpers (vision/text calls).
+- `prompts/`: prompt builders for each stage.
+- `pipeline/`: episode orchestration, solvers, logging.
+- `steps/`: per-round step loop (prompt-driven / graph mode).
+- `graph/`: local KG + path sampling (graph mode).
+- `utils/parsing.py`: response parsing (`<question>`, `<answer>`, option letter).
+- `utils/schema.py`: shared data types (`StageResult` etc).
 - Assets: `test.png` (input image), `context.txt` (reference text), output log defaults to `question_log.jsonl`.
 - Local environment: `env/` may contain a local virtual environment; don’t commit `__pycache__/` changes.
 
@@ -16,7 +18,7 @@
 
 - Run the workflow: `python main.py`
   - Reads `test.png`, generates questions for up to `MAX_ROUNDS`, and appends results to `QUESTION_LOG_PATH`.
-- Quick syntax check: `python -m py_compile main.py config.py api_client.py parsing.py prompts.py pipeline.py schema.py`
+- Quick syntax check: `python -m py_compile $(ls *.py pipeline/*.py steps/*.py graph/*.py prompts/*.py utils/*.py | tr '\n' ' ')`
 - (Optional) create/use a venv:
   - Create: `python -m venv .venv`
   - Activate: `source .venv/bin/activate`
