@@ -109,24 +109,50 @@ Cyclic Tests for Photochromism and Discoloration: The LED device (18 W, λ = 365
     for round_idx in range(1, MAX_ROUNDS + 1):
         print(f"\n=== 第 {round_idx} 轮生成 ===")
         stop_reason = None
+        solver_raw = None
         solver_letter = None
         reflect_feedback = None
 
         episode = run_episode(context, image_path, feedback, previous_final_question)
         previous_final_question = episode.stage_final.question
+        print("步骤链路:")
+        for step in episode.steps:
+            print(f"- Step {step.k} 问题:\n{step.question}")
+            print(f"  答案: {step.answer}")
+            print(f"  evidence: {step.evidence}")
+            print(
+                "  modal_use:",
+                step.modal_use,
+                "cross_modal_bridge:",
+                step.cross_modal_bridge,
+            )
+        print("\n最终题目:")
+        print(episode.stage_final.question)
+        print("最终答案:", episode.stage_final.answer)
+        if episode.difficulty_metrics:
+            print(
+                "求解器输出:",
+                f"medium={episode.difficulty_metrics.get('medium_raw')}",
+                f"strong={episode.difficulty_metrics.get('strong_raw')}",
+            )
 
         try:
             solver_raw, solver_letter = try_solve_question(
                 context, episode.stage_final.question, image_path, MODEL_SOLVE_FINAL
             )
             standard_letter = parse_option_letter_optional(episode.stage_final.answer)
+            print("最终求解模型输出:", f"<answer>{solver_letter}</answer>" if solver_letter else "(无法解析)")
             if not standard_letter:
                 stop_reason = "standard_answer_parse_failed"
+            elif not solver_letter:
+                stop_reason = "solver_parse_failed"
             elif solver_letter != standard_letter:
                 stop_reason = "solver_incorrect"
             else:
                 analysis_prompt = build_analysis_prompt(
-                    episode.stage_final.question, episode.stage_final.answer, solver_raw
+                    episode.stage_final.question,
+                    episode.stage_final.answer,
+                    solver_raw,
                 )
                 feedback = call_text_model(analysis_prompt, MODEL_ANALYSIS)
                 reflect_feedback = feedback.strip()
@@ -142,6 +168,7 @@ Cyclic Tests for Photochromism and Discoloration: The LED device (18 W, λ = 365
             round_idx,
             episode,
             solver_final_pred=solver_letter,
+            solver_final_raw=solver_raw,
             reflect_feedback=reflect_feedback,
             stop_reason=stop_reason,
         )

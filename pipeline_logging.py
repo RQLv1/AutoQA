@@ -10,6 +10,7 @@ def save_round_questions(
     round_idx: int,
     episode: EpisodeResult,
     solver_final_pred: str | None = None,
+    solver_final_raw: str | None = None,
     reflect_feedback: str | None = None,
     stop_reason: str | None = None,
 ) -> None:
@@ -39,17 +40,30 @@ def save_round_questions(
         "steps": [step_to_dict(step) for step in episode.steps],
         "difficulty_metrics": episode.difficulty_metrics,
         "solver_final_pred": solver_final_pred,
+        "solver_final_raw": solver_final_raw,
         "reflect_feedback": reflect_feedback,
         "stop_reason": stop_reason,
     }
-    with log_path.open("a", encoding="utf-8") as f:
+    if log_path.suffix == ".json":
+        jsonl_path = log_path.with_suffix(".jsonl")
+        pretty_path = log_path
+    else:
+        jsonl_path = log_path
+        pretty_path = log_path.with_suffix(".json")
+
+    with jsonl_path.open("a", encoding="utf-8") as f:
         f.write(json.dumps(payload, ensure_ascii=False) + "\n")
 
-    pretty_path = log_path.with_suffix(".json")
     existing: list[dict[str, object]] = []
     if pretty_path.exists():
         try:
-            existing = json.loads(pretty_path.read_text(encoding="utf-8"))
+            loaded = json.loads(pretty_path.read_text(encoding="utf-8"))
+            if isinstance(loaded, list):
+                existing = loaded  # type: ignore[assignment]
+            elif isinstance(loaded, dict):
+                existing = [loaded]  # type: ignore[list-item]
+            else:
+                existing = []
         except json.JSONDecodeError:
             existing = []
     existing.append(payload)

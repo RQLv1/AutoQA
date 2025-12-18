@@ -3,7 +3,7 @@ from typing import Any
 
 from api_client import call_vision_model
 from config import MODEL_SOLVE_MEDIUM, MODEL_SOLVE_STRONG
-from parsing import parse_option_letter_optional
+from parsing import parse_option_letter_optional, parse_tagged_option_letter
 from prompts import build_solver_prompt
 from schema import StageResult
 
@@ -12,8 +12,8 @@ def solve_mcq(
     context: str, question: str, image_path: Path, model: str
 ) -> tuple[str, str | None]:
     solver_prompt = build_solver_prompt(context, question)
-    solver_raw = call_vision_model(solver_prompt, image_path, model)
-    solver_letter = parse_option_letter_optional(solver_raw)
+    solver_raw = call_vision_model(solver_prompt, image_path, model, max_tokens=64, temperature=0)
+    solver_letter = parse_tagged_option_letter(solver_raw, "answer")
     return solver_raw, solver_letter
 
 

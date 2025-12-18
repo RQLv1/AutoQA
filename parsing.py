@@ -31,7 +31,35 @@ def parse_option_letter(text: str) -> str:
 
 
 def parse_option_letter_optional(text: str) -> str | None:
-    match = re.search(r"[A-D]", text)
+    if not text:
+        return None
+    tagged = extract_tag_optional(text, "answer")
+    if tagged:
+        match = re.search(r"[A-D]", tagged)
+        if match:
+            return match.group(0)
+    head_match = re.match(r"\s*([A-D])\b", text)
+    if head_match:
+        return head_match.group(1)
+    patterns = [
+        r"(?:正确答案|答案)\s*[为是:：]\s*([A-D])",
+        r"(?:Correct|Answer)\s*(?:is|:)\s*([A-D])",
+    ]
+    for pattern in patterns:
+        matches = re.findall(pattern, text, flags=re.IGNORECASE)
+        if matches:
+            return matches[-1]
+    letters = re.findall(r"[A-D]", text)
+    if letters:
+        return letters[-1]
+    return None
+
+
+def parse_tagged_option_letter(text: str, tag: str = "answer") -> str | None:
+    tagged = extract_tag_optional(text, tag)
+    if not tagged:
+        return None
+    match = re.search(r"[A-D]", tagged)
     if not match:
         return None
     return match.group(0)

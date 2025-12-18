@@ -2,73 +2,154 @@
   {
     "round": 1,
     "stage_1": {
-      "question": "观察图片中心区域的图1c，该示意图展示了蓝色圆点（Crystalline TiO2）与绿色圆点（Amorphous TiO2）的结合界面。请问图中红色虚线箭头所指的界面物理特征被标注为什么？\nA. Interfacial strain\nB. Surface modification\nC. Lattice doping\nD. Phase transition",
-      "answer": "A，图1c中明确标注了晶体与非晶TiO2界面处存在\"Interfacial strain\"（界面应变），文档中也提到该图展示了晶体-非晶界面处的处延应变。",
-      "raw": "<question>观察图片中心区域的图1c，该示意图展示了蓝色圆点（Crystalline TiO2）与绿色圆点（Amorphous TiO2）的结合界面。请问图中红色虚线箭头所指的界面物理特征被标注为什么？\nA. Interfacial strain\nB. Surface modification\nC. Lattice doping\nD. Phase transition</question>\n<answer>A，图1c中明确标注了晶体与非晶TiO2界面处存在\"Interfacial strain\"（界面应变），文档中也提到该图展示了晶体-非晶界面处的处延应变。</answer>\n<evidence>{\"doc_spans\": [\"Figure 1c illustrates the epitaxial strain at the crystalline-amorphous interface\"], \"image_regions\": [[280, 270, 460, 460]]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>"
+      "question": "在图像中心区域的高分辨TEM图(e)中，(101)晶面晶格间距增大的直接原因是？ A. Rb元素半径较小 B. Rb成功掺杂TiO₂晶格 C. 氧空位减少导致收缩 D. 复合硅烷表面修饰",
+      "answer": "B，Rb掺杂导致晶格膨胀",
+      "raw": "<question>在图像中心区域的高分辨TEM图(e)中，(101)晶面晶格间距增大的直接原因是？ A. Rb元素半径较小 B. Rb成功掺杂TiO₂晶格 C. 氧空位减少导致收缩 D. 复合硅烷表面修饰</question>\n<answer>B，Rb掺杂导致晶格膨胀</answer>\n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域高分辨TEM图(e)标注(101)晶面3.59Å晶格间距\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>"
     },
     "stage_2": {
-      "question": "结合文中对加入 DEG 后 Rb-TiO2/TB-CS 纳米分散液在 650 nm 处光学调制与着色行为的描述，下列说法哪项正确？  \nA. 光学调制幅度≈50%，着色需＞10 min  \nB. 光学调制幅度≈79.5%，着色需150 min  \nC. 光学调制幅度≈91.54%，在 UV 照射 60 s 内完成着色  \nD. 光学调制幅度≈82.74%，在 UV 照射 70 s 内完成着色",
-      "answer": "C，调制幅度91.54%，60秒内达最大着色",
-      "raw": "<question>结合文中对加入 DEG 后 Rb-TiO2/TB-CS 纳米分散液在 650 nm 处光学调制与着色行为的描述，下列说法哪项正确？  \nA. 光学调制幅度≈50%，着色需＞10 min  \nB. 光学调制幅度≈79.5%，着色需150 min  \nC. 光学调制幅度≈91.54%，在 UV 照射 60 s 内完成着色  \nD. 光学调制幅度≈82.74%，在 UV 照射 70 s 内完成着色</question>\n<answer>C，调制幅度91.54%，60秒内达最大着色</answer>\n<evidence>{\"doc_spans\": [\"L21-L21\"], \"image_regions\": [\"中心区域图1c显示晶体-非晶界面的Interfacial strain，为后述高光学调制性能提供结构基础\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>"
+      "question": "结合图(e)中(101)晶面晶格间距增大与文中DFT结果，哪一选项最能解释在约3%张应变下样品中会自发生成大量氧空位？  \nA. 晶格拉伸只提高载流子迁移率，不影响缺陷形成  \nB. Rb掺杂与晶格拉伸协同使氧空位形成能转为负值  \nC. 仅有Rb掺杂即可使氧空位形成能始终为零  \nD. 张应变抑制氧空位生成，使晶体更接近完美结构",
+      "answer": "B，Rb掺杂+张应变使形成能为负，自发产生成空位",
+      "raw": "<question>结合图(e)中(101)晶面晶格间距增大与文中DFT结果，哪一选项最能解释在约3%张应变下样品中会自发生成大量氧空位？  \nA. 晶格拉伸只提高载流子迁移率，不影响缺陷形成  \nB. Rb掺杂与晶格拉伸协同使氧空位形成能转为负值  \nC. 仅有Rb掺杂即可使氧空位形成能始终为零  \nD. 张应变抑制氧空位生成，使晶体更接近完美结构</question>\n<answer>B，Rb掺杂+张应变使形成能为负，自发产生成空位</answer>\n<evidence>{\"doc_spans\": [\"L25-L27\"], \"image_regions\": [\"中心区域高分辨TEM图(e)中(101)晶面拉伸位置\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>"
     },
     "stage_3": {
-      "question": "根据文中对 Rb-TiO2/TB-CS 纳米颗粒在 PGMEA 溶剂中分散特性的描述，结合图1b展示的单分散形貌，下列哪项正确阐述了其粒径特征对材料光学性能的影响？\nA. 平均粒径约 295 nm，导致严重的瑞利散射，降低了材料透明度\nB. 平均粒径约 11.7 nm，因尺寸小于 40 nm 可避免瑞利散射，确保了材料的高透明性\nC. 平均粒径约 10.5 nm，虽为单分散但尺寸过小，不利于光生电子的产生\nD. 平均粒径约 50 nm，正好满足可见光波长的 1/10 要求，增强了光调制幅度",
-      "answer": "B，粒径11.7nm小于40nm避免散射保透明",
-      "raw": "<question>根据文中对 Rb-TiO2/TB-CS 纳米颗粒在 PGMEA 溶剂中分散特性的描述，结合图1b展示的单分散形貌，下列哪项正确阐述了其粒径特征对材料光学性能的影响？\nA. 平均粒径约 295 nm，导致严重的瑞利散射，降低了材料透明度\nB. 平均粒径约 11.7 nm，因尺寸小于 40 nm 可避免瑞利散射，确保了材料的高透明性\nC. 平均粒径约 10.5 nm，虽为单分散但尺寸过小，不利于光生电子的产生\nD. 平均粒径约 50 nm，正好满足可见光波长的 1/10 要求，增强了光调制幅度</question>\n<answer>B，粒径11.7nm小于40nm避免散射保透明</answer>\n<evidence>{\"doc_spans\": [\"The Rb-TiO2/TB-CS exhibits an average size of 11.7 nm, which is roughly consistent with the statistics of the TEM, suggesting the monodispersion of Rb-TiO2/TB-CS NPs in PGMEA.\", \"it is sufficiently smaller than 40 nm to prevent Rayleigh scattering of visible light.\"], \"image_regions\": [\"Figure 1b\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>"
+      "question": "根据文中DFT计算结果，关于DEG在Rb-TiO2/TB(3%)体系中的吸附特性及其对光致变色性能的影响，下列说法正确的是？\nA. 物理吸附能更负，DEG倾向于物理吸附，阻碍了空穴的快速俘获\nB. 氧空位处的解离吸附能比物理吸附能更负，表明DEG倾向于解离吸附，有利于快速俘获空穴\nC. 晶格应变使吸附能转为正值，导致DEG难以吸附在颗粒表面\nD. Rb掺杂消除了氧空位，使得DEG只能通过物理吸附与表面结合",
+      "answer": "B，解离吸附能更负，倾向解离吸附利于空穴俘获",
+      "raw": "<question>根据文中DFT计算结果，关于DEG在Rb-TiO2/TB(3%)体系中的吸附特性及其对光致变色性能的影响，下列说法正确的是？\nA. 物理吸附能更负，DEG倾向于物理吸附，阻碍了空穴的快速俘获\nB. 氧空位处的解离吸附能比物理吸附能更负，表明DEG倾向于解离吸附，有利于快速俘获空穴\nC. 晶格应变使吸附能转为正值，导致DEG难以吸附在颗粒表面\nD. Rb掺杂消除了氧空位，使得DEG只能通过物理吸附与表面结合</question>\n<answer>B，解离吸附能更负，倾向解离吸附利于空穴俘获</answer>\n<evidence>{\"doc_spans\": [\"Notably, the dissociative adsorption energy of DEG on $Rb-TiO_{2}/TB(3\\%)$ at oxygen vacancy is more negative than the physical adsorption energy, indicating that DEG prefers to be dissociatively adsorbed at oxygen vacancy in $Rb-TiO_{2}/TB(3\\%)$.\"], \"image_regions\": []}</evidence>\n<modal_use>text</modal_use>\n<cross_modal_bridge>false</cross_modal_bridge>"
     },
     "stage_final": {
-      "question": "结合图1中心区域示意图1c中蓝色晶体TiO₂与绿色非晶TiO₂界面的红色虚线箭头标注，以及文中对该界面结构与光学性能关系的描述，下列关于该体系在650 nm处光学行为与粒径特征的说法，哪一项与图文信息同时相符？  \nA. 界面为“Surface modification”，纳米颗粒平均粒径≈295 nm，导致强烈瑞利散射，光学调制幅度约50%且着色需＞10 min  \nB. 界面为“Lattice doping”，纳米颗粒平均粒径≈50 nm，接近可见光波长1/10，从而使光学调制幅度≈79.5%，着色约150 min  \nC. 界面为“Phase transition”，纳米颗粒平均粒径≈10.5 nm，虽保持单分散但尺寸过小抑制光生电子生成，光学调制幅度约82.74%，着色约70 s  \nD. 界面为“Interfacial strain”，在晶体-非晶TiO₂交界处产生上图所示应变场，颗粒在PGMEA中实际平均粒径约11.7 nm，小于40 nm以避免可见光瑞利散射，从而在加入DEG后仍保持高透明度，并能在UV照射60 s内实现约91.54%的650 nm光学调制",
-      "answer": "D；界面标注interfacial strain，11.7 nm粒径支撑91.54%快速调制",
-      "raw": "<question>结合图1中心区域示意图1c中蓝色晶体TiO₂与绿色非晶TiO₂界面的红色虚线箭头标注，以及文中对该界面结构与光学性能关系的描述，下列关于该体系在650 nm处光学行为与粒径特征的说法，哪一项与图文信息同时相符？  \nA. 界面为“Surface modification”，纳米颗粒平均粒径≈295 nm，导致强烈瑞利散射，光学调制幅度约50%且着色需＞10 min  \nB. 界面为“Lattice doping”，纳米颗粒平均粒径≈50 nm，接近可见光波长1/10，从而使光学调制幅度≈79.5%，着色约150 min  \nC. 界面为“Phase transition”，纳米颗粒平均粒径≈10.5 nm，虽保持单分散但尺寸过小抑制光生电子生成，光学调制幅度约82.74%，着色约70 s  \nD. 界面为“Interfacial strain”，在晶体-非晶TiO₂交界处产生上图所示应变场，颗粒在PGMEA中实际平均粒径约11.7 nm，小于40 nm以避免可见光瑞利散射，从而在加入DEG后仍保持高透明度，并能在UV照射60 s内实现约91.54%的650 nm光学调制</question>\n<answer>D；界面标注interfacial strain，11.7 nm粒径支撑91.54%快速调制</answer>"
+      "question": "结合图1中高分辨TEM图(e)可见Rb‑TiO₂/TB‑CS样品(101)晶面晶格间距由纯TiO₂的3.51 Å拉伸到3.59 Å，以及文中DFT对Rb‑TiO₂/TB(3%)的计算结果：3%张应变下氧空位形成能随Rb掺杂显著降低并转为负值，且DEG在含氧空位表面的解离吸附能比物理吸附更负。关于该体系在约3%张应变条件下的缺陷与表面吸附行为，哪一项最合理地解释其优异的光致变色性能？  \nA. 复合硅烷表面修饰导致晶格膨胀，使DEG主要物理吸附并抑制氧空位生成  \nB. Rb掺入放大(101)晶面张应变，使氧空位自发形成，并在这些缺陷位上显著增强DEG的解离吸附  \nC. 由于Rb半径较小引起晶格收缩，降低氧空位浓度并迫使DEG仅以物理吸附存在  \nD. 张应变只提升载流子迁移率，对氧空位形成能和DEG吸附方式影响可以忽略",
+      "answer": "B；Rb掺杂+张应变促氧空位自发形成并强化DEG解离吸附",
+      "raw": "<question>结合图1中高分辨TEM图(e)可见Rb‑TiO₂/TB‑CS样品(101)晶面晶格间距由纯TiO₂的3.51 Å拉伸到3.59 Å，以及文中DFT对Rb‑TiO₂/TB(3%)的计算结果：3%张应变下氧空位形成能随Rb掺杂显著降低并转为负值，且DEG在含氧空位表面的解离吸附能比物理吸附更负。关于该体系在约3%张应变条件下的缺陷与表面吸附行为，哪一项最合理地解释其优异的光致变色性能？  \nA. 复合硅烷表面修饰导致晶格膨胀，使DEG主要物理吸附并抑制氧空位生成  \nB. Rb掺入放大(101)晶面张应变，使氧空位自发形成，并在这些缺陷位上显著增强DEG的解离吸附  \nC. 由于Rb半径较小引起晶格收缩，降低氧空位浓度并迫使DEG仅以物理吸附存在  \nD. 张应变只提升载流子迁移率，对氧空位形成能和DEG吸附方式影响可以忽略</question>\n<answer>B；Rb掺杂+张应变促氧空位自发形成并强化DEG解离吸附</answer>"
     },
     "steps": [
       {
         "k": 0,
-        "question": "观察图片中心区域的图1c，该示意图展示了蓝色圆点（Crystalline TiO2）与绿色圆点（Amorphous TiO2）的结合界面。请问图中红色虚线箭头所指的界面物理特征被标注为什么？\nA. Interfacial strain\nB. Surface modification\nC. Lattice doping\nD. Phase transition",
-        "answer": "A，图1c中明确标注了晶体与非晶TiO2界面处存在\"Interfacial strain\"（界面应变），文档中也提到该图展示了晶体-非晶界面处的处延应变。",
+        "question": "在图像中心区域的高分辨TEM图(e)中，(101)晶面晶格间距增大的直接原因是？ A. Rb元素半径较小 B. Rb成功掺杂TiO₂晶格 C. 氧空位减少导致收缩 D. 复合硅烷表面修饰",
+        "answer": "B，Rb掺杂导致晶格膨胀",
         "evidence": {
           "doc_spans": [
-            "Figure 1c illustrates the epitaxial strain at the crystalline-amorphous interface"
+            "L12-L18"
           ],
           "image_regions": [
-            [
-              280,
-              270,
-              460,
-              460
-            ]
+            "中心区域高分辨TEM图(e)标注(101)晶面3.59Å晶格间距"
           ]
         },
         "modal_use": "both",
         "cross_modal_bridge": true,
-        "raw": "<question>观察图片中心区域的图1c，该示意图展示了蓝色圆点（Crystalline TiO2）与绿色圆点（Amorphous TiO2）的结合界面。请问图中红色虚线箭头所指的界面物理特征被标注为什么？\nA. Interfacial strain\nB. Surface modification\nC. Lattice doping\nD. Phase transition</question>\n<answer>A，图1c中明确标注了晶体与非晶TiO2界面处存在\"Interfacial strain\"（界面应变），文档中也提到该图展示了晶体-非晶界面处的处延应变。</answer>\n<evidence>{\"doc_spans\": [\"Figure 1c illustrates the epitaxial strain at the crystalline-amorphous interface\"], \"image_regions\": [[280, 270, 460, 460]]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>",
+        "raw": "<question>在图像中心区域的高分辨TEM图(e)中，(101)晶面晶格间距增大的直接原因是？ A. Rb元素半径较小 B. Rb成功掺杂TiO₂晶格 C. 氧空位减少导致收缩 D. 复合硅烷表面修饰</question>\n<answer>B，Rb掺杂导致晶格膨胀</answer>\n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域高分辨TEM图(e)标注(101)晶面3.59Å晶格间距\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>",
         "judge_flags": null
       },
       {
         "k": 1,
-        "question": "结合文中对加入 DEG 后 Rb-TiO2/TB-CS 纳米分散液在 650 nm 处光学调制与着色行为的描述，下列说法哪项正确？  \nA. 光学调制幅度≈50%，着色需＞10 min  \nB. 光学调制幅度≈79.5%，着色需150 min  \nC. 光学调制幅度≈91.54%，在 UV 照射 60 s 内完成着色  \nD. 光学调制幅度≈82.74%，在 UV 照射 70 s 内完成着色",
-        "answer": "C，调制幅度91.54%，60秒内达最大着色",
+        "question": "结合图(e)中(101)晶面晶格间距增大与文中DFT结果，哪一选项最能解释在约3%张应变下样品中会自发生成大量氧空位？  \nA. 晶格拉伸只提高载流子迁移率，不影响缺陷形成  \nB. Rb掺杂与晶格拉伸协同使氧空位形成能转为负值  \nC. 仅有Rb掺杂即可使氧空位形成能始终为零  \nD. 张应变抑制氧空位生成，使晶体更接近完美结构",
+        "answer": "B，Rb掺杂+张应变使形成能为负，自发产生成空位",
         "evidence": {
           "doc_spans": [
-            "L21-L21"
+            "L25-L27"
           ],
           "image_regions": [
-            "中心区域图1c显示晶体-非晶界面的Interfacial strain，为后述高光学调制性能提供结构基础"
+            "中心区域高分辨TEM图(e)中(101)晶面拉伸位置"
           ]
         },
         "modal_use": "both",
         "cross_modal_bridge": true,
-        "raw": "<question>结合文中对加入 DEG 后 Rb-TiO2/TB-CS 纳米分散液在 650 nm 处光学调制与着色行为的描述，下列说法哪项正确？  \nA. 光学调制幅度≈50%，着色需＞10 min  \nB. 光学调制幅度≈79.5%，着色需150 min  \nC. 光学调制幅度≈91.54%，在 UV 照射 60 s 内完成着色  \nD. 光学调制幅度≈82.74%，在 UV 照射 70 s 内完成着色</question>\n<answer>C，调制幅度91.54%，60秒内达最大着色</answer>\n<evidence>{\"doc_spans\": [\"L21-L21\"], \"image_regions\": [\"中心区域图1c显示晶体-非晶界面的Interfacial strain，为后述高光学调制性能提供结构基础\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>",
+        "raw": "<question>结合图(e)中(101)晶面晶格间距增大与文中DFT结果，哪一选项最能解释在约3%张应变下样品中会自发生成大量氧空位？  \nA. 晶格拉伸只提高载流子迁移率，不影响缺陷形成  \nB. Rb掺杂与晶格拉伸协同使氧空位形成能转为负值  \nC. 仅有Rb掺杂即可使氧空位形成能始终为零  \nD. 张应变抑制氧空位生成，使晶体更接近完美结构</question>\n<answer>B，Rb掺杂+张应变使形成能为负，自发产生成空位</answer>\n<evidence>{\"doc_spans\": [\"L25-L27\"], \"image_regions\": [\"中心区域高分辨TEM图(e)中(101)晶面拉伸位置\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>",
         "judge_flags": null
       },
       {
         "k": 2,
-        "question": "根据文中对 Rb-TiO2/TB-CS 纳米颗粒在 PGMEA 溶剂中分散特性的描述，结合图1b展示的单分散形貌，下列哪项正确阐述了其粒径特征对材料光学性能的影响？\nA. 平均粒径约 295 nm，导致严重的瑞利散射，降低了材料透明度\nB. 平均粒径约 11.7 nm，因尺寸小于 40 nm 可避免瑞利散射，确保了材料的高透明性\nC. 平均粒径约 10.5 nm，虽为单分散但尺寸过小，不利于光生电子的产生\nD. 平均粒径约 50 nm，正好满足可见光波长的 1/10 要求，增强了光调制幅度",
-        "answer": "B，粒径11.7nm小于40nm避免散射保透明",
+        "question": "根据文中DFT计算结果，关于DEG在Rb-TiO2/TB(3%)体系中的吸附特性及其对光致变色性能的影响，下列说法正确的是？\nA. 物理吸附能更负，DEG倾向于物理吸附，阻碍了空穴的快速俘获\nB. 氧空位处的解离吸附能比物理吸附能更负，表明DEG倾向于解离吸附，有利于快速俘获空穴\nC. 晶格应变使吸附能转为正值，导致DEG难以吸附在颗粒表面\nD. Rb掺杂消除了氧空位，使得DEG只能通过物理吸附与表面结合",
+        "answer": "B，解离吸附能更负，倾向解离吸附利于空穴俘获",
+        "evidence": "{\"doc_spans\": [\"Notably, the dissociative adsorption energy of DEG on $Rb-TiO_{2}/TB(3\\%)$ at oxygen vacancy is more negative than the physical adsorption energy, indicating that DEG prefers to be dissociatively adsorbed at oxygen vacancy in $Rb-TiO_{2}/TB(3\\%)$.\"], \"image_regions\": []}",
+        "modal_use": "text",
+        "cross_modal_bridge": false,
+        "raw": "<question>根据文中DFT计算结果，关于DEG在Rb-TiO2/TB(3%)体系中的吸附特性及其对光致变色性能的影响，下列说法正确的是？\nA. 物理吸附能更负，DEG倾向于物理吸附，阻碍了空穴的快速俘获\nB. 氧空位处的解离吸附能比物理吸附能更负，表明DEG倾向于解离吸附，有利于快速俘获空穴\nC. 晶格应变使吸附能转为正值，导致DEG难以吸附在颗粒表面\nD. Rb掺杂消除了氧空位，使得DEG只能通过物理吸附与表面结合</question>\n<answer>B，解离吸附能更负，倾向解离吸附利于空穴俘获</answer>\n<evidence>{\"doc_spans\": [\"Notably, the dissociative adsorption energy of DEG on $Rb-TiO_{2}/TB(3\\%)$ at oxygen vacancy is more negative than the physical adsorption energy, indicating that DEG prefers to be dissociatively adsorbed at oxygen vacancy in $Rb-TiO_{2}/TB(3\\%)$.\"], \"image_regions\": []}</evidence>\n<modal_use>text</modal_use>\n<cross_modal_bridge>false</cross_modal_bridge>",
+        "judge_flags": null
+      }
+    ],
+    "difficulty_metrics": {
+      "medium_correct": false,
+      "strong_correct": false,
+      "difficulty_score": 0.0,
+      "cross_modal_used": true,
+      "num_hops": 3,
+      "medium_pred": null,
+      "strong_pred": "B",
+      "medium_raw": "",
+      "strong_raw": "<answer>B</answer>"
+    },
+    "solver_final_pred": "B",
+    "solver_final_raw": "<answer>B</answer>",
+    "reflect_feedback": null,
+    "stop_reason": "solver_incorrect"
+  },
+  {
+    "round": 1,
+    "stage_1": {
+      "question": "在图中高分辨率TEM中心区域可见，Rb-TiO₂/TB-CS的(200)晶面晶格间距是多少？A. 1.90 Å  B. 1.95 Å  C. 3.51 Å  D. 3.59 Å",
+      "answer": "B，因图中标注显示为1.95 Å",
+      "raw": "<question>在图中高分辨率TEM中心区域可见，Rb-TiO₂/TB-CS的(200)晶面晶格间距是多少？A. 1.90 Å  B. 1.95 Å  C. 3.51 Å  D. 3.59 Å</question>\n<answer>B，因图中标注显示为1.95 Å</answer>\n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域标注(200) 1.95 Å的TEM图像\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_2": {
+      "question": "在图中高分辨率TEM已表明 Rb-TiO₂/TB-CS 的(200)晶面发生晶格拉伸，那么结合文中说明，这种由 Rb 掺杂与拉伸应变协同导致的大量氧空位生成，主要是为了哪一目的？A. 提高 TiO₂ 的紫外吸收边 B. 促进 DEG 的解离吸附以作为牺牲电子供体清除空穴 C. 减少表面硅氧烷修饰量 D. 抑制 Ti³⁺ 的形成",
+      "answer": "B，Rb掺杂与拉伸应变促氧空位，自发吸附DEG清空穴",
+      "raw": "<question>在图中高分辨率TEM已表明 Rb-TiO₂/TB-CS 的(200)晶面发生晶格拉伸，那么结合文中说明，这种由 Rb 掺杂与拉伸应变协同导致的大量氧空位生成，主要是为了哪一目的？A. 提高 TiO₂ 的紫外吸收边 B. 促进 DEG 的解离吸附以作为牺牲电子供体清除空穴 C. 减少表面硅氧烷修饰量 D. 抑制 Ti³⁺ 的形成</question>\n<answer>B，Rb掺杂与拉伸应变促氧空位，自发吸附DEG清空穴</answer>\n<evidence>{\"doc_spans\": [\"L8-L9\", \"L26-L27\"], \"image_regions\": [\"中心区域标注1.95 Å的(200)晶面\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_3": {
+      "question": "结合文中描述与图1b所示的TEM形貌，Rb-TiO₂/TB-CS 纳米粒子在 PGMEA 中的平均粒径约为 11.7 nm。请问将粒径控制在远小于 40 nm 的主要光学目的，以及实现该粒径下单分散状态的关键处理手段分别是什么？\nA. 增强局域表面等离子体共振（LSPR）；通过 Rb 离子掺杂实现\nB. 防止可见光的瑞利散射以获得高透明度；通过复合硅氧烷（CS）表面修饰实现\nC. 提高氧空位的生成效率；通过晶格拉伸应变实现\nD. 促进牺牲电子供体 DEG 的化学吸附；通过二次溶剂热处理实现",
+      "answer": "B，粒径小于40nm防瑞利散射增透，CS修饰保单分散",
+      "raw": "<question>结合文中描述与图1b所示的TEM形貌，Rb-TiO₂/TB-CS 纳米粒子在 PGMEA 中的平均粒径约为 11.7 nm。请问将粒径控制在远小于 40 nm 的主要光学目的，以及实现该粒径下单分散状态的关键处理手段分别是什么？\nA. 增强局域表面等离子体共振（LSPR）；通过 Rb 离子掺杂实现\nB. 防止可见光的瑞利散射以获得高透明度；通过复合硅氧烷（CS）表面修饰实现\nC. 提高氧空位的生成效率；通过晶格拉伸应变实现\nD. 促进牺牲电子供体 DEG 的化学吸附；通过二次溶剂热处理实现</question>\n<answer>B，粒径小于40nm防瑞利散射增透，CS修饰保单分散</answer>\n<evidence>{\"doc_spans\": [\"2.1. Preparation and Characterization of Rb-TiO2/TB-CS Structure\", \"Figure 2b displays the number distribution of particle size... exhibits an average size of 11.7 nm... sufficiently smaller than 40 nm to prevent Rayleigh scattering of visible light.\", \"Surface modification was performed using composite siloxanes... to enable monodispersity\"], \"image_regions\": [\"Figure 1b\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_final": {
+      "question": "结合图1中高分辨率 TEM 中心区域对 (200) 晶面的标注以及文中对 Rb 掺杂、拉伸晶格与粒径控制的讨论，下列关于 Rb-TiO₂/TB-CS 纳米颗粒结构与光学性能的描述，哪一项同时正确指出了：(i) (200) 晶面的实际晶格间距；(ii) 由此相关的氧空位在体系中的主要功能；(iii) 粒径远小于 40 nm 时实现高透明度所依赖的具体表面处理手段？  \nA. 1.90 Å；直接增强 TiO₂ 的本征紫外吸收；通过 Rb 掺杂缩小颗粒避免散射  \nB. 1.95 Å；促进 DEG 的解离吸附以作为牺牲电子供体清除空穴；通过复合硅氧烷修饰使 ~11.7 nm 颗粒在 PGMEA 中单分散以抑制可见光瑞利散射  \nC. 3.51 Å；减少表面硅氧烷覆盖以提高折射率；通过二次溶剂热处理缩小粒径  \nD. 3.59 Å；抑制 Ti³⁺ 的生成以维持无色态；通过未改性的 Rb-TiO₂/TB 自然分散降低浊度",
+      "answer": "B；(200)面1.95Å，氧空位促DEG吸附清空穴，小粒径靠CS修饰单分散防散射",
+      "raw": "<question>结合图1中高分辨率 TEM 中心区域对 (200) 晶面的标注以及文中对 Rb 掺杂、拉伸晶格与粒径控制的讨论，下列关于 Rb-TiO₂/TB-CS 纳米颗粒结构与光学性能的描述，哪一项同时正确指出了：(i) (200) 晶面的实际晶格间距；(ii) 由此相关的氧空位在体系中的主要功能；(iii) 粒径远小于 40 nm 时实现高透明度所依赖的具体表面处理手段？  \nA. 1.90 Å；直接增强 TiO₂ 的本征紫外吸收；通过 Rb 掺杂缩小颗粒避免散射  \nB. 1.95 Å；促进 DEG 的解离吸附以作为牺牲电子供体清除空穴；通过复合硅氧烷修饰使 ~11.7 nm 颗粒在 PGMEA 中单分散以抑制可见光瑞利散射  \nC. 3.51 Å；减少表面硅氧烷覆盖以提高折射率；通过二次溶剂热处理缩小粒径  \nD. 3.59 Å；抑制 Ti³⁺ 的生成以维持无色态；通过未改性的 Rb-TiO₂/TB 自然分散降低浊度</question>\n<answer>B；(200)面1.95Å，氧空位促DEG吸附清空穴，小粒径靠CS修饰单分散防散射</answer>"
+    },
+    "steps": [
+      {
+        "k": 0,
+        "question": "在图中高分辨率TEM中心区域可见，Rb-TiO₂/TB-CS的(200)晶面晶格间距是多少？A. 1.90 Å  B. 1.95 Å  C. 3.51 Å  D. 3.59 Å",
+        "answer": "B，因图中标注显示为1.95 Å",
         "evidence": {
           "doc_spans": [
-            "The Rb-TiO2/TB-CS exhibits an average size of 11.7 nm, which is roughly consistent with the statistics of the TEM, suggesting the monodispersion of Rb-TiO2/TB-CS NPs in PGMEA.",
-            "it is sufficiently smaller than 40 nm to prevent Rayleigh scattering of visible light."
+            "L12-L18"
+          ],
+          "image_regions": [
+            "中心区域标注(200) 1.95 Å的TEM图像"
+          ]
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": true,
+        "raw": "<question>在图中高分辨率TEM中心区域可见，Rb-TiO₂/TB-CS的(200)晶面晶格间距是多少？A. 1.90 Å  B. 1.95 Å  C. 3.51 Å  D. 3.59 Å</question>\n<answer>B，因图中标注显示为1.95 Å</answer>\n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域标注(200) 1.95 Å的TEM图像\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>",
+        "judge_flags": null
+      },
+      {
+        "k": 1,
+        "question": "在图中高分辨率TEM已表明 Rb-TiO₂/TB-CS 的(200)晶面发生晶格拉伸，那么结合文中说明，这种由 Rb 掺杂与拉伸应变协同导致的大量氧空位生成，主要是为了哪一目的？A. 提高 TiO₂ 的紫外吸收边 B. 促进 DEG 的解离吸附以作为牺牲电子供体清除空穴 C. 减少表面硅氧烷修饰量 D. 抑制 Ti³⁺ 的形成",
+        "answer": "B，Rb掺杂与拉伸应变促氧空位，自发吸附DEG清空穴",
+        "evidence": {
+          "doc_spans": [
+            "L8-L9",
+            "L26-L27"
+          ],
+          "image_regions": [
+            "中心区域标注1.95 Å的(200)晶面"
+          ]
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": true,
+        "raw": "<question>在图中高分辨率TEM已表明 Rb-TiO₂/TB-CS 的(200)晶面发生晶格拉伸，那么结合文中说明，这种由 Rb 掺杂与拉伸应变协同导致的大量氧空位生成，主要是为了哪一目的？A. 提高 TiO₂ 的紫外吸收边 B. 促进 DEG 的解离吸附以作为牺牲电子供体清除空穴 C. 减少表面硅氧烷修饰量 D. 抑制 Ti³⁺ 的形成</question>\n<answer>B，Rb掺杂与拉伸应变促氧空位，自发吸附DEG清空穴</answer>\n<evidence>{\"doc_spans\": [\"L8-L9\", \"L26-L27\"], \"image_regions\": [\"中心区域标注1.95 Å的(200)晶面\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>",
+        "judge_flags": null
+      },
+      {
+        "k": 2,
+        "question": "结合文中描述与图1b所示的TEM形貌，Rb-TiO₂/TB-CS 纳米粒子在 PGMEA 中的平均粒径约为 11.7 nm。请问将粒径控制在远小于 40 nm 的主要光学目的，以及实现该粒径下单分散状态的关键处理手段分别是什么？\nA. 增强局域表面等离子体共振（LSPR）；通过 Rb 离子掺杂实现\nB. 防止可见光的瑞利散射以获得高透明度；通过复合硅氧烷（CS）表面修饰实现\nC. 提高氧空位的生成效率；通过晶格拉伸应变实现\nD. 促进牺牲电子供体 DEG 的化学吸附；通过二次溶剂热处理实现",
+        "answer": "B，粒径小于40nm防瑞利散射增透，CS修饰保单分散",
+        "evidence": {
+          "doc_spans": [
+            "2.1. Preparation and Characterization of Rb-TiO2/TB-CS Structure",
+            "Figure 2b displays the number distribution of particle size... exhibits an average size of 11.7 nm... sufficiently smaller than 40 nm to prevent Rayleigh scattering of visible light.",
+            "Surface modification was performed using composite siloxanes... to enable monodispersity"
           ],
           "image_regions": [
             "Figure 1b"
@@ -76,23 +157,483 @@
         },
         "modal_use": "both",
         "cross_modal_bridge": true,
-        "raw": "<question>根据文中对 Rb-TiO2/TB-CS 纳米颗粒在 PGMEA 溶剂中分散特性的描述，结合图1b展示的单分散形貌，下列哪项正确阐述了其粒径特征对材料光学性能的影响？\nA. 平均粒径约 295 nm，导致严重的瑞利散射，降低了材料透明度\nB. 平均粒径约 11.7 nm，因尺寸小于 40 nm 可避免瑞利散射，确保了材料的高透明性\nC. 平均粒径约 10.5 nm，虽为单分散但尺寸过小，不利于光生电子的产生\nD. 平均粒径约 50 nm，正好满足可见光波长的 1/10 要求，增强了光调制幅度</question>\n<answer>B，粒径11.7nm小于40nm避免散射保透明</answer>\n<evidence>{\"doc_spans\": [\"The Rb-TiO2/TB-CS exhibits an average size of 11.7 nm, which is roughly consistent with the statistics of the TEM, suggesting the monodispersion of Rb-TiO2/TB-CS NPs in PGMEA.\", \"it is sufficiently smaller than 40 nm to prevent Rayleigh scattering of visible light.\"], \"image_regions\": [\"Figure 1b\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>",
+        "raw": "<question>结合文中描述与图1b所示的TEM形貌，Rb-TiO₂/TB-CS 纳米粒子在 PGMEA 中的平均粒径约为 11.7 nm。请问将粒径控制在远小于 40 nm 的主要光学目的，以及实现该粒径下单分散状态的关键处理手段分别是什么？\nA. 增强局域表面等离子体共振（LSPR）；通过 Rb 离子掺杂实现\nB. 防止可见光的瑞利散射以获得高透明度；通过复合硅氧烷（CS）表面修饰实现\nC. 提高氧空位的生成效率；通过晶格拉伸应变实现\nD. 促进牺牲电子供体 DEG 的化学吸附；通过二次溶剂热处理实现</question>\n<answer>B，粒径小于40nm防瑞利散射增透，CS修饰保单分散</answer>\n<evidence>{\"doc_spans\": [\"2.1. Preparation and Characterization of Rb-TiO2/TB-CS Structure\", \"Figure 2b displays the number distribution of particle size... exhibits an average size of 11.7 nm... sufficiently smaller than 40 nm to prevent Rayleigh scattering of visible light.\", \"Surface modification was performed using composite siloxanes... to enable monodispersity\"], \"image_regions\": [\"Figure 1b\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>",
         "judge_flags": null
       }
     ],
     "difficulty_metrics": {
-      "medium_correct": true,
+      "medium_correct": false,
       "strong_correct": true,
-      "difficulty_score": 0.5,
+      "difficulty_score": 1.0,
       "cross_modal_used": true,
       "num_hops": 3,
-      "medium_pred": "D",
-      "strong_pred": "D",
-      "medium_raw": "D",
-      "strong_raw": "D"
+      "medium_pred": null,
+      "strong_pred": "B",
+      "medium_raw": "",
+      "strong_raw": "<answer>B</answer>"
     },
-    "solver_final_pred": null,
-    "reflect_feedback": null,
-    "stop_reason": "solve_error: Error code: 400 - {'success': False, 'message': '模型提供方限流', 'data': None, 'code': 'MPE-429', 'detailMessage': '{\\n  \"error\": {\\n    \"code\": 429,\\n    \"message\": \"Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.\",\\n    \"status\": \"RESOURCE_EXHAUSTED\"\\n  }\\n}\\n, traceId: 213e060c17660408687226707e0d5d'}"
+    "solver_final_pred": "B",
+    "solver_final_raw": "<answer>B</answer>",
+    "reflect_feedback": "1. **分散关键信息位置与表述**  \n   - 将晶面间距、氧空位作用、表面修饰方式分别埋在不同段落、图注或补充信息中，并采用不同表述（如用“0.195 nm”替代“1.95 Å”），降低将三者直接对应到同一选项的显性线索。  \n\n2. **增加干扰选项的“合理性”与相似度**  \n   - 在其他选项中也给出接近的晶面间距数值与看似合理的机理（如氧空位参与可见光吸收、表面硅氧烷既调折射率又影响带电状态），使学生必须理解具体机理细节和参数规模，而不能凭直觉排除。  \n\n3. **引入多步骤推理或定量比较**  \n   - 要求考生结合粒径与波长的数量级关系推导散射机制、用能级或反应路径图判断氧空位的主导作用，再与具体溶剂和配体配位能力匹配，从而完成跨“晶体学—表面化学—光学”多环节的综合推理，而非直接记忆型作答。",
+    "stop_reason": null
+  },
+  {
+    "round": 1,
+    "stage_1": {
+      "question": "在图中中心区域的高分辨TEM图像中，(200)晶面对应的晶格间距是多少？  \nA. 1.90 Å  \nB. 1.95 Å  \nC. 3.51 Å  \nD. 3.59 Å",
+      "answer": "B，图中黄色标注显示晶格间距为1.95 Å",
+      "raw": "<question>在图中中心区域的高分辨TEM图像中，(200)晶面对应的晶格间距是多少？  \nA. 1.90 Å  \nB. 1.95 Å  \nC. 3.51 Å  \nD. 3.59 Å</question>  \n<answer>B，图中黄色标注显示晶格间距为1.95 Å</answer>  \n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域高分辨TEM图像，标注(200)晶面1.95 Å\"]}</evidence>  \n<modal_use>both</modal_use>  \n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_2": {
+      "question": "结合图中中心区域标注的1.95 Å(200)晶面信息，关于加入DEG后的 Rb-TiO2/TB-CS 光致变色纳米分散液在650 nm处的光学调制幅度和在UV照射下达到完全着色所需时间，下列哪一项表述正确？  \nA. 光学调制幅度约91.54%，着色时间为60 s  \nB. 光学调制幅度约80%，着色时间为150 s  \nC. 光学调制幅度约70%，着色时间为21 s  \nD. 光学调制幅度约50%，着色时间为120 s",
+      "answer": "A，文中指出调制91.54%，60 s着色完成",
+      "raw": "<question>结合图中中心区域标注的1.95 Å(200)晶面信息，关于加入DEG后的 Rb-TiO2/TB-CS 光致变色纳米分散液在650 nm处的光学调制幅度和在UV照射下达到完全着色所需时间，下列哪一项表述正确？  \nA. 光学调制幅度约91.54%，着色时间为60 s  \nB. 光学调制幅度约80%，着色时间为150 s  \nC. 光学调制幅度约70%，着色时间为21 s  \nD. 光学调制幅度约50%，着色时间为120 s</question>\n<answer>A，文中指出调制91.54%，60 s着色完成</answer>\n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域高分辨TEM中(200)晶面1.95 Å标注\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_3": {
+      "question": "结合图1b中Rb-TiO2/TB-CS纳米颗粒均匀分散的形貌，以及上一步中提到的超过90%的光学调制幅度，以下关于该材料在着色前具有高透明度的原因，哪项是正确的？\nA. 纳米颗粒在PGMEA中的平均粒径约为11.7 nm，远小于40 nm，有效避免了可见光的瑞利散射。\nB. 颗粒表面的复合硅氧烷(CS)涂层能完全吸收可见光，从而实现透明。\nC. Rb的掺杂使得TiO2的带隙显著增宽，阻止了任何可见光的吸收。\nD. 未经修饰的颗粒在溶液中形成约295 nm的聚集体，增强了透光性。",
+      "answer": "A，颗粒平均粒径约11.7 nm，远小于40 nm，避免了瑞利散射。",
+      "raw": "<question>结合图1b中Rb-TiO2/TB-CS纳米颗粒均匀分散的形貌，以及上一步中提到的超过90%的光学调制幅度，以下关于该材料在着色前具有高透明度的原因，哪项是正确的？\nA. 纳米颗粒在PGMEA中的平均粒径约为11.7 nm，远小于40 nm，有效避免了可见光的瑞利散射。\nB. 颗粒表面的复合硅氧烷(CS)涂层能完全吸收可见光，从而实现透明。\nC. Rb的掺杂使得TiO2的带隙显著增宽，阻止了任何可见光的吸收。\nD. 未经修饰的颗粒在溶液中形成约295 nm的聚集体，增强了透光性。</question>\n<answer>A，颗粒平均粒径约11.7 nm，远小于40 nm，避免了瑞利散射。</answer>\n<evidence>{\"doc_spans\": [\"Figure 2b displays the number distribution of particle size for TiO2-CS, TiO2/TB-CS, Rb-TiO2/TB-CS, and unmodified Rb-TiO2/TB in propylene glycol monomethyl ether acetate (PGMEA). Compared to unmodified Rb-TiO2/TB with an average size of 295 nm, the Rb-TiO2/TB-CS exhibits an average size of 11.7 nm, which is roughly consistent with the statistics of the TEM, suggesting the monodispersion of Rb-TiO2/TB-CS NPs in PGMEA. In addition, although the particle size of Rb-TiO2/TB-CS is slightly increased in comparison to TiO2-CS and TiO2/TB-CS, it is sufficiently smaller than 40 nm to prevent Rayleigh scattering of visible light.\"], \"image_regions\": [\"Figure 1b\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_final": {
+      "question": "结合图中中心区域高分辨 TEM 对 (200) 晶面的标注，以及文中对 Rb‑TiO₂/TB‑CS 结构和粒径分布的描述，下列关于加入 DEG 后 Rb‑TiO₂/TB‑CS 光致变色纳米分散液在 650 nm 处表现出的光学与光学透明性特征的综合表述，哪一项最符合实验结果？\n\nA. (200) 面晶格间距约 1.90 Å，对应分散液在 650 nm 调制幅度约 70%，且由 295 nm 聚集体导致可见光强烈散射。  \nB. (200) 面晶格间距约 1.95 Å，纳米颗粒在 PGMEA 中平均粒径约 11.7 nm，显著抑制可见光瑞利散射，并实现超过 90% 的 650 nm 光学调制幅度与 60 s 内完成着色。  \nC. (200) 面晶格间距约 3.51 Å，尽管粒径约 11.7 nm，但 650 nm 调制幅度不足 50%，主要受 rubidium 氧化物强吸收限制。  \nD. (200) 面晶格间距约 3.59 Å，粒径接近 40 nm，600–800 nm 区域存在强本征吸收，因此难以获得高透明度和超过 80% 的光学调制。",
+      "answer": "B；(200) 面 1.95 Å，对应 11.7 nm 单分散粒子，650 nm 调制约 91.5%，60 s 着色。",
+      "raw": "<question>结合图中中心区域高分辨 TEM 对 (200) 晶面的标注，以及文中对 Rb‑TiO₂/TB‑CS 结构和粒径分布的描述，下列关于加入 DEG 后 Rb‑TiO₂/TB‑CS 光致变色纳米分散液在 650 nm 处表现出的光学与光学透明性特征的综合表述，哪一项最符合实验结果？\n\nA. (200) 面晶格间距约 1.90 Å，对应分散液在 650 nm 调制幅度约 70%，且由 295 nm 聚集体导致可见光强烈散射。  \nB. (200) 面晶格间距约 1.95 Å，纳米颗粒在 PGMEA 中平均粒径约 11.7 nm，显著抑制可见光瑞利散射，并实现超过 90% 的 650 nm 光学调制幅度与 60 s 内完成着色。  \nC. (200) 面晶格间距约 3.51 Å，尽管粒径约 11.7 nm，但 650 nm 调制幅度不足 50%，主要受 rubidium 氧化物强吸收限制。  \nD. (200) 面晶格间距约 3.59 Å，粒径接近 40 nm，600–800 nm 区域存在强本征吸收，因此难以获得高透明度和超过 80% 的光学调制。\n\n</question>\n<answer>B；(200) 面 1.95 Å，对应 11.7 nm 单分散粒子，650 nm 调制约 91.5%，60 s 着色。</answer>"
+    },
+    "steps": [
+      {
+        "k": 0,
+        "question": "在图中中心区域的高分辨TEM图像中，(200)晶面对应的晶格间距是多少？  \nA. 1.90 Å  \nB. 1.95 Å  \nC. 3.51 Å  \nD. 3.59 Å",
+        "answer": "B，图中黄色标注显示晶格间距为1.95 Å",
+        "evidence": {
+          "doc_spans": [
+            "L12-L18"
+          ],
+          "image_regions": [
+            "中心区域高分辨TEM图像，标注(200)晶面1.95 Å"
+          ]
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": true,
+        "raw": "<question>在图中中心区域的高分辨TEM图像中，(200)晶面对应的晶格间距是多少？  \nA. 1.90 Å  \nB. 1.95 Å  \nC. 3.51 Å  \nD. 3.59 Å</question>  \n<answer>B，图中黄色标注显示晶格间距为1.95 Å</answer>  \n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域高分辨TEM图像，标注(200)晶面1.95 Å\"]}</evidence>  \n<modal_use>both</modal_use>  \n<cross_modal_bridge>true</cross_modal_bridge>",
+        "judge_flags": null
+      },
+      {
+        "k": 1,
+        "question": "结合图中中心区域标注的1.95 Å(200)晶面信息，关于加入DEG后的 Rb-TiO2/TB-CS 光致变色纳米分散液在650 nm处的光学调制幅度和在UV照射下达到完全着色所需时间，下列哪一项表述正确？  \nA. 光学调制幅度约91.54%，着色时间为60 s  \nB. 光学调制幅度约80%，着色时间为150 s  \nC. 光学调制幅度约70%，着色时间为21 s  \nD. 光学调制幅度约50%，着色时间为120 s",
+        "answer": "A，文中指出调制91.54%，60 s着色完成",
+        "evidence": {
+          "doc_spans": [
+            "L12-L18"
+          ],
+          "image_regions": [
+            "中心区域高分辨TEM中(200)晶面1.95 Å标注"
+          ]
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": true,
+        "raw": "<question>结合图中中心区域标注的1.95 Å(200)晶面信息，关于加入DEG后的 Rb-TiO2/TB-CS 光致变色纳米分散液在650 nm处的光学调制幅度和在UV照射下达到完全着色所需时间，下列哪一项表述正确？  \nA. 光学调制幅度约91.54%，着色时间为60 s  \nB. 光学调制幅度约80%，着色时间为150 s  \nC. 光学调制幅度约70%，着色时间为21 s  \nD. 光学调制幅度约50%，着色时间为120 s</question>\n<answer>A，文中指出调制91.54%，60 s着色完成</answer>\n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域高分辨TEM中(200)晶面1.95 Å标注\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>",
+        "judge_flags": null
+      },
+      {
+        "k": 2,
+        "question": "结合图1b中Rb-TiO2/TB-CS纳米颗粒均匀分散的形貌，以及上一步中提到的超过90%的光学调制幅度，以下关于该材料在着色前具有高透明度的原因，哪项是正确的？\nA. 纳米颗粒在PGMEA中的平均粒径约为11.7 nm，远小于40 nm，有效避免了可见光的瑞利散射。\nB. 颗粒表面的复合硅氧烷(CS)涂层能完全吸收可见光，从而实现透明。\nC. Rb的掺杂使得TiO2的带隙显著增宽，阻止了任何可见光的吸收。\nD. 未经修饰的颗粒在溶液中形成约295 nm的聚集体，增强了透光性。",
+        "answer": "A，颗粒平均粒径约11.7 nm，远小于40 nm，避免了瑞利散射。",
+        "evidence": {
+          "doc_spans": [
+            "Figure 2b displays the number distribution of particle size for TiO2-CS, TiO2/TB-CS, Rb-TiO2/TB-CS, and unmodified Rb-TiO2/TB in propylene glycol monomethyl ether acetate (PGMEA). Compared to unmodified Rb-TiO2/TB with an average size of 295 nm, the Rb-TiO2/TB-CS exhibits an average size of 11.7 nm, which is roughly consistent with the statistics of the TEM, suggesting the monodispersion of Rb-TiO2/TB-CS NPs in PGMEA. In addition, although the particle size of Rb-TiO2/TB-CS is slightly increased in comparison to TiO2-CS and TiO2/TB-CS, it is sufficiently smaller than 40 nm to prevent Rayleigh scattering of visible light."
+          ],
+          "image_regions": [
+            "Figure 1b"
+          ]
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": true,
+        "raw": "<question>结合图1b中Rb-TiO2/TB-CS纳米颗粒均匀分散的形貌，以及上一步中提到的超过90%的光学调制幅度，以下关于该材料在着色前具有高透明度的原因，哪项是正确的？\nA. 纳米颗粒在PGMEA中的平均粒径约为11.7 nm，远小于40 nm，有效避免了可见光的瑞利散射。\nB. 颗粒表面的复合硅氧烷(CS)涂层能完全吸收可见光，从而实现透明。\nC. Rb的掺杂使得TiO2的带隙显著增宽，阻止了任何可见光的吸收。\nD. 未经修饰的颗粒在溶液中形成约295 nm的聚集体，增强了透光性。</question>\n<answer>A，颗粒平均粒径约11.7 nm，远小于40 nm，避免了瑞利散射。</answer>\n<evidence>{\"doc_spans\": [\"Figure 2b displays the number distribution of particle size for TiO2-CS, TiO2/TB-CS, Rb-TiO2/TB-CS, and unmodified Rb-TiO2/TB in propylene glycol monomethyl ether acetate (PGMEA). Compared to unmodified Rb-TiO2/TB with an average size of 295 nm, the Rb-TiO2/TB-CS exhibits an average size of 11.7 nm, which is roughly consistent with the statistics of the TEM, suggesting the monodispersion of Rb-TiO2/TB-CS NPs in PGMEA. In addition, although the particle size of Rb-TiO2/TB-CS is slightly increased in comparison to TiO2-CS and TiO2/TB-CS, it is sufficiently smaller than 40 nm to prevent Rayleigh scattering of visible light.\"], \"image_regions\": [\"Figure 1b\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>",
+        "judge_flags": null
+      }
+    ],
+    "difficulty_metrics": {
+      "medium_correct": false,
+      "strong_correct": true,
+      "difficulty_score": 1.0,
+      "cross_modal_used": true,
+      "num_hops": 3,
+      "medium_pred": null,
+      "strong_pred": "B",
+      "medium_raw": "",
+      "strong_raw": "<answer>B</answer>"
+    },
+    "solver_final_pred": "B",
+    "solver_final_raw": "<answer>B</answer>",
+    "reflect_feedback": "1. 增加多源信息整合  \n   - 让学生同时利用 TEM 标注、XRD 数据、粒径分布曲线和时间‑透过率曲线，从多种图表中提取数值和趋势后才能排除干扰选项，而不是仅靠一两个明显的特征。\n\n2. 弱化“唯一数值”线索  \n   - 避免选项中仅有一项给出与文中完全一致的晶面间距或调制幅度等精确数字，可改为多个选项给出相近数值，需要根据误差范围、物理合理性或其他参数组合进行判断。\n\n3. 引入概念性推理与反事实干扰  \n   - 设计需要理解瑞利散射与粒径关系、溶剂折射率匹配、载流子动力学对着色时间影响等机理的题干，并加入若干“看似合理但与机理相反”的干扰描述，迫使答题者进行物理化学层面的推理，而非只做简单的文本比对。",
+    "stop_reason": null
+  },
+  {
+    "round": 2,
+    "stage_1": {
+      "question": "根据图中中心区域高分辨TEM对(200)晶面的1.95 Å标注，以及文中对Rb‑TiO₂/TB‑CS结构与粒径分布的描述，下列关于其在PGMEA中分散性与可见光透过性特点的综合推断，哪一项最合理？  \nA. (200)面1.90 Å，粒径约295 nm，可见光透过率显著下降，散射增强。  \nB. (200)面1.95 Å，粒径约11.7 nm，避免瑞利散射并保持高透明度。  \nC. (200)面3.51 Å，粒径约11.7 nm，但由于强表面吸收导致低透明度。  \nD. (200)面3.59 Å，粒径接近40 nm，存在明显瑞利散射影响透过率。",
+      "answer": "B，高分辨TEM和粒径数据均支持",
+      "raw": "<question>根据图中中心区域高分辨TEM对(200)晶面的1.95 Å标注，以及文中对Rb‑TiO₂/TB‑CS结构与粒径分布的描述，下列关于其在PGMEA中分散性与可见光透过性特点的综合推断，哪一项最合理？  \nA. (200)面1.90 Å，粒径约295 nm，可见光透过率显著下降，散射增强。  \nB. (200)面1.95 Å，粒径约11.7 nm，避免瑞利散射并保持高透明度。  \nC. (200)面3.51 Å，粒径约11.7 nm，但由于强表面吸收导致低透明度。  \nD. (200)面3.59 Å，粒径接近40 nm，存在明显瑞利散射影响透过率。</question>  \n<answer>B，高分辨TEM和粒径数据均支持</answer>  \n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域(200)晶面1.95Å标注\"]}</evidence>  \n<modal_use>both</modal_use>  \n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_2": {
+      "question": "结合图1中心区域对 Rb‑TiO₂/TB‑CS(200)晶面 1.95 Å 与晶体‑非晶界面拉伸应变的标注，以及文中关于“Rb 掺杂与晶格拉伸应变协同显著降低氧空位形成能，使氧空位自发大量生成”的描述，下列对其光致变色性能提升机理的综合推断，哪一项最合理？  \nA. 虽形成 1.95 Å(200) 晶面与拉伸应变，但未改变氧空位形成能，光致变色主要由粒径减小引起。  \nB. Rb 掺杂与界面拉伸应变使氧空位形成能转为负值，氧空位浓度指数级增加，有利于 DEG 解离吸附并加快 Ti⁴⁺→Ti³⁺ 还原，从而提升调制幅度与响应速率。  \nC. Rb 掺杂虽增加晶格常数，但抑制氧空位形成并削弱 DEG 吸附，因此需更长紫外照射才能获得与未掺杂样品相同的对比度。  \nD. 界面拉伸应变只导致晶面间距膨胀和瑞利散射增强，使可见光透过率下降，是高对比度变色的主要原因。",
+      "answer": "B，Rb+应变协同使氧空位自发大量生成",
+      "raw": "<question>结合图1中心区域对 Rb‑TiO₂/TB‑CS(200)晶面 1.95 Å 与晶体‑非晶界面拉伸应变的标注，以及文中关于“Rb 掺杂与晶格拉伸应变协同显著降低氧空位形成能，使氧空位自发大量生成”的描述，下列对其光致变色性能提升机理的综合推断，哪一项最合理？  \nA. 虽形成 1.95 Å(200) 晶面与拉伸应变，但未改变氧空位形成能，光致变色主要由粒径减小引起。  \nB. Rb 掺杂与界面拉伸应变使氧空位形成能转为负值，氧空位浓度指数级增加，有利于 DEG 解离吸附并加快 Ti⁴⁺→Ti³⁺ 还原，从而提升调制幅度与响应速率。  \nC. Rb 掺杂虽增加晶格常数，但抑制氧空位形成并削弱 DEG 吸附，因此需更长紫外照射才能获得与未掺杂样品相同的对比度。  \nD. 界面拉伸应变只导致晶面间距膨胀和瑞利散射增强，使可见光透过率下降，是高对比度变色的主要原因。</question>\n<answer>B，Rb+应变协同使氧空位自发大量生成</answer>\n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域标注(200) 1.95 Å及晶体‑非晶界面应变示意\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_3": {
+      "question": "结合图1中Rb-TiO₂/TB-CS的TEM图像(图1b)与元素分布图(图1j)，以及文中关于复合硅氧烷(CS)表面改性使纳米粒子在PGMEA中粒径从295 nm减小至11.7 nm的描述，下列关于表面改性对材料最终光致变色应用性能的贡献，哪项分析最为全面准确？\nA. 表面改性(CS)是产生氧空位和拉伸应变的关键，从而直接提升了超过90%的光学调制幅度。\nB. 表面改性(CS)通过实现小于40 nm的单分散状态，有效抑制瑞利散射，确保了材料在着色前的高透明度；这与Rb掺杂/应变带来的高对比度着色能力相结合，共同实现了高性能的透明光致变色应用。\nC. 表面改性(CS)虽然减小了粒径，但其引入的硅氧烷层阻碍了DEG与氧空位的接触，导致着色速率相比未改性样品(Rb-TiO₂/TB)变慢，需要更长的紫外照射时间。\nD. 表面改性(CS)的主要作用是通过折射率匹配来提升透明度，其粒径减小(从295 nm到11.7 nm)对抑制散射的贡献不大，最终的高对比度主要源于纳米粒子本身固有的颜色。",
+      "answer": "B，表面改性确保小粒径和高透明度，是实现高性能透明光致变色应用的前提。",
+      "raw": "<question>结合图1中Rb-TiO₂/TB-CS的TEM图像(图1b)与元素分布图(图1j)，以及文中关于复合硅氧烷(CS)表面改性使纳米粒子在PGMEA中粒径从295 nm减小至11.7 nm的描述，下列关于表面改性对材料最终光致变色应用性能的贡献，哪项分析最为全面准确？\nA. 表面改性(CS)是产生氧空位和拉伸应变的关键，从而直接提升了超过90%的光学调制幅度。\nB. 表面改性(CS)通过实现小于40 nm的单分散状态，有效抑制瑞利散射，确保了材料在着色前的高透明度；这与Rb掺杂/应变带来的高对比度着色能力相结合，共同实现了高性能的透明光致变色应用。\nC. 表面改性(CS)虽然减小了粒径，但其引入的硅氧烷层阻碍了DEG与氧空位的接触，导致着色速率相比未改性样品(Rb-TiO₂/TB)变慢，需要更长的紫外照射时间。\nD. 表面改性(CS)的主要作用是通过折射率匹配来提升透明度，其粒径减小(从295 nm到11.7 nm)对抑制散射的贡献不大，最终的高对比度主要源于纳米粒子本身固有的颜色。</question>\n<answer>B，表面改性确保小粒径和高透明度，是实现高性能透明光致变色应用的前提。</answer>\n<evidence>{\"doc_spans\": [\"L12-L14\", \"L100-L102\", \"L106-L108\"], \"image_regions\": [\"Figure 1b\", \"Figure 1j\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_final": {
+      "question": "结合图1中心高分辨 TEM 中标注的 Rb‑TiO₂/TB‑CS (200) 晶面 1.95 Å 晶格间距与 10–12 nm 级别的粒径特征，以及文中关于 Rb 掺杂‑拉伸应变协同工程氧空位、CS 表面改性在 PGMEA 中将平均粒径由 295 nm 降至 11.7 nm 并实现高透过率 (>90% 调制幅度前) 的描述，下列关于该体系在 PGMEA 中的分散性、可见光透过性及光致变色机理的综合判断，哪一项最合理？  \nA. (200) 面晶格距约 1.90 Å、平均粒径约 295 nm，Rb 掺杂主导致巨量瑞利散射，致初始可见光透过率明显降低，从而获得高对比度。  \nB. (200) 面晶格距约 1.95 Å、平均粒径约 11.7 nm，Rb 掺杂与界面拉伸应变协同将氧空位形成能降为负值，使富氧空位纳米粒子在 PGMEA 中高度单分散并几乎不产生瑞利散射；表面大量化学吸附的 DEG 作为牺牲电子给体加速 Ti⁴⁺→Ti³⁺ 还原，使体系在保持高初始透明度的同时实现>90% 的光学调制幅度与 60 s 级快速着色。  \nC. (101) 面晶格距约 3.51 Å、平均粒径约 11.7 nm，Rb 掺杂虽引入氧空位，但厚硅氧烷壳层抑制 DEG 接触，使体系需明显长于 60 s 的照射时间才达到仅约 60% 的光学调制幅度。  \nD. (101) 面晶格距约 3.59 Å、平均粒径接近 40 nm，界面拉伸应变主要通过增强可见区瑞利散射和折射率失配来提升表观对比度，而氧空位与 DEG 的贡献可以忽略。",
+      "answer": "B；晶格扩张与小粒径协同，高透明且高对比度",
+      "raw": "<question>结合图1中心高分辨 TEM 中标注的 Rb‑TiO₂/TB‑CS (200) 晶面 1.95 Å 晶格间距与 10–12 nm 级别的粒径特征，以及文中关于 Rb 掺杂‑拉伸应变协同工程氧空位、CS 表面改性在 PGMEA 中将平均粒径由 295 nm 降至 11.7 nm 并实现高透过率 (>90% 调制幅度前) 的描述，下列关于该体系在 PGMEA 中的分散性、可见光透过性及光致变色机理的综合判断，哪一项最合理？  \nA. (200) 面晶格距约 1.90 Å、平均粒径约 295 nm，Rb 掺杂主导致巨量瑞利散射，致初始可见光透过率明显降低，从而获得高对比度。  \nB. (200) 面晶格距约 1.95 Å、平均粒径约 11.7 nm，Rb 掺杂与界面拉伸应变协同将氧空位形成能降为负值，使富氧空位纳米粒子在 PGMEA 中高度单分散并几乎不产生瑞利散射；表面大量化学吸附的 DEG 作为牺牲电子给体加速 Ti⁴⁺→Ti³⁺ 还原，使体系在保持高初始透明度的同时实现>90% 的光学调制幅度与 60 s 级快速着色。  \nC. (101) 面晶格距约 3.51 Å、平均粒径约 11.7 nm，Rb 掺杂虽引入氧空位，但厚硅氧烷壳层抑制 DEG 接触，使体系需明显长于 60 s 的照射时间才达到仅约 60% 的光学调制幅度。  \nD. (101) 面晶格距约 3.59 Å、平均粒径接近 40 nm，界面拉伸应变主要通过增强可见区瑞利散射和折射率失配来提升表观对比度，而氧空位与 DEG 的贡献可以忽略。</question>\n<answer>B；晶格扩张与小粒径协同，高透明且高对比度</answer>"
+    },
+    "steps": [
+      {
+        "k": 0,
+        "question": "根据图中中心区域高分辨TEM对(200)晶面的1.95 Å标注，以及文中对Rb‑TiO₂/TB‑CS结构与粒径分布的描述，下列关于其在PGMEA中分散性与可见光透过性特点的综合推断，哪一项最合理？  \nA. (200)面1.90 Å，粒径约295 nm，可见光透过率显著下降，散射增强。  \nB. (200)面1.95 Å，粒径约11.7 nm，避免瑞利散射并保持高透明度。  \nC. (200)面3.51 Å，粒径约11.7 nm，但由于强表面吸收导致低透明度。  \nD. (200)面3.59 Å，粒径接近40 nm，存在明显瑞利散射影响透过率。",
+        "answer": "B，高分辨TEM和粒径数据均支持",
+        "evidence": {
+          "doc_spans": [
+            "L12-L18"
+          ],
+          "image_regions": [
+            "中心区域(200)晶面1.95Å标注"
+          ]
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": true,
+        "raw": "<question>根据图中中心区域高分辨TEM对(200)晶面的1.95 Å标注，以及文中对Rb‑TiO₂/TB‑CS结构与粒径分布的描述，下列关于其在PGMEA中分散性与可见光透过性特点的综合推断，哪一项最合理？  \nA. (200)面1.90 Å，粒径约295 nm，可见光透过率显著下降，散射增强。  \nB. (200)面1.95 Å，粒径约11.7 nm，避免瑞利散射并保持高透明度。  \nC. (200)面3.51 Å，粒径约11.7 nm，但由于强表面吸收导致低透明度。  \nD. (200)面3.59 Å，粒径接近40 nm，存在明显瑞利散射影响透过率。</question>  \n<answer>B，高分辨TEM和粒径数据均支持</answer>  \n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域(200)晶面1.95Å标注\"]}</evidence>  \n<modal_use>both</modal_use>  \n<cross_modal_bridge>true</cross_modal_bridge>",
+        "judge_flags": null
+      },
+      {
+        "k": 1,
+        "question": "结合图1中心区域对 Rb‑TiO₂/TB‑CS(200)晶面 1.95 Å 与晶体‑非晶界面拉伸应变的标注，以及文中关于“Rb 掺杂与晶格拉伸应变协同显著降低氧空位形成能，使氧空位自发大量生成”的描述，下列对其光致变色性能提升机理的综合推断，哪一项最合理？  \nA. 虽形成 1.95 Å(200) 晶面与拉伸应变，但未改变氧空位形成能，光致变色主要由粒径减小引起。  \nB. Rb 掺杂与界面拉伸应变使氧空位形成能转为负值，氧空位浓度指数级增加，有利于 DEG 解离吸附并加快 Ti⁴⁺→Ti³⁺ 还原，从而提升调制幅度与响应速率。  \nC. Rb 掺杂虽增加晶格常数，但抑制氧空位形成并削弱 DEG 吸附，因此需更长紫外照射才能获得与未掺杂样品相同的对比度。  \nD. 界面拉伸应变只导致晶面间距膨胀和瑞利散射增强，使可见光透过率下降，是高对比度变色的主要原因。",
+        "answer": "B，Rb+应变协同使氧空位自发大量生成",
+        "evidence": {
+          "doc_spans": [
+            "L12-L18"
+          ],
+          "image_regions": [
+            "中心区域标注(200) 1.95 Å及晶体‑非晶界面应变示意"
+          ]
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": true,
+        "raw": "<question>结合图1中心区域对 Rb‑TiO₂/TB‑CS(200)晶面 1.95 Å 与晶体‑非晶界面拉伸应变的标注，以及文中关于“Rb 掺杂与晶格拉伸应变协同显著降低氧空位形成能，使氧空位自发大量生成”的描述，下列对其光致变色性能提升机理的综合推断，哪一项最合理？  \nA. 虽形成 1.95 Å(200) 晶面与拉伸应变，但未改变氧空位形成能，光致变色主要由粒径减小引起。  \nB. Rb 掺杂与界面拉伸应变使氧空位形成能转为负值，氧空位浓度指数级增加，有利于 DEG 解离吸附并加快 Ti⁴⁺→Ti³⁺ 还原，从而提升调制幅度与响应速率。  \nC. Rb 掺杂虽增加晶格常数，但抑制氧空位形成并削弱 DEG 吸附，因此需更长紫外照射才能获得与未掺杂样品相同的对比度。  \nD. 界面拉伸应变只导致晶面间距膨胀和瑞利散射增强，使可见光透过率下降，是高对比度变色的主要原因。</question>\n<answer>B，Rb+应变协同使氧空位自发大量生成</answer>\n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域标注(200) 1.95 Å及晶体‑非晶界面应变示意\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>",
+        "judge_flags": null
+      },
+      {
+        "k": 2,
+        "question": "结合图1中Rb-TiO₂/TB-CS的TEM图像(图1b)与元素分布图(图1j)，以及文中关于复合硅氧烷(CS)表面改性使纳米粒子在PGMEA中粒径从295 nm减小至11.7 nm的描述，下列关于表面改性对材料最终光致变色应用性能的贡献，哪项分析最为全面准确？\nA. 表面改性(CS)是产生氧空位和拉伸应变的关键，从而直接提升了超过90%的光学调制幅度。\nB. 表面改性(CS)通过实现小于40 nm的单分散状态，有效抑制瑞利散射，确保了材料在着色前的高透明度；这与Rb掺杂/应变带来的高对比度着色能力相结合，共同实现了高性能的透明光致变色应用。\nC. 表面改性(CS)虽然减小了粒径，但其引入的硅氧烷层阻碍了DEG与氧空位的接触，导致着色速率相比未改性样品(Rb-TiO₂/TB)变慢，需要更长的紫外照射时间。\nD. 表面改性(CS)的主要作用是通过折射率匹配来提升透明度，其粒径减小(从295 nm到11.7 nm)对抑制散射的贡献不大，最终的高对比度主要源于纳米粒子本身固有的颜色。",
+        "answer": "B，表面改性确保小粒径和高透明度，是实现高性能透明光致变色应用的前提。",
+        "evidence": {
+          "doc_spans": [
+            "L12-L14",
+            "L100-L102",
+            "L106-L108"
+          ],
+          "image_regions": [
+            "Figure 1b",
+            "Figure 1j"
+          ]
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": true,
+        "raw": "<question>结合图1中Rb-TiO₂/TB-CS的TEM图像(图1b)与元素分布图(图1j)，以及文中关于复合硅氧烷(CS)表面改性使纳米粒子在PGMEA中粒径从295 nm减小至11.7 nm的描述，下列关于表面改性对材料最终光致变色应用性能的贡献，哪项分析最为全面准确？\nA. 表面改性(CS)是产生氧空位和拉伸应变的关键，从而直接提升了超过90%的光学调制幅度。\nB. 表面改性(CS)通过实现小于40 nm的单分散状态，有效抑制瑞利散射，确保了材料在着色前的高透明度；这与Rb掺杂/应变带来的高对比度着色能力相结合，共同实现了高性能的透明光致变色应用。\nC. 表面改性(CS)虽然减小了粒径，但其引入的硅氧烷层阻碍了DEG与氧空位的接触，导致着色速率相比未改性样品(Rb-TiO₂/TB)变慢，需要更长的紫外照射时间。\nD. 表面改性(CS)的主要作用是通过折射率匹配来提升透明度，其粒径减小(从295 nm到11.7 nm)对抑制散射的贡献不大，最终的高对比度主要源于纳米粒子本身固有的颜色。</question>\n<answer>B，表面改性确保小粒径和高透明度，是实现高性能透明光致变色应用的前提。</answer>\n<evidence>{\"doc_spans\": [\"L12-L14\", \"L100-L102\", \"L106-L108\"], \"image_regions\": [\"Figure 1b\", \"Figure 1j\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>",
+        "judge_flags": null
+      }
+    ],
+    "difficulty_metrics": {
+      "medium_correct": false,
+      "strong_correct": true,
+      "difficulty_score": 1.0,
+      "cross_modal_used": true,
+      "num_hops": 3,
+      "medium_pred": null,
+      "strong_pred": "B",
+      "medium_raw": "",
+      "strong_raw": "<answer>B</answer>"
+    },
+    "solver_final_pred": "B",
+    "solver_final_raw": "<answer>B</answer>",
+    "reflect_feedback": "1. **弱化数字直观排除法**  \n   - 减少或模糊粒径、晶面间距等“唯一正确数值”，改用相对描述或范围，使考生不能直接凭记忆或比对数字排错，而需真正理解结构‑性能关系。\n\n2. **增加机理干扰与条件交织**  \n   - 在选项中同时引入多种可行机理（如双电层稳定、配体位阻效应、折射率匹配、界面极性改变等），并设置部分“半对半错”的说法，要求考生综合判断哪些效应主导、哪些仅次要或矛盾。\n\n3. **引入定量推理与情景扩展**  \n   - 要求根据粒径尺度与波长估算散射强度或透过率变化，并结合电致/光致变色动力学、缺陷态密度变化等定量或半定量推理；或增加在溶剂更换、掺杂浓度变化等新情景下的趋势预测，从记忆题提升为分析与迁移题。",
+    "stop_reason": null
+  },
+  {
+    "round": 3,
+    "stage_1": {
+      "question": "结合图1中心区域高分辨TEM所示Rb‑TiO₂/TB‑CS (200)晶面约1.95 Å的晶格距及其与文中描述的Rb掺杂‑晶格拉伸协同形成氧空位、CS表面改性显著降低PGMEA中平均粒径的结果，下列关于其对可见光透过性与光致变色性能影响的判断，哪一项最合理？  \nA. 晶格距收缩至1.90 Å且粒径大，强瑞利散射导致初始透过率低，从而提升对比度。  \nB. 晶格距约1.95 Å且粒径约10–12 nm，氧空位显著促进DEG化学吸附，加速Ti³⁺形成，兼具高初始透明度与快速着色。  \nC. 晶格距约3.51 Å且粒径约10 nm，氧空位虽多但表面壳层抑制DEG接触，导致调制幅度降低。  \nD. 晶格距约3.59 Å且粒径≈40 nm，拉伸应变主要通过增加散射来提升对比度，氧空位贡献较小。",
+      "answer": "B，晶格应变与Rb掺杂协同促氧空位并保持高透明",
+      "raw": "<question>结合图1中心区域高分辨TEM所示Rb‑TiO₂/TB‑CS (200)晶面约1.95 Å的晶格距及其与文中描述的Rb掺杂‑晶格拉伸协同形成氧空位、CS表面改性显著降低PGMEA中平均粒径的结果，下列关于其对可见光透过性与光致变色性能影响的判断，哪一项最合理？  \nA. 晶格距收缩至1.90 Å且粒径大，强瑞利散射导致初始透过率低，从而提升对比度。  \nB. 晶格距约1.95 Å且粒径约10–12 nm，氧空位显著促进DEG化学吸附，加速Ti³⁺形成，兼具高初始透明度与快速着色。  \nC. 晶格距约3.51 Å且粒径约10 nm，氧空位虽多但表面壳层抑制DEG接触，导致调制幅度降低。  \nD. 晶格距约3.59 Å且粒径≈40 nm，拉伸应变主要通过增加散射来提升对比度，氧空位贡献较小。</question>  \n<answer>B，晶格应变与Rb掺杂协同促氧空位并保持高透明</answer>  \n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域d标注(200)晶面1.95 Å区域\"]}</evidence>  \n<modal_use>both</modal_use>  \n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_2": {
+      "question": "结合图1中 Rb‑TiO₂/TB‑CS 晶体‑非晶界面附近明显的拉伸应变分布，以及文中指出“通过 Rb 掺杂与晶体‑非晶界面拉伸应变协同作用，可显著提高 TiO₂ 中氧空位浓度，从而增强光致变色响应速度、调制幅度和循环可逆性”，若将该结构与仅具有晶体‑非晶界面但无 Rb 掺杂的 TiO₂/TB‑CS 进行比较，下列推断最合理的是：  \nA. 两者氧空位主要由表面羟基脱水产生，Rb 仅改变折射率，对响应动力学影响很小。  \nB. TiO₂/TB‑CS 由于无异质掺杂，晶格更完整，载流子迁移率更高，因此其光致变色调制幅度和循环稳定性应优于 Rb‑TiO₂/TB‑CS。  \nC. Rb‑TiO₂/TB‑CS 中 Rb 掺杂引入正电荷和局部晶格畸变，在界面拉伸应变的协同下进一步降低氧空位形成能，使氧空位浓度高于 TiO₂/TB‑CS，从而在保持高透明度的前提下实现更快着色、更高光学调制和更优循环可逆性。  \nD. 若去除界面拉伸应变，仅通过提高 Rb 掺杂浓度即可线性提升氧空位数量和光致变色寿命，界面结构对性能贡献可以忽略。",
+      "answer": "C，Rb掺杂与拉伸应变协同降氧空位形成能",
+      "raw": "<question>结合图1中 Rb‑TiO₂/TB‑CS 晶体‑非晶界面附近明显的拉伸应变分布，以及文中指出“通过 Rb 掺杂与晶体‑非晶界面拉伸应变协同作用，可显著提高 TiO₂ 中氧空位浓度，从而增强光致变色响应速度、调制幅度和循环可逆性”，若将该结构与仅具有晶体‑非晶界面但无 Rb 掺杂的 TiO₂/TB‑CS 进行比较，下列推断最合理的是：  \nA. 两者氧空位主要由表面羟基脱水产生，Rb 仅改变折射率，对响应动力学影响很小。  \nB. TiO₂/TB‑CS 由于无异质掺杂，晶格更完整，载流子迁移率更高，因此其光致变色调制幅度和循环稳定性应优于 Rb‑TiO₂/TB‑CS。  \nC. Rb‑TiO₂/TB‑CS 中 Rb 掺杂引入正电荷和局部晶格畸变，在界面拉伸应变的协同下进一步降低氧空位形成能，使氧空位浓度高于 TiO₂/TB‑CS，从而在保持高透明度的前提下实现更快着色、更高光学调制和更优循环可逆性。  \nD. 若去除界面拉伸应变，仅通过提高 Rb 掺杂浓度即可线性提升氧空位数量和光致变色寿命，界面结构对性能贡献可以忽略。</question>\n<answer>C，Rb掺杂与拉伸应变协同降氧空位形成能</answer>\n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域晶体-非晶界面与应变分布示意\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_3": {
+      "question": "文中指出，优化的 Rb/Ti 投料比为 5%，但通过 EDS 和 ICP-OES 测得的实际掺杂比仅为约 2%，其主要原因是 Rb⁺ 离子半径较大，难以完全进入 TiO₂ 晶格。结合图1(j)中 Rb 元素在优化条件下均匀分布的图像，以及文中对更高掺杂浓度的描述（“随着掺杂剂浓度增加，TiO₂ 晶体中可容纳的缺陷和杂原子位点变得饱和，导致氧化铷在 TiO₂ 表面析出，引起相邻颗粒通过桥接作用发生聚集”），若实验中将 Rb/Ti 投料比从 5% 进一步提高到 10%，最可能发生什么情况？\nA. 实际进入晶格的 Rb/Ti 比例将随投料比线性增加至约 4%，因为更高的反应物浓度能有效克服离子半径位阻，从而使光致变色性能翻倍。\nB. 过量的 Rb⁺ 离子会均匀地替代非晶 TiO₂ 层中的 Ti⁴⁺，进一步增强界面应变，由于非晶层结构疏松，这并不会引起颗粒团聚，反而会提升性能。\nC. 实际进入晶格的 Rb/Ti 比例增长将非常有限，而大部分未进入晶格的 Rb⁺ 倾向于在颗粒表面形成氧化物，充当“桥梁”导致颗粒团聚，最终损害材料在基质中的分散性和透明度。\nD. 过量的 Rb⁺ 会被后继的 DPSi/APSi 表面改性剂完全螯合，虽然实际掺杂率不再提高，但由于形成了更稳定的核-壳界面层，颗粒的分散性会得到改善。",
+      "answer": "C，掺杂位点饱和后，过量Rb⁺在表面析出导致颗粒团聚。",
+      "raw": "<question>文中指出，优化的 Rb/Ti 投料比为 5%，但通过 EDS 和 ICP-OES 测得的实际掺杂比仅为约 2%，其主要原因是 Rb⁺ 离子半径较大，难以完全进入 TiO₂ 晶格。结合图1(j)中 Rb 元素在优化条件下均匀分布的图像，以及文中对更高掺杂浓度的描述（“随着掺杂剂浓度增加，TiO₂ 晶体中可容纳的缺陷和杂原子位点变得饱和，导致氧化铷在 TiO₂ 表面析出，引起相邻颗粒通过桥接作用发生聚集”），若实验中将 Rb/Ti 投料比从 5% 进一步提高到 10%，最可能发生什么情况？\nA. 实际进入晶格的 Rb/Ti 比例将随投料比线性增加至约 4%，因为更高的反应物浓度能有效克服离子半径位阻，从而使光致变色性能翻倍。\nB. 过量的 Rb⁺ 离子会均匀地替代非晶 TiO₂ 层中的 Ti⁴⁺，进一步增强界面应变，由于非晶层结构疏松，这并不会引起颗粒团聚，反而会提升性能。\nC. 实际进入晶格的 Rb/Ti 比例增长将非常有限，而大部分未进入晶格的 Rb⁺ 倾向于在颗粒表面形成氧化物，充当“桥梁”导致颗粒团聚，最终损害材料在基质中的分散性和透明度。\nD. 过量的 Rb⁺ 会被后继的 DPSi/APSi 表面改性剂完全螯合，虽然实际掺杂率不再提高，但由于形成了更稳定的核-壳界面层，颗粒的分散性会得到改善。</question>\n<answer>C，掺杂位点饱和后，过量Rb⁺在表面析出导致颗粒团聚。</answer>\n<evidence>{\"doc_spans\": [\"L10-L13\"], \"image_regions\": [\"Figure 1. j) Elemental maps for Rb-TiO2/TB-CS.\"\n]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_final": {
+      "question": "结合图1中 Rb‑TiO₂/TB‑CS 纳米颗粒中心区域的高分辨 TEM（可见(200)晶面晶格距约 1.95 Å、粒径约 10 nm 级且被非晶壳层包覆）、应变分布示意以及元素均匀分布的 EDS 图像，并参照文中关于 Rb 掺杂与晶体‑非晶界面拉伸应变协同增加氧空位、CS 表面改性显著减小 PGMEA 中平均粒径并提高可见光透过性与光致变色对比度的讨论，如果在保持 DEG 浓度不变的前提下，将此 Rb‑TiO₂/TB‑CS 体系用于制备同厚度（≈0.8 mm）的丙烯酸酯透明薄膜并与以下几种假想结构进行比较，下列对其在 650 nm 处初始透过率与着色动力学/调制幅度综合表现的判断，哪一项最合理？  \nA. 若改为未掺杂 TiO₂/TB‑CS 且保持同等粒径与界面应变，由于晶格更完整、载流子迁移率更高，其光致变色调制幅度和循环稳定性会普遍优于 Rb‑TiO₂/TB‑CS。  \nB. 若改为 Rb 掺杂但不形成晶体‑非晶界面的单晶型 Rb‑TiO₂‑CS（粒径同样约 10–12 nm），虽然保持高透明度，但缺乏界面拉伸应变使氧空位浓度明显下降，DEG 只能以物理吸附为主，导致着色速率与调制幅度均显著劣于图1所示结构。  \nC. 图1所示 Rb‑TiO₂/TB‑CS 中，适度拉伸应变与 Rb 掺杂协同将(200)晶面晶格距扩展至约 1.95 Å，并在 CS 壳层保证粒径约 10–12 nm 单分散的同时显著提高氧空位与 DEG 化学吸附位点密度，从而在维持极低瑞利散射和高初始透过率的前提下，实现更快 Ti⁴⁺→Ti³⁺ 还原、>90% 级光学调制以及优于未掺杂体系的循环可逆性。  \nD. 若继续将 Rb/Ti 投料比提高到 10%，在图1(j) 所示那样保持 Rb 元素几乎完全均匀分布的前提下，更多 Rb⁺ 将线性进入晶格使(200)晶面进一步拉伸并产生更多氧空位；同时，粒径仍维持在 10 nm 左右因而散射几乎不变，故初始透过率基本不变但调制幅度将近乎翻倍。",
+      "answer": "C；Rb+应变协同增氧空位，兼具高透过与高调制",
+      "raw": "<question>结合图1中 Rb‑TiO₂/TB‑CS 纳米颗粒中心区域的高分辨 TEM（可见(200)晶面晶格距约 1.95 Å、粒径约 10 nm 级且被非晶壳层包覆）、应变分布示意以及元素均匀分布的 EDS 图像，并参照文中关于 Rb 掺杂与晶体‑非晶界面拉伸应变协同增加氧空位、CS 表面改性显著减小 PGMEA 中平均粒径并提高可见光透过性与光致变色对比度的讨论，如果在保持 DEG 浓度不变的前提下，将此 Rb‑TiO₂/TB‑CS 体系用于制备同厚度（≈0.8 mm）的丙烯酸酯透明薄膜并与以下几种假想结构进行比较，下列对其在 650 nm 处初始透过率与着色动力学/调制幅度综合表现的判断，哪一项最合理？  \nA. 若改为未掺杂 TiO₂/TB‑CS 且保持同等粒径与界面应变，由于晶格更完整、载流子迁移率更高，其光致变色调制幅度和循环稳定性会普遍优于 Rb‑TiO₂/TB‑CS。  \nB. 若改为 Rb 掺杂但不形成晶体‑非晶界面的单晶型 Rb‑TiO₂‑CS（粒径同样约 10–12 nm），虽然保持高透明度，但缺乏界面拉伸应变使氧空位浓度明显下降，DEG 只能以物理吸附为主，导致着色速率与调制幅度均显著劣于图1所示结构。  \nC. 图1所示 Rb‑TiO₂/TB‑CS 中，适度拉伸应变与 Rb 掺杂协同将(200)晶面晶格距扩展至约 1.95 Å，并在 CS 壳层保证粒径约 10–12 nm 单分散的同时显著提高氧空位与 DEG 化学吸附位点密度，从而在维持极低瑞利散射和高初始透过率的前提下，实现更快 Ti⁴⁺→Ti³⁺ 还原、>90% 级光学调制以及优于未掺杂体系的循环可逆性。  \nD. 若继续将 Rb/Ti 投料比提高到 10%，在图1(j) 所示那样保持 Rb 元素几乎完全均匀分布的前提下，更多 Rb⁺ 将线性进入晶格使(200)晶面进一步拉伸并产生更多氧空位；同时，粒径仍维持在 10 nm 左右因而散射几乎不变，故初始透过率基本不变但调制幅度将近乎翻倍。  \n</question>\n<answer>C；Rb+应变协同增氧空位，兼具高透过与高调制</answer>"
+    },
+    "steps": [
+      {
+        "k": 0,
+        "question": "结合图1中心区域高分辨TEM所示Rb‑TiO₂/TB‑CS (200)晶面约1.95 Å的晶格距及其与文中描述的Rb掺杂‑晶格拉伸协同形成氧空位、CS表面改性显著降低PGMEA中平均粒径的结果，下列关于其对可见光透过性与光致变色性能影响的判断，哪一项最合理？  \nA. 晶格距收缩至1.90 Å且粒径大，强瑞利散射导致初始透过率低，从而提升对比度。  \nB. 晶格距约1.95 Å且粒径约10–12 nm，氧空位显著促进DEG化学吸附，加速Ti³⁺形成，兼具高初始透明度与快速着色。  \nC. 晶格距约3.51 Å且粒径约10 nm，氧空位虽多但表面壳层抑制DEG接触，导致调制幅度降低。  \nD. 晶格距约3.59 Å且粒径≈40 nm，拉伸应变主要通过增加散射来提升对比度，氧空位贡献较小。",
+        "answer": "B，晶格应变与Rb掺杂协同促氧空位并保持高透明",
+        "evidence": {
+          "doc_spans": [
+            "L12-L18"
+          ],
+          "image_regions": [
+            "中心区域d标注(200)晶面1.95 Å区域"
+          ]
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": true,
+        "raw": "<question>结合图1中心区域高分辨TEM所示Rb‑TiO₂/TB‑CS (200)晶面约1.95 Å的晶格距及其与文中描述的Rb掺杂‑晶格拉伸协同形成氧空位、CS表面改性显著降低PGMEA中平均粒径的结果，下列关于其对可见光透过性与光致变色性能影响的判断，哪一项最合理？  \nA. 晶格距收缩至1.90 Å且粒径大，强瑞利散射导致初始透过率低，从而提升对比度。  \nB. 晶格距约1.95 Å且粒径约10–12 nm，氧空位显著促进DEG化学吸附，加速Ti³⁺形成，兼具高初始透明度与快速着色。  \nC. 晶格距约3.51 Å且粒径约10 nm，氧空位虽多但表面壳层抑制DEG接触，导致调制幅度降低。  \nD. 晶格距约3.59 Å且粒径≈40 nm，拉伸应变主要通过增加散射来提升对比度，氧空位贡献较小。</question>  \n<answer>B，晶格应变与Rb掺杂协同促氧空位并保持高透明</answer>  \n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域d标注(200)晶面1.95 Å区域\"]}</evidence>  \n<modal_use>both</modal_use>  \n<cross_modal_bridge>true</cross_modal_bridge>",
+        "judge_flags": null
+      },
+      {
+        "k": 1,
+        "question": "结合图1中 Rb‑TiO₂/TB‑CS 晶体‑非晶界面附近明显的拉伸应变分布，以及文中指出“通过 Rb 掺杂与晶体‑非晶界面拉伸应变协同作用，可显著提高 TiO₂ 中氧空位浓度，从而增强光致变色响应速度、调制幅度和循环可逆性”，若将该结构与仅具有晶体‑非晶界面但无 Rb 掺杂的 TiO₂/TB‑CS 进行比较，下列推断最合理的是：  \nA. 两者氧空位主要由表面羟基脱水产生，Rb 仅改变折射率，对响应动力学影响很小。  \nB. TiO₂/TB‑CS 由于无异质掺杂，晶格更完整，载流子迁移率更高，因此其光致变色调制幅度和循环稳定性应优于 Rb‑TiO₂/TB‑CS。  \nC. Rb‑TiO₂/TB‑CS 中 Rb 掺杂引入正电荷和局部晶格畸变，在界面拉伸应变的协同下进一步降低氧空位形成能，使氧空位浓度高于 TiO₂/TB‑CS，从而在保持高透明度的前提下实现更快着色、更高光学调制和更优循环可逆性。  \nD. 若去除界面拉伸应变，仅通过提高 Rb 掺杂浓度即可线性提升氧空位数量和光致变色寿命，界面结构对性能贡献可以忽略。",
+        "answer": "C，Rb掺杂与拉伸应变协同降氧空位形成能",
+        "evidence": {
+          "doc_spans": [
+            "L12-L18"
+          ],
+          "image_regions": [
+            "中心区域晶体-非晶界面与应变分布示意"
+          ]
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": true,
+        "raw": "<question>结合图1中 Rb‑TiO₂/TB‑CS 晶体‑非晶界面附近明显的拉伸应变分布，以及文中指出“通过 Rb 掺杂与晶体‑非晶界面拉伸应变协同作用，可显著提高 TiO₂ 中氧空位浓度，从而增强光致变色响应速度、调制幅度和循环可逆性”，若将该结构与仅具有晶体‑非晶界面但无 Rb 掺杂的 TiO₂/TB‑CS 进行比较，下列推断最合理的是：  \nA. 两者氧空位主要由表面羟基脱水产生，Rb 仅改变折射率，对响应动力学影响很小。  \nB. TiO₂/TB‑CS 由于无异质掺杂，晶格更完整，载流子迁移率更高，因此其光致变色调制幅度和循环稳定性应优于 Rb‑TiO₂/TB‑CS。  \nC. Rb‑TiO₂/TB‑CS 中 Rb 掺杂引入正电荷和局部晶格畸变，在界面拉伸应变的协同下进一步降低氧空位形成能，使氧空位浓度高于 TiO₂/TB‑CS，从而在保持高透明度的前提下实现更快着色、更高光学调制和更优循环可逆性。  \nD. 若去除界面拉伸应变，仅通过提高 Rb 掺杂浓度即可线性提升氧空位数量和光致变色寿命，界面结构对性能贡献可以忽略。</question>\n<answer>C，Rb掺杂与拉伸应变协同降氧空位形成能</answer>\n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域晶体-非晶界面与应变分布示意\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>",
+        "judge_flags": null
+      },
+      {
+        "k": 2,
+        "question": "文中指出，优化的 Rb/Ti 投料比为 5%，但通过 EDS 和 ICP-OES 测得的实际掺杂比仅为约 2%，其主要原因是 Rb⁺ 离子半径较大，难以完全进入 TiO₂ 晶格。结合图1(j)中 Rb 元素在优化条件下均匀分布的图像，以及文中对更高掺杂浓度的描述（“随着掺杂剂浓度增加，TiO₂ 晶体中可容纳的缺陷和杂原子位点变得饱和，导致氧化铷在 TiO₂ 表面析出，引起相邻颗粒通过桥接作用发生聚集”），若实验中将 Rb/Ti 投料比从 5% 进一步提高到 10%，最可能发生什么情况？\nA. 实际进入晶格的 Rb/Ti 比例将随投料比线性增加至约 4%，因为更高的反应物浓度能有效克服离子半径位阻，从而使光致变色性能翻倍。\nB. 过量的 Rb⁺ 离子会均匀地替代非晶 TiO₂ 层中的 Ti⁴⁺，进一步增强界面应变，由于非晶层结构疏松，这并不会引起颗粒团聚，反而会提升性能。\nC. 实际进入晶格的 Rb/Ti 比例增长将非常有限，而大部分未进入晶格的 Rb⁺ 倾向于在颗粒表面形成氧化物，充当“桥梁”导致颗粒团聚，最终损害材料在基质中的分散性和透明度。\nD. 过量的 Rb⁺ 会被后继的 DPSi/APSi 表面改性剂完全螯合，虽然实际掺杂率不再提高，但由于形成了更稳定的核-壳界面层，颗粒的分散性会得到改善。",
+        "answer": "C，掺杂位点饱和后，过量Rb⁺在表面析出导致颗粒团聚。",
+        "evidence": {
+          "doc_spans": [
+            "L10-L13"
+          ],
+          "image_regions": [
+            "Figure 1. j) Elemental maps for Rb-TiO2/TB-CS."
+          ]
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": true,
+        "raw": "<question>文中指出，优化的 Rb/Ti 投料比为 5%，但通过 EDS 和 ICP-OES 测得的实际掺杂比仅为约 2%，其主要原因是 Rb⁺ 离子半径较大，难以完全进入 TiO₂ 晶格。结合图1(j)中 Rb 元素在优化条件下均匀分布的图像，以及文中对更高掺杂浓度的描述（“随着掺杂剂浓度增加，TiO₂ 晶体中可容纳的缺陷和杂原子位点变得饱和，导致氧化铷在 TiO₂ 表面析出，引起相邻颗粒通过桥接作用发生聚集”），若实验中将 Rb/Ti 投料比从 5% 进一步提高到 10%，最可能发生什么情况？\nA. 实际进入晶格的 Rb/Ti 比例将随投料比线性增加至约 4%，因为更高的反应物浓度能有效克服离子半径位阻，从而使光致变色性能翻倍。\nB. 过量的 Rb⁺ 离子会均匀地替代非晶 TiO₂ 层中的 Ti⁴⁺，进一步增强界面应变，由于非晶层结构疏松，这并不会引起颗粒团聚，反而会提升性能。\nC. 实际进入晶格的 Rb/Ti 比例增长将非常有限，而大部分未进入晶格的 Rb⁺ 倾向于在颗粒表面形成氧化物，充当“桥梁”导致颗粒团聚，最终损害材料在基质中的分散性和透明度。\nD. 过量的 Rb⁺ 会被后继的 DPSi/APSi 表面改性剂完全螯合，虽然实际掺杂率不再提高，但由于形成了更稳定的核-壳界面层，颗粒的分散性会得到改善。</question>\n<answer>C，掺杂位点饱和后，过量Rb⁺在表面析出导致颗粒团聚。</answer>\n<evidence>{\"doc_spans\": [\"L10-L13\"], \"image_regions\": [\"Figure 1. j) Elemental maps for Rb-TiO2/TB-CS.\"\n]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>",
+        "judge_flags": null
+      }
+    ],
+    "difficulty_metrics": {
+      "medium_correct": false,
+      "strong_correct": true,
+      "difficulty_score": 1.0,
+      "cross_modal_used": true,
+      "num_hops": 3,
+      "medium_pred": null,
+      "strong_pred": "C",
+      "medium_raw": "",
+      "strong_raw": "<answer>C</answer>"
+    },
+    "solver_final_pred": "C",
+    "solver_final_raw": "<answer>C</answer>",
+    "reflect_feedback": "1. 增加“干扰项”的合理性：  \n   - 让错误选项部分正确、部分错误，如同时在透过率、着色速率和循环稳定性三点中只错一两点，迫使考生逐条比对文中细节，而不是一眼排除。\n\n2. 引入定量与对比推算：  \n   - 在题干中给出具体掺杂浓度、氧空位变化比例、散射截面数量级等数据，要求考生根据瑞利散射 ∝ d⁶/λ⁴、载流子浓度与调制深度的定性关系进行估算，而非只做“越多越好”式判断。\n\n3. 增加多因素耦合情景：  \n   - 同时改变两到三个参数（如 Rb 掺杂、壳层厚度、溶剂种类或固含量），让考生区分哪些因素主要影响透明度、哪些主导着色动力学与循环稳定性，从而需要真正理解“掺杂‑应变‑粒径‑界面化学”之间的耦合机制。",
+    "stop_reason": null
+  },
+  {
+    "round": 4,
+    "stage_1": {
+      "question": "结合图1中中心区域的高分辨TEM可见(200)晶面晶格距约1.95 Å、粒径≈10 nm且被非晶壳层包覆，以及文中关于Rb掺杂与晶体‑非晶界面拉伸应变协同增加氧空位、提高DEG化学吸附位点进而增强光致变色性能的讨论，下列对其结构特征与性能关系的判断最合理的是哪一项？  \nA. 晶格距增至1.95 Å源于非晶包覆层的光学屏蔽作用，而与Rb掺杂无关。  \nB. 粒径≈10 nm虽可降低瑞利散射，但界面拉伸应变会降低氧空位浓度。  \nC. Rb掺杂与拉伸应变协同作用既扩展晶格距，又提升氧空位与DEG吸附位点，从而提高调制幅度与循环稳定性。  \nD. 晶体‑非晶界面主要由TBOT二次加入形成，其作用仅在于减小粒径，对光致变色无显著影响。",
+      "answer": "C，Rb掺杂协同应变显著增强性能",
+      "raw": "<question>结合图1中中心区域的高分辨TEM可见(200)晶面晶格距约1.95 Å、粒径≈10 nm且被非晶壳层包覆，以及文中关于Rb掺杂与晶体‑非晶界面拉伸应变协同增加氧空位、提高DEG化学吸附位点进而增强光致变色性能的讨论，下列对其结构特征与性能关系的判断最合理的是哪一项？  \nA. 晶格距增至1.95 Å源于非晶包覆层的光学屏蔽作用，而与Rb掺杂无关。  \nB. 粒径≈10 nm虽可降低瑞利散射，但界面拉伸应变会降低氧空位浓度。  \nC. Rb掺杂与拉伸应变协同作用既扩展晶格距，又提升氧空位与DEG吸附位点，从而提高调制幅度与循环稳定性。  \nD. 晶体‑非晶界面主要由TBOT二次加入形成，其作用仅在于减小粒径，对光致变色无显著影响。</question>  \n<answer>C，Rb掺杂协同应变显著增强性能</answer>  \n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域高分辨TEM显示(200)晶面1.95Å晶格距与非晶壳层包覆\"]}</evidence>  \n<modal_use>both</modal_use>  \n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_2": {
+      "question": "结合图1中心区域可见的晶体‑非晶界面拉伸应变与(200)晶面晶格距增大，若DFT 计算表明在 3% 拉伸应变下进一步引入 Rb 掺杂后 TiO₂ 氧空位形成能变为负值，则下列对该结构对光致变色性能影响的判断哪项最合理？  \nA. 氧空位形成能为负会使晶格严重塌陷，粒径远大于 40 nm，导致透过率和循环稳定性同时下降。  \nB. 大量自发生成的氧空位提高 DEG 化学吸附位点，使调制幅度提升，但会显著减慢着色速率。  \nC. Rb 掺杂与拉伸应变协同使氧空位自发大量生成，在保持粒径≈10 nm 高透明的同时，提高 DEG 吸附量，从而兼顾大调制幅度与良好循环稳定性。  \nD. 由于氧空位形成能降低，载流子更易复合，虽提高了初始着色深度，但透过率和循环稳定性都会明显变差。",
+      "answer": "C，氧空位自发大量生成兼顾高对比与稳定性",
+      "raw": "<question>结合图1中心区域可见的晶体‑非晶界面拉伸应变与(200)晶面晶格距增大，若DFT 计算表明在 3% 拉伸应变下进一步引入 Rb 掺杂后 TiO₂ 氧空位形成能变为负值，则下列对该结构对光致变色性能影响的判断哪项最合理？  \nA. 氧空位形成能为负会使晶格严重塌陷，粒径远大于 40 nm，导致透过率和循环稳定性同时下降。  \nB. 大量自发生成的氧空位提高 DEG 化学吸附位点，使调制幅度提升，但会显著减慢着色速率。  \nC. Rb 掺杂与拉伸应变协同使氧空位自发大量生成，在保持粒径≈10 nm 高透明的同时，提高 DEG 吸附量，从而兼顾大调制幅度与良好循环稳定性。  \nD. 由于氧空位形成能降低，载流子更易复合，虽提高了初始着色深度，但透过率和循环稳定性都会明显变差。</question>\n<answer>C，氧空位自发大量生成兼顾高对比与稳定性</answer>\n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域的晶体‑非晶界面与(200)1.95 Å 晶格距\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_3": {
+      "question": "结合上一步结论（Rb掺杂与应变协同促进氧空位生成），并根据新的文档信息“DFT计算表明，相比于纯TiO₂，DEG在具有氧空位的Rb-TiO₂/TB(3%)表面更倾向于发生解离吸附（化学吸附），其解离吸附能更负”，以下关于DEG吸附状态对光致变色动力学影响的分析，哪项最为准确？\nA. DEG的解离吸附虽然能量上有利，但形成的强化学键会阻碍其作为牺牲电子给体（SED）的活性，并减慢空穴清除速率，从而降低着色深度。\nB. DEG的解离吸附提供了一个比载流子复合（~ps）更快的空穴清除路径（~fs），有效抑制了电子-空穴复合，从而使更多光生电子参与Ti⁴⁺还原，实现快速且高对比度的着色。\nC. 物理吸附的DEG层通过阻挡O₂接触，主要贡献在于延长褪色时间以稳定着色态，而对初始着色速率和调制幅度的贡献与解离吸附的DEG相当。\nD. 尽管解离吸附能更负，但该过程会导致DEG快速分解并生成副产物覆盖在纳米颗粒表面，虽然初始着色快，但会迅速堵塞活性位点，导致循环稳定性急剧下降。",
+      "answer": "B，解离吸附提供快速空穴清除路径，抑制复合，提升着色性能。",
+      "raw": "<question>结合上一步结论（Rb掺杂与应变协同促进氧空位生成），并根据新的文档信息“DFT计算表明，相比于纯TiO₂，DEG在具有氧空位的Rb-TiO₂/TB(3%)表面更倾向于发生解离吸附（化学吸附），其解离吸附能更负”，以下关于DEG吸附状态对光致变色动力学影响的分析，哪项最为准确？\nA. DEG的解离吸附虽然能量上有利，但形成的强化学键会阻碍其作为牺牲电子给体（SED）的活性，并减慢空穴清除速率，从而降低着色深度。\nB. DEG的解离吸附提供了一个比载流子复合（~ps）更快的空穴清除路径（~fs），有效抑制了电子-空穴复合，从而使更多光生电子参与Ti⁴⁺还原，实现快速且高对比度的着色。\nC. 物理吸附的DEG层通过阻挡O₂接触，主要贡献在于延长褪色时间以稳定着色态，而对初始着色速率和调制幅度的贡献与解离吸附的DEG相当。\nD. 尽管解离吸附能更负，但该过程会导致DEG快速分解并生成副产物覆盖在纳米颗粒表面，虽然初始着色快，但会迅速堵塞活性位点，导致循环稳定性急剧下降。</question>\n<answer>B，解离吸附提供快速空穴清除路径，抑制复合，提升着色性能。</answer>\n<evidence>{\"doc_spans\": [\"Figure 3d displays the schematic illustration of the color-switching mechanism of DEG-added Rb-TiO2/TB-CS nanodispersion. Electrons and holes are produced by UV excitation. For physisorbed DEG on the particle surface, hole scavenging involves two processes: the trapping of the hole (step 1, ≈fs) and the abstraction of hydrogen from physisorbed DEG (step 2, ≈ns). The hole is first trapped by the lattice oxygen to form the Ti4+-O· radical, while the abstraction of hydrogen from DEG by that radical is too slow to compete with the recombination of electron-hole pairs (step 5, ≈ps). Hence, the physisorbed DEG can hardly serve as an effective SED to scavenge holes. For dissociatively adsorbed DEG, the hole can be directly trapped in a 2p orbital by the bridging oxygen (step 4, ≈fs), and a fast deprotonation process is performed to form a relatively stable ketyl radical Ti4+-O-CH-R. Due to the faster hole scavenging than recombination of carriers, the electron can be localized on Ti4+ to form Ti3+ (step 3), allowing for the coloration of photochromism.\", \"Notably, the dissociative adsorption energy of DEG on Rb-TiO2/TB(3%) at oxygen vacancy is more negative than the physical adsorption energy, indicating that DEG prefers to be dissociatively adsorbed at oxygen vacancy in Rb-TiO2/TB(3%).\"]}</evidence>\n<modal_use>text</modal_use>\n<cross_modal_bridge>false</cross_modal_bridge>"
+    },
+    "stage_final": {
+      "question": "结合图1中央高分辨 TEM 显示：(200) 晶面晶格距由纯 TiO₂ 的 1.90 Å 拉伸到约 1.95 Å、颗粒被非晶壳层包覆且平均粒径≈10 nm，以及文中 DFT 结果“在 3% 拉伸应变下继续引入约 2 at.% Rb 掺杂可使氧空位形成能转为负值，并显著提高 DEG 在含氧空位 Rb‑TiO₂/TB(3%) 表面的解离吸附能更负”，若以 650 nm 为工作波长并保证颗粒尺寸仍远小于可见光波长，从透过率、着色速率与循环稳定性三方面综合考量，下列关于图中结构—性能关系的判断哪一项最合理？  \nA. 粒径≈10 nm 使瑞利散射截面仅为 40 nm 颗粒的约 (10/40)⁶ ≈ 1/4096，因此高透过率主要源于纳米尺寸和非晶层的折射率匹配；但 Rb 掺杂引起的拉伸应变会降低氧空位浓度，使 DEG 只能物理吸附，虽保持透明却导致着色调制幅度和循环稳定性均明显下降。  \nB. 3% 拉伸应变虽能略微增加氧空位，但同时会显著增大带隙，降低载流子浓度；再加上非晶壳层阻隔 DEG 接近晶体表面，导致空穴清除变慢，只能在牺牲部分透过率的前提下获得有限的着色深度和较差的循环稳定性。  \nC. Rb 掺杂与晶体‑非晶界面 3% 级拉伸应变协同将 (200) 晶格距扩展到≈1.95 Å，使氧空位形成能变为负值，从而在保持粒径≈10 nm 带来的极低瑞利散射和高透明度的同时，大量生成表面氧空位以促进 DEG 优先生成解离吸附态；这既提供了快于电子‑空穴复合的空穴清除通道，又保证了足够的化学吸附位点，因而实现>90%@650 nm 的光学调制幅度和经数十循环仍保持高对比度的稳定着色‑褪色行为。  \nD. 图中非晶壳层由二次加入 20% TBOT 完全构成，其主要功能是通过进一步减小粒径和屏蔽 Rb 对晶格的影响来抑制氧空位形成；这虽然提升了短波段透过率并避免近红外 LSPR 吸收，但使得可供 DEG 化学吸附的活性位显著减少，因此着色速率和循环稳定性均弱于未掺杂 TiO₂/TB‑CS 体系。",
+      "answer": "C；应变+Rb 使氧空位自发大量生成并强化DEG解离吸附，兼顾高透过率与高对比、耐循环",
+      "raw": "<question>结合图1中央高分辨 TEM 显示：(200) 晶面晶格距由纯 TiO₂ 的 1.90 Å 拉伸到约 1.95 Å、颗粒被非晶壳层包覆且平均粒径≈10 nm，以及文中 DFT 结果“在 3% 拉伸应变下继续引入约 2 at.% Rb 掺杂可使氧空位形成能转为负值，并显著提高 DEG 在含氧空位 Rb‑TiO₂/TB(3%) 表面的解离吸附能更负”，若以 650 nm 为工作波长并保证颗粒尺寸仍远小于可见光波长，从透过率、着色速率与循环稳定性三方面综合考量，下列关于图中结构—性能关系的判断哪一项最合理？  \nA. 粒径≈10 nm 使瑞利散射截面仅为 40 nm 颗粒的约 (10/40)⁶ ≈ 1/4096，因此高透过率主要源于纳米尺寸和非晶层的折射率匹配；但 Rb 掺杂引起的拉伸应变会降低氧空位浓度，使 DEG 只能物理吸附，虽保持透明却导致着色调制幅度和循环稳定性均明显下降。  \nB. 3% 拉伸应变虽能略微增加氧空位，但同时会显著增大带隙，降低载流子浓度；再加上非晶壳层阻隔 DEG 接近晶体表面，导致空穴清除变慢，只能在牺牲部分透过率的前提下获得有限的着色深度和较差的循环稳定性。  \nC. Rb 掺杂与晶体‑非晶界面 3% 级拉伸应变协同将 (200) 晶格距扩展到≈1.95 Å，使氧空位形成能变为负值，从而在保持粒径≈10 nm 带来的极低瑞利散射和高透明度的同时，大量生成表面氧空位以促进 DEG 优先生成解离吸附态；这既提供了快于电子‑空穴复合的空穴清除通道，又保证了足够的化学吸附位点，因而实现>90%@650 nm 的光学调制幅度和经数十循环仍保持高对比度的稳定着色‑褪色行为。  \nD. 图中非晶壳层由二次加入 20% TBOT 完全构成，其主要功能是通过进一步减小粒径和屏蔽 Rb 对晶格的影响来抑制氧空位形成；这虽然提升了短波段透过率并避免近红外 LSPR 吸收，但使得可供 DEG 化学吸附的活性位显著减少，因此着色速率和循环稳定性均弱于未掺杂 TiO₂/TB‑CS 体系。  \n</question>\n<answer>C；应变+Rb 使氧空位自发大量生成并强化DEG解离吸附，兼顾高透过率与高对比、耐循环</answer>"
+    },
+    "steps": [
+      {
+        "k": 0,
+        "question": "结合图1中中心区域的高分辨TEM可见(200)晶面晶格距约1.95 Å、粒径≈10 nm且被非晶壳层包覆，以及文中关于Rb掺杂与晶体‑非晶界面拉伸应变协同增加氧空位、提高DEG化学吸附位点进而增强光致变色性能的讨论，下列对其结构特征与性能关系的判断最合理的是哪一项？  \nA. 晶格距增至1.95 Å源于非晶包覆层的光学屏蔽作用，而与Rb掺杂无关。  \nB. 粒径≈10 nm虽可降低瑞利散射，但界面拉伸应变会降低氧空位浓度。  \nC. Rb掺杂与拉伸应变协同作用既扩展晶格距，又提升氧空位与DEG吸附位点，从而提高调制幅度与循环稳定性。  \nD. 晶体‑非晶界面主要由TBOT二次加入形成，其作用仅在于减小粒径，对光致变色无显著影响。",
+        "answer": "C，Rb掺杂协同应变显著增强性能",
+        "evidence": {
+          "doc_spans": [
+            "L12-L18"
+          ],
+          "image_regions": [
+            "中心区域高分辨TEM显示(200)晶面1.95Å晶格距与非晶壳层包覆"
+          ]
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": true,
+        "raw": "<question>结合图1中中心区域的高分辨TEM可见(200)晶面晶格距约1.95 Å、粒径≈10 nm且被非晶壳层包覆，以及文中关于Rb掺杂与晶体‑非晶界面拉伸应变协同增加氧空位、提高DEG化学吸附位点进而增强光致变色性能的讨论，下列对其结构特征与性能关系的判断最合理的是哪一项？  \nA. 晶格距增至1.95 Å源于非晶包覆层的光学屏蔽作用，而与Rb掺杂无关。  \nB. 粒径≈10 nm虽可降低瑞利散射，但界面拉伸应变会降低氧空位浓度。  \nC. Rb掺杂与拉伸应变协同作用既扩展晶格距，又提升氧空位与DEG吸附位点，从而提高调制幅度与循环稳定性。  \nD. 晶体‑非晶界面主要由TBOT二次加入形成，其作用仅在于减小粒径，对光致变色无显著影响。</question>  \n<answer>C，Rb掺杂协同应变显著增强性能</answer>  \n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域高分辨TEM显示(200)晶面1.95Å晶格距与非晶壳层包覆\"]}</evidence>  \n<modal_use>both</modal_use>  \n<cross_modal_bridge>true</cross_modal_bridge>",
+        "judge_flags": null
+      },
+      {
+        "k": 1,
+        "question": "结合图1中心区域可见的晶体‑非晶界面拉伸应变与(200)晶面晶格距增大，若DFT 计算表明在 3% 拉伸应变下进一步引入 Rb 掺杂后 TiO₂ 氧空位形成能变为负值，则下列对该结构对光致变色性能影响的判断哪项最合理？  \nA. 氧空位形成能为负会使晶格严重塌陷，粒径远大于 40 nm，导致透过率和循环稳定性同时下降。  \nB. 大量自发生成的氧空位提高 DEG 化学吸附位点，使调制幅度提升，但会显著减慢着色速率。  \nC. Rb 掺杂与拉伸应变协同使氧空位自发大量生成，在保持粒径≈10 nm 高透明的同时，提高 DEG 吸附量，从而兼顾大调制幅度与良好循环稳定性。  \nD. 由于氧空位形成能降低，载流子更易复合，虽提高了初始着色深度，但透过率和循环稳定性都会明显变差。",
+        "answer": "C，氧空位自发大量生成兼顾高对比与稳定性",
+        "evidence": {
+          "doc_spans": [
+            "L12-L18"
+          ],
+          "image_regions": [
+            "中心区域的晶体‑非晶界面与(200)1.95 Å 晶格距"
+          ]
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": true,
+        "raw": "<question>结合图1中心区域可见的晶体‑非晶界面拉伸应变与(200)晶面晶格距增大，若DFT 计算表明在 3% 拉伸应变下进一步引入 Rb 掺杂后 TiO₂ 氧空位形成能变为负值，则下列对该结构对光致变色性能影响的判断哪项最合理？  \nA. 氧空位形成能为负会使晶格严重塌陷，粒径远大于 40 nm，导致透过率和循环稳定性同时下降。  \nB. 大量自发生成的氧空位提高 DEG 化学吸附位点，使调制幅度提升，但会显著减慢着色速率。  \nC. Rb 掺杂与拉伸应变协同使氧空位自发大量生成，在保持粒径≈10 nm 高透明的同时，提高 DEG 吸附量，从而兼顾大调制幅度与良好循环稳定性。  \nD. 由于氧空位形成能降低，载流子更易复合，虽提高了初始着色深度，但透过率和循环稳定性都会明显变差。</question>\n<answer>C，氧空位自发大量生成兼顾高对比与稳定性</answer>\n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域的晶体‑非晶界面与(200)1.95 Å 晶格距\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>",
+        "judge_flags": null
+      },
+      {
+        "k": 2,
+        "question": "结合上一步结论（Rb掺杂与应变协同促进氧空位生成），并根据新的文档信息“DFT计算表明，相比于纯TiO₂，DEG在具有氧空位的Rb-TiO₂/TB(3%)表面更倾向于发生解离吸附（化学吸附），其解离吸附能更负”，以下关于DEG吸附状态对光致变色动力学影响的分析，哪项最为准确？\nA. DEG的解离吸附虽然能量上有利，但形成的强化学键会阻碍其作为牺牲电子给体（SED）的活性，并减慢空穴清除速率，从而降低着色深度。\nB. DEG的解离吸附提供了一个比载流子复合（~ps）更快的空穴清除路径（~fs），有效抑制了电子-空穴复合，从而使更多光生电子参与Ti⁴⁺还原，实现快速且高对比度的着色。\nC. 物理吸附的DEG层通过阻挡O₂接触，主要贡献在于延长褪色时间以稳定着色态，而对初始着色速率和调制幅度的贡献与解离吸附的DEG相当。\nD. 尽管解离吸附能更负，但该过程会导致DEG快速分解并生成副产物覆盖在纳米颗粒表面，虽然初始着色快，但会迅速堵塞活性位点，导致循环稳定性急剧下降。",
+        "answer": "B，解离吸附提供快速空穴清除路径，抑制复合，提升着色性能。",
+        "evidence": {
+          "doc_spans": [
+            "Figure 3d displays the schematic illustration of the color-switching mechanism of DEG-added Rb-TiO2/TB-CS nanodispersion. Electrons and holes are produced by UV excitation. For physisorbed DEG on the particle surface, hole scavenging involves two processes: the trapping of the hole (step 1, ≈fs) and the abstraction of hydrogen from physisorbed DEG (step 2, ≈ns). The hole is first trapped by the lattice oxygen to form the Ti4+-O· radical, while the abstraction of hydrogen from DEG by that radical is too slow to compete with the recombination of electron-hole pairs (step 5, ≈ps). Hence, the physisorbed DEG can hardly serve as an effective SED to scavenge holes. For dissociatively adsorbed DEG, the hole can be directly trapped in a 2p orbital by the bridging oxygen (step 4, ≈fs), and a fast deprotonation process is performed to form a relatively stable ketyl radical Ti4+-O-CH-R. Due to the faster hole scavenging than recombination of carriers, the electron can be localized on Ti4+ to form Ti3+ (step 3), allowing for the coloration of photochromism.",
+            "Notably, the dissociative adsorption energy of DEG on Rb-TiO2/TB(3%) at oxygen vacancy is more negative than the physical adsorption energy, indicating that DEG prefers to be dissociatively adsorbed at oxygen vacancy in Rb-TiO2/TB(3%)."
+          ]
+        },
+        "modal_use": "text",
+        "cross_modal_bridge": false,
+        "raw": "<question>结合上一步结论（Rb掺杂与应变协同促进氧空位生成），并根据新的文档信息“DFT计算表明，相比于纯TiO₂，DEG在具有氧空位的Rb-TiO₂/TB(3%)表面更倾向于发生解离吸附（化学吸附），其解离吸附能更负”，以下关于DEG吸附状态对光致变色动力学影响的分析，哪项最为准确？\nA. DEG的解离吸附虽然能量上有利，但形成的强化学键会阻碍其作为牺牲电子给体（SED）的活性，并减慢空穴清除速率，从而降低着色深度。\nB. DEG的解离吸附提供了一个比载流子复合（~ps）更快的空穴清除路径（~fs），有效抑制了电子-空穴复合，从而使更多光生电子参与Ti⁴⁺还原，实现快速且高对比度的着色。\nC. 物理吸附的DEG层通过阻挡O₂接触，主要贡献在于延长褪色时间以稳定着色态，而对初始着色速率和调制幅度的贡献与解离吸附的DEG相当。\nD. 尽管解离吸附能更负，但该过程会导致DEG快速分解并生成副产物覆盖在纳米颗粒表面，虽然初始着色快，但会迅速堵塞活性位点，导致循环稳定性急剧下降。</question>\n<answer>B，解离吸附提供快速空穴清除路径，抑制复合，提升着色性能。</answer>\n<evidence>{\"doc_spans\": [\"Figure 3d displays the schematic illustration of the color-switching mechanism of DEG-added Rb-TiO2/TB-CS nanodispersion. Electrons and holes are produced by UV excitation. For physisorbed DEG on the particle surface, hole scavenging involves two processes: the trapping of the hole (step 1, ≈fs) and the abstraction of hydrogen from physisorbed DEG (step 2, ≈ns). The hole is first trapped by the lattice oxygen to form the Ti4+-O· radical, while the abstraction of hydrogen from DEG by that radical is too slow to compete with the recombination of electron-hole pairs (step 5, ≈ps). Hence, the physisorbed DEG can hardly serve as an effective SED to scavenge holes. For dissociatively adsorbed DEG, the hole can be directly trapped in a 2p orbital by the bridging oxygen (step 4, ≈fs), and a fast deprotonation process is performed to form a relatively stable ketyl radical Ti4+-O-CH-R. Due to the faster hole scavenging than recombination of carriers, the electron can be localized on Ti4+ to form Ti3+ (step 3), allowing for the coloration of photochromism.\", \"Notably, the dissociative adsorption energy of DEG on Rb-TiO2/TB(3%) at oxygen vacancy is more negative than the physical adsorption energy, indicating that DEG prefers to be dissociatively adsorbed at oxygen vacancy in Rb-TiO2/TB(3%).\"]}</evidence>\n<modal_use>text</modal_use>\n<cross_modal_bridge>false</cross_modal_bridge>",
+        "judge_flags": null
+      }
+    ],
+    "difficulty_metrics": {
+      "medium_correct": false,
+      "strong_correct": true,
+      "difficulty_score": 1.0,
+      "cross_modal_used": true,
+      "num_hops": 3,
+      "medium_pred": null,
+      "strong_pred": "C",
+      "medium_raw": "",
+      "strong_raw": "<answer>C</answer>"
+    },
+    "solver_final_pred": "C",
+    "solver_final_raw": "<answer>C</answer>",
+    "reflect_feedback": "1. 在选项中引入多处“部分正确但有关键错误”的表述，要求考生综合量化关系（如拉伸应变与氧空位形成能、粒径与散射截面、掺杂与带边位置/载流子密度等）逐项排除，而非仅凭关键词“氧空位增多”“高透过率”等进行模式识别。  \n\n2. 将单一结论型问法改为“多因素权衡+定量估算”型，例如给出不同 Rb 含量、不同应变或不同粒径下的数值（透过率、调制深度、循环次数后残余对比度），要求考生对比多个假设结构，选出哪一组参数配置更优，或按优劣排序。  \n\n3. 在题干中增加与 DFT/光学/电化学结果间的“交叉验证”信息，如给出能带结构变化、表面态密度、CV/色谱数据片段，要求考生同时利用 HRTEM、理论计算和电化学/光谱证据进行联合判断，而不是只抓住“负形成能→氧空位多→性能好”的单线推理。",
+    "stop_reason": null
+  },
+  {
+    "round": 5,
+    "stage_1": {
+      "question": "结合图1中心区域高分辨TEM显示：(200)晶面晶格距由纯TiO₂的1.90 Å拉伸至约1.95 Å，颗粒外包覆非晶壳层且平均粒径≈10 nm，并考虑文中DFT结果“在3%拉伸应变下继续引入约2 at.% Rb掺杂可使氧空位形成能转为负值，促进DEG在含氧空位Rb‑TiO₂/TB(3%)表面解离吸附能更负”，若以650 nm为工作波长并保证颗粒尺寸远小于可见光波长，从透过率、着色速率与循环稳定性三方面综合权衡，下列判断哪项最合理？  \nA. 粒径≈10 nm使瑞利散射截面仅为40 nm颗粒的约(10/40)⁶≈1/4096，高透过率主要源于纳米尺寸与非晶层的折射率匹配；但Rb掺杂引起的拉伸应变降低氧空位浓度，使DEG只能物理吸附，虽保持透明却显著降低着色幅度与稳定性。  \nB. 3%拉伸应变略增氧空位，但同时显著增大带隙、降低载流子浓度；加之非晶壳层阻隔DEG接近晶面，致空穴清除变慢，仅在牺牲部分透过率前提下获得有限着色深度与差循环稳定性。  \nC. Rb掺杂与晶‑非晶界面3%级拉伸应变协同将(200)晶格距扩展到≈1.95 Å，使氧空位形成能为负，在保持粒径≈10 nm带来的极低瑞利散射和高透明度的同时，大量生成表面氧空位以促进DEG优先解离吸附；这既提供了快于电子‑空穴复合的空穴清除通道，又保证了足够化学吸附位点，实现>90%@650 nm的高光学调制幅度和经数十循环仍保持高对比度的稳定着色‑褪色行为。  \nD. 图中非晶壳层由二次加入20% TBOT完全构成，其主要功能是通过减小粒径并屏蔽Rb对晶格的影响来抑制氧空位形成；这虽提升短波段透过率并避免近红外LSPR吸收，但使DEG化学吸附活性位显著减少，着色速率和循环稳定性均弱于未掺杂TiO₂/TB‑CS体系。",
+      "answer": "C，Rb掺杂与应变协同显著提升性能",
+      "raw": "<question>结合图1中心区域高分辨TEM显示：(200)晶面晶格距由纯TiO₂的1.90 Å拉伸至约1.95 Å，颗粒外包覆非晶壳层且平均粒径≈10 nm，并考虑文中DFT结果“在3%拉伸应变下继续引入约2 at.% Rb掺杂可使氧空位形成能转为负值，促进DEG在含氧空位Rb‑TiO₂/TB(3%)表面解离吸附能更负”，若以650 nm为工作波长并保证颗粒尺寸远小于可见光波长，从透过率、着色速率与循环稳定性三方面综合权衡，下列判断哪项最合理？  \nA. 粒径≈10 nm使瑞利散射截面仅为40 nm颗粒的约(10/40)⁶≈1/4096，高透过率主要源于纳米尺寸与非晶层的折射率匹配；但Rb掺杂引起的拉伸应变降低氧空位浓度，使DEG只能物理吸附，虽保持透明却显著降低着色幅度与稳定性。  \nB. 3%拉伸应变略增氧空位，但同时显著增大带隙、降低载流子浓度；加之非晶壳层阻隔DEG接近晶面，致空穴清除变慢，仅在牺牲部分透过率前提下获得有限着色深度与差循环稳定性。  \nC. Rb掺杂与晶‑非晶界面3%级拉伸应变协同将(200)晶格距扩展到≈1.95 Å，使氧空位形成能为负，在保持粒径≈10 nm带来的极低瑞利散射和高透明度的同时，大量生成表面氧空位以促进DEG优先解离吸附；这既提供了快于电子‑空穴复合的空穴清除通道，又保证了足够化学吸附位点，实现>90%@650 nm的高光学调制幅度和经数十循环仍保持高对比度的稳定着色‑褪色行为。  \nD. 图中非晶壳层由二次加入20% TBOT完全构成，其主要功能是通过减小粒径并屏蔽Rb对晶格的影响来抑制氧空位形成；这虽提升短波段透过率并避免近红外LSPR吸收，但使DEG化学吸附活性位显著减少，着色速率和循环稳定性均弱于未掺杂TiO₂/TB‑CS体系。</question>  \n<answer>C，Rb掺杂与应变协同显著提升性能</answer>  \n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域高分辨TEM (200)晶面1.95 Å拉伸、非晶壳层包覆\"]}</evidence>  \n<modal_use>both</modal_use>  \n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_2": {
+      "question": "基于图1d,e 中(200)面晶格距从 1.90 Å 拉伸到约 1.95 Å 以及 GPA 显示的界面拉伸应变，结合文中 DFT 结果“在约 3% 拉伸应变下继续引入约 2 at.% Rb 掺杂可使氧空位形成能转为负值，自发生成大量氧空位”，现设想三种结构：  \nI. 仅有晶‑非晶界面张应变的 TiO₂/TB，等效应变≈3%，但无 Rb 掺杂；  \nII. Rb 掺杂量≈2 at.% 的 Rb‑TiO₂（无第二步 TBOT，几乎无界面应变）；  \nIII. 同图1 所示具有晶‑非晶界面且实测 Rb/Ti≈2% 的 Rb‑TiO₂/TB(3%)。  \n若三者颗粒尺寸均≈10 nm，可忽略尺寸对光散射差异，从“氧空位浓度→DEG 解离吸附→650 nm 处光学调制幅度与循环稳定性”这一链条综合判断，下列关于哪一结构最有利于获得>90%@650 nm 光学调制且在 50 个循环后仍保持>80% 调制幅度的说法最合理？  \n\nA. 结构 I 仅依靠≈3% 张应变即可将氧空位形成能降为负值，因此其氧空位浓度最高，DEG 解离吸附也最充分，预期比含 Rb 的 III 有更大的调制幅度和更好的循环稳定性。  \n\nB. 结构 II 中 Rb 掺杂通过电荷补偿足以使氧空位形成能变为负值，与是否存在晶格应变无关；因此在避免界面应变导致缺陷聚集的前提下，II 的长期循环稳定性应优于 III。  \n\nC. 结构 III 中 3% 级张应变先显著降低氧空位形成能，而约 2 at.% 的 Rb 掺杂进一步将其压低至负值，使氧空位浓度呈指数级提升，从而在不牺牲透明度的情况下最大化 DEG 解离吸附量，实验上也对应>90%@650 nm 的初始调制幅度及 50 个循环后仍>80% 的稳定对比度。  \n\nD. 由于 Rb 掺杂主要引入正电荷并抑制氧空位生成，真正决定氧空位浓度的是界面张应变；因此 I 和 III 在性能上应接近，而 II 的氧空位最少、着色速率最慢。",
+      "answer": "C：仅 III 同时需要应变与 Rb 使形成能为负",
+      "raw": "<question>基于图1d,e 中(200)面晶格距从 1.90 Å 拉伸到约 1.95 Å 以及 GPA 显示的界面拉伸应变，结合文中 DFT 结果“在约 3% 拉伸应变下继续引入约 2 at.% Rb 掺杂可使氧空位形成能转为负值，自发生成大量氧空位”，现设想三种结构：  \nI. 仅有晶‑非晶界面张应变的 TiO₂/TB，等效应变≈3%，但无 Rb 掺杂；  \nII. Rb 掺杂量≈2 at.% 的 Rb‑TiO₂（无第二步 TBOT，几乎无界面应变）；  \nIII. 同图1 所示具有晶‑非晶界面且实测 Rb/Ti≈2% 的 Rb‑TiO₂/TB(3%)。  \n若三者颗粒尺寸均≈10 nm，可忽略尺寸对光散射差异，从“氧空位浓度→DEG 解离吸附→650 nm 处光学调制幅度与循环稳定性”这一链条综合判断，下列关于哪一结构最有利于获得>90%@650 nm 光学调制且在 50 个循环后仍保持>80% 调制幅度的说法最合理？  \n\nA. 结构 I 仅依靠≈3% 张应变即可将氧空位形成能降为负值，因此其氧空位浓度最高，DEG 解离吸附也最充分，预期比含 Rb 的 III 有更大的调制幅度和更好的循环稳定性。  \n\nB. 结构 II 中 Rb 掺杂通过电荷补偿足以使氧空位形成能变为负值，与是否存在晶格应变无关；因此在避免界面应变导致缺陷聚集的前提下，II 的长期循环稳定性应优于 III。  \n\nC. 结构 III 中 3% 级张应变先显著降低氧空位形成能，而约 2 at.% 的 Rb 掺杂进一步将其压低至负值，使氧空位浓度呈指数级提升，从而在不牺牲透明度的情况下最大化 DEG 解离吸附量，实验上也对应>90%@650 nm 的初始调制幅度及 50 个循环后仍>80% 的稳定对比度。  \n\nD. 由于 Rb 掺杂主要引入正电荷并抑制氧空位生成，真正决定氧空位浓度的是界面张应变；因此 I 和 III 在性能上应接近，而 II 的氧空位最少、着色速率最慢。</question>  \n\n<answer>C：仅 III 同时需要应变与 Rb 使形成能为负</answer>  \n\n<evidence>{\"doc_spans\": [\"L12-L18\", \"L182-L210\", \"L356-L378\"], \"image_regions\": [\"中心区域高分辨TEM标注1.95 Å 与GPA应变分布\"]}</evidence>  \n\n<modal_use>both</modal_use>  \n\n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_3": {
+      "question": "基于上一步结论“Rb 掺杂与晶格应变协同作用可最大化氧空位浓度”，并结合新信息“与未改性 Rb-TiO₂/TB 粒子平均尺寸 295 nm 相比，经复合硅烷表面改性后的 Rb-TiO₂/TB-CS 在 PGMEA 中平均粒径仅约 11.7 nm，小于 40 nm，可避免可见光瑞利散射”，请评估以下两种结构在 DEG/PGMEA 分散液中的综合光致变色潜力：  \n- **结构 X:** 未经表面改性的 Rb-TiO₂/TB (平均粒径 ≈ 295 nm)  \n- **结构 Y:** 经复合硅烷改性的 Rb-TiO₂/TB-CS (平均粒径 ≈ 11.7 nm)  \n哪项陈述最准确地评价了两者实现“高初始透明度(T₀ > 90%)”与“大光学调制幅度(ΔT > 90%@650nm)”目标的适用性？  \n\nA. 结构 X 因其 295 nm 的大尺寸会产生强烈瑞利散射，导致初始透明度极低，但其内部优化的氧空位结构依然能保证其在着色后，相对于自身浑浊的初始态，仍可获得超过 90% 的相对调制深度。  \n\nB. 结构 Y 中复合硅烷(CS)的表面包覆虽然实现了~11.7 nm 的小尺寸和高透明度，但同时会钝化表面的氧空位，阻碍 DEG 的解离吸附，因此其光学调制幅度会远低于拥有裸露活性位点的结构 X。  \n\nC. 结构 X 尽管拥有最高的氧空位浓度，但其~295 nm 的粒径远超瑞利散射极限，将导致分散液呈不透明的乳白色，无法满足高透明度前提。结构 Y 则通过表面改性将粒径降至~11.7 nm，在保证高初始透明度的同时，完整保留了 Rb 掺杂和界面应变协同诱导的高浓度氧空位，最终实现了 >90% 的光学调制幅度。  \n\nD. 光学调制性能主要取决于比表面积，结构 Y 的~11.7 nm 粒径使其比表面积远大于结构 X，这会内在地产生更多表面氧空位。因此，结构 Y 的优异性能主要归因于尺寸效应，而非 Rb 掺杂与应变的协同作用。",
+      "answer": "C：X因粒径大散射强而初始透明度低，Y兼具小尺寸高透明度和高氧空位浓度。",
+      "raw": "<question>基于上一步结论“Rb 掺杂与晶格应变协同作用可最大化氧空位浓度”，并结合新信息“与未改性 Rb-TiO₂/TB 粒子平均尺寸 295 nm 相比，经复合硅烷表面改性后的 Rb-TiO₂/TB-CS 在 PGMEA 中平均粒径仅约 11.7 nm，小于 40 nm，可避免可见光瑞利散射”，请评估以下两种结构在 DEG/PGMEA 分散液中的综合光致变色潜力：  \n- **结构 X:** 未经表面改性的 Rb-TiO₂/TB (平均粒径 ≈ 295 nm)  \n- **结构 Y:** 经复合硅烷改性的 Rb-TiO₂/TB-CS (平均粒径 ≈ 11.7 nm)  \n哪项陈述最准确地评价了两者实现“高初始透明度(T₀ > 90%)”与“大光学调制幅度(ΔT > 90%@650nm)”目标的适用性？  \n\nA. 结构 X 因其 295 nm 的大尺寸会产生强烈瑞利散射，导致初始透明度极低，但其内部优化的氧空位结构依然能保证其在着色后，相对于自身浑浊的初始态，仍可获得超过 90% 的相对调制深度。  \n\nB. 结构 Y 中复合硅烷(CS)的表面包覆虽然实现了~11.7 nm 的小尺寸和高透明度，但同时会钝化表面的氧空位，阻碍 DEG 的解离吸附，因此其光学调制幅度会远低于拥有裸露活性位点的结构 X。  \n\nC. 结构 X 尽管拥有最高的氧空位浓度，但其~295 nm 的粒径远超瑞利散射极限，将导致分散液呈不透明的乳白色，无法满足高透明度前提。结构 Y 则通过表面改性将粒径降至~11.7 nm，在保证高初始透明度的同时，完整保留了 Rb 掺杂和界面应变协同诱导的高浓度氧空位，最终实现了 >90% 的光学调制幅度。  \n\nD. 光学调制性能主要取决于比表面积，结构 Y 的~11.7 nm 粒径使其比表面积远大于结构 X，这会内在地产生更多表面氧空位。因此，结构 Y 的优异性能主要归因于尺寸效应，而非 Rb 掺杂与应变的协同作用。</question>\n<answer>C：X因粒径大散射强而初始透明度低，Y兼具小尺寸高透明度和高氧空位浓度。</answer>\n<evidence>{\"doc_spans\": [\"Compared to unmodified Rb-TiO₂/TB with an average size of 295 nm, the Rb-TiO₂/TB-CS exhibits an average size of 11.7 nm, which is roughly consistent with the statistics of the TEM, suggesting the monodispersion of Rb-TiO₂/TB-CS NPs in PGMEA. In addition, although the particle size of Rb-TiO₂/TB-CS is slightly increased in comparison to TiO₂-CS and TiO₂/TB-CS, it is sufficiently smaller than 40 nm to prevent Rayleigh scattering of visible light.\", \"Notably, a large optical modulation amplitude is displayed, which is as high as 91.54% at 650 nm.\"], \"image_regions\": [\"Figure 1b\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>"
+    },
+    "stage_final": {
+      "question": "图1d 中高分辨 TEM 显示 Rb‑TiO₂/TB‑CS (200) 晶面晶格距由纯 TiO₂ 的 1.90 Å 拉伸到约 1.95 Å，结合 c、g、i 所示晶‑非晶界面张应变分布，以及文中 DFT 结果“在约 3% 拉伸应变下继续引入 ≈2 at.% Rb 掺杂可使氧空位形成能转为负值，并显著降低 DEG 在含氧空位 Rb‑TiO₂/TB(3%) 表面的解离吸附能”，现考察在 650 nm 工作波长下、要求初始透过率 T₀ > 90% 且经 50 次循环后调制幅度 ΔT₅₀ ≥ 80% 的 DEG/PGMEA 纳米分散体系。设想四种假想样品（粒径均控制在图1b 所示的 10 nm 量级，保证瑞利散射可忽略）：  \n\n(i) 仅具有图1f,g 所示晶‑非晶界面张应变的 TiO₂/TB‑CS（约 3% 应变，无 Rb）；  \n(ii) 仅 Rb 掺杂、但几乎无界面应变的 Rb‑TiO₂‑CS（Rb/Ti≈2%，(200) 面仍接近 1.90 Å）；  \n(iii) 与图1d,e,h,i 一致，同时具备 3% 级界面张应变和 Rb/Ti≈2% 的 Rb‑TiO₂/TB‑CS；  \n(iv) 在 (iii) 基础上将 Rb/Ti 提升到 10%，导致如文中讨论的 Rb₂O 表面析出和颗粒轻微粗化（等效氧空位形成能下降幅度有限，且界面应变部分被缓解），粒径保持在 10–15 nm。  \n\n综合考虑：(a) DFT 给出的氧空位形成能与应变/Rb 含量的定量关系；(b) DEG 在不同表面构型上的解离吸附能变化；(c) 图 3e,g 所示 650 nm 处调制深度与循环稳定性的实验数据趋势，在不牺牲高透明度前提下，以下哪一项对四种样品在 650 nm 处可实现的“初始调制幅度 ΔT₀”与“50 次循环后残余调制幅度 ΔT₅₀”排序最合理？  \n\nA. 仅 3% 应变即可使氧空位形成能为负，因此 (i) 的氧空位浓度和 DEG 解离吸附量最高；加之无外来掺杂对能带的干扰，其 ΔT₀ 与 ΔT₅₀ 均应优于 (iii)，整体排序为 ΔT₀,ΔT₅₀： (i) > (iii) > (ii) > (iv)。  \n\nB. Rb 掺杂本身就足以通过电荷补偿将氧空位形成能压低至负值，与是否存在晶格应变无关；因此避免界面应变导致缺陷聚集的 (ii) 在循环稳定性上应最优，其次是 (iii)，而过量掺杂的 (iv) 因 Rb₂O 析出略差，(i) 由于缺乏 Rb 仅能获得中等 ΔT₀，综合排序趋近于 (ii) ≳ (iii) > (iv) > (i)。  \n\nC. 仅有 3% 应变的 (i) 只能线性降低氧空位形成能而仍为正值；仅 Rb 掺杂的 (ii) 在应变趋近 0 时同样难以使形成能转负，因此二者虽比纯 TiO₂ 有更多缺陷，但难以支撑 >90%@650 nm 的 ΔT₀ 和 ΔT₅₀≥80%。(iii) 中界面拉伸应变先显著降低形成能，Rb 再通过电荷补偿将其压低为负值，使氧空位浓度呈指数级提高，并在 DFT 计算中对应最负的 DEG 解离吸附能；结合图 3e,g 的实验，可实现 ΔT₀≈92%@650 nm 且 50 次循环后仍保留 >80%。而 (iv) 由于高 Rb 含量引起局部 Rb₂O 析出和应变部分释放，实际氧空位有效浓度与表面活性位反而下降，ΔT₀、ΔT₅₀ 均略逊于 (iii)。因此合理的综合排序应为 (iii) » (iv) > (i) ≈ (ii)。  \n\nD. 抛开 DFT 所示的形成能差异，在粒径相近且 <40 nm 的条件下，决定氧空位浓度的主要是比表面积和界面面积：具有更多晶‑非晶界面的 (i) 与 (iii) 在氧空位数量和 DEG 吸附量上应近似；而 Rb 掺杂主要影响带边位置和自由载流子，但不会显著改变 ΔT₀ 或 ΔT₅₀，故四者的综合性能应接近，仅在细节上表现为 (i) ≈ (iii) ≳ (iv) > (ii)。",
+      "answer": "C：唯有应变+适量Rb协同使Vo形成能为负，兼具高ΔT与高稳定性",
+      "raw": "<question>图1d 中高分辨 TEM 显示 Rb‑TiO₂/TB‑CS (200) 晶面晶格距由纯 TiO₂ 的 1.90 Å 拉伸到约 1.95 Å，结合 c、g、i 所示晶‑非晶界面张应变分布，以及文中 DFT 结果“在约 3% 拉伸应变下继续引入 ≈2 at.% Rb 掺杂可使氧空位形成能转为负值，并显著降低 DEG 在含氧空位 Rb‑TiO₂/TB(3%) 表面的解离吸附能”，现考察在 650 nm 工作波长下、要求初始透过率 T₀ > 90% 且经 50 次循环后调制幅度 ΔT₅₀ ≥ 80% 的 DEG/PGMEA 纳米分散体系。设想四种假想样品（粒径均控制在图1b 所示的 10 nm 量级，保证瑞利散射可忽略）：  \n\n(i) 仅具有图1f,g 所示晶‑非晶界面张应变的 TiO₂/TB‑CS（约 3% 应变，无 Rb）；  \n(ii) 仅 Rb 掺杂、但几乎无界面应变的 Rb‑TiO₂‑CS（Rb/Ti≈2%，(200) 面仍接近 1.90 Å）；  \n(iii) 与图1d,e,h,i 一致，同时具备 3% 级界面张应变和 Rb/Ti≈2% 的 Rb‑TiO₂/TB‑CS；  \n(iv) 在 (iii) 基础上将 Rb/Ti 提升到 10%，导致如文中讨论的 Rb₂O 表面析出和颗粒轻微粗化（等效氧空位形成能下降幅度有限，且界面应变部分被缓解），粒径保持在 10–15 nm。  \n\n综合考虑：(a) DFT 给出的氧空位形成能与应变/Rb 含量的定量关系；(b) DEG 在不同表面构型上的解离吸附能变化；(c) 图 3e,g 所示 650 nm 处调制深度与循环稳定性的实验数据趋势，在不牺牲高透明度前提下，以下哪一项对四种样品在 650 nm 处可实现的“初始调制幅度 ΔT₀”与“50 次循环后残余调制幅度 ΔT₅₀”排序最合理？  \n\nA. 仅 3% 应变即可使氧空位形成能为负，因此 (i) 的氧空位浓度和 DEG 解离吸附量最高；加之无外来掺杂对能带的干扰，其 ΔT₀ 与 ΔT₅₀ 均应优于 (iii)，整体排序为 ΔT₀,ΔT₅₀： (i) > (iii) > (ii) > (iv)。  \n\nB. Rb 掺杂本身就足以通过电荷补偿将氧空位形成能压低至负值，与是否存在晶格应变无关；因此避免界面应变导致缺陷聚集的 (ii) 在循环稳定性上应最优，其次是 (iii)，而过量掺杂的 (iv) 因 Rb₂O 析出略差，(i) 由于缺乏 Rb 仅能获得中等 ΔT₀，综合排序趋近于 (ii) ≳ (iii) > (iv) > (i)。  \n\nC. 仅有 3% 应变的 (i) 只能线性降低氧空位形成能而仍为正值；仅 Rb 掺杂的 (ii) 在应变趋近 0 时同样难以使形成能转负，因此二者虽比纯 TiO₂ 有更多缺陷，但难以支撑 >90%@650 nm 的 ΔT₀ 和 ΔT₅₀≥80%。(iii) 中界面拉伸应变先显著降低形成能，Rb 再通过电荷补偿将其压低为负值，使氧空位浓度呈指数级提高，并在 DFT 计算中对应最负的 DEG 解离吸附能；结合图 3e,g 的实验，可实现 ΔT₀≈92%@650 nm 且 50 次循环后仍保留 >80%。而 (iv) 由于高 Rb 含量引起局部 Rb₂O 析出和应变部分释放，实际氧空位有效浓度与表面活性位反而下降，ΔT₀、ΔT₅₀ 均略逊于 (iii)。因此合理的综合排序应为 (iii) » (iv) > (i) ≈ (ii)。  \n\nD. 抛开 DFT 所示的形成能差异，在粒径相近且 <40 nm 的条件下，决定氧空位浓度的主要是比表面积和界面面积：具有更多晶‑非晶界面的 (i) 与 (iii) 在氧空位数量和 DEG 吸附量上应近似；而 Rb 掺杂主要影响带边位置和自由载流子，但不会显著改变 ΔT₀ 或 ΔT₅₀，故四者的综合性能应接近，仅在细节上表现为 (i) ≈ (iii) ≳ (iv) > (ii)。</question>\n<answer>C：唯有应变+适量Rb协同使Vo形成能为负，兼具高ΔT与高稳定性</answer>"
+    },
+    "steps": [
+      {
+        "k": 0,
+        "question": "结合图1中心区域高分辨TEM显示：(200)晶面晶格距由纯TiO₂的1.90 Å拉伸至约1.95 Å，颗粒外包覆非晶壳层且平均粒径≈10 nm，并考虑文中DFT结果“在3%拉伸应变下继续引入约2 at.% Rb掺杂可使氧空位形成能转为负值，促进DEG在含氧空位Rb‑TiO₂/TB(3%)表面解离吸附能更负”，若以650 nm为工作波长并保证颗粒尺寸远小于可见光波长，从透过率、着色速率与循环稳定性三方面综合权衡，下列判断哪项最合理？  \nA. 粒径≈10 nm使瑞利散射截面仅为40 nm颗粒的约(10/40)⁶≈1/4096，高透过率主要源于纳米尺寸与非晶层的折射率匹配；但Rb掺杂引起的拉伸应变降低氧空位浓度，使DEG只能物理吸附，虽保持透明却显著降低着色幅度与稳定性。  \nB. 3%拉伸应变略增氧空位，但同时显著增大带隙、降低载流子浓度；加之非晶壳层阻隔DEG接近晶面，致空穴清除变慢，仅在牺牲部分透过率前提下获得有限着色深度与差循环稳定性。  \nC. Rb掺杂与晶‑非晶界面3%级拉伸应变协同将(200)晶格距扩展到≈1.95 Å，使氧空位形成能为负，在保持粒径≈10 nm带来的极低瑞利散射和高透明度的同时，大量生成表面氧空位以促进DEG优先解离吸附；这既提供了快于电子‑空穴复合的空穴清除通道，又保证了足够化学吸附位点，实现>90%@650 nm的高光学调制幅度和经数十循环仍保持高对比度的稳定着色‑褪色行为。  \nD. 图中非晶壳层由二次加入20% TBOT完全构成，其主要功能是通过减小粒径并屏蔽Rb对晶格的影响来抑制氧空位形成；这虽提升短波段透过率并避免近红外LSPR吸收，但使DEG化学吸附活性位显著减少，着色速率和循环稳定性均弱于未掺杂TiO₂/TB‑CS体系。",
+        "answer": "C，Rb掺杂与应变协同显著提升性能",
+        "evidence": {
+          "doc_spans": [
+            "L12-L18"
+          ],
+          "image_regions": [
+            "中心区域高分辨TEM (200)晶面1.95 Å拉伸、非晶壳层包覆"
+          ]
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": true,
+        "raw": "<question>结合图1中心区域高分辨TEM显示：(200)晶面晶格距由纯TiO₂的1.90 Å拉伸至约1.95 Å，颗粒外包覆非晶壳层且平均粒径≈10 nm，并考虑文中DFT结果“在3%拉伸应变下继续引入约2 at.% Rb掺杂可使氧空位形成能转为负值，促进DEG在含氧空位Rb‑TiO₂/TB(3%)表面解离吸附能更负”，若以650 nm为工作波长并保证颗粒尺寸远小于可见光波长，从透过率、着色速率与循环稳定性三方面综合权衡，下列判断哪项最合理？  \nA. 粒径≈10 nm使瑞利散射截面仅为40 nm颗粒的约(10/40)⁶≈1/4096，高透过率主要源于纳米尺寸与非晶层的折射率匹配；但Rb掺杂引起的拉伸应变降低氧空位浓度，使DEG只能物理吸附，虽保持透明却显著降低着色幅度与稳定性。  \nB. 3%拉伸应变略增氧空位，但同时显著增大带隙、降低载流子浓度；加之非晶壳层阻隔DEG接近晶面，致空穴清除变慢，仅在牺牲部分透过率前提下获得有限着色深度与差循环稳定性。  \nC. Rb掺杂与晶‑非晶界面3%级拉伸应变协同将(200)晶格距扩展到≈1.95 Å，使氧空位形成能为负，在保持粒径≈10 nm带来的极低瑞利散射和高透明度的同时，大量生成表面氧空位以促进DEG优先解离吸附；这既提供了快于电子‑空穴复合的空穴清除通道，又保证了足够化学吸附位点，实现>90%@650 nm的高光学调制幅度和经数十循环仍保持高对比度的稳定着色‑褪色行为。  \nD. 图中非晶壳层由二次加入20% TBOT完全构成，其主要功能是通过减小粒径并屏蔽Rb对晶格的影响来抑制氧空位形成；这虽提升短波段透过率并避免近红外LSPR吸收，但使DEG化学吸附活性位显著减少，着色速率和循环稳定性均弱于未掺杂TiO₂/TB‑CS体系。</question>  \n<answer>C，Rb掺杂与应变协同显著提升性能</answer>  \n<evidence>{\"doc_spans\": [\"L12-L18\"], \"image_regions\": [\"中心区域高分辨TEM (200)晶面1.95 Å拉伸、非晶壳层包覆\"]}</evidence>  \n<modal_use>both</modal_use>  \n<cross_modal_bridge>true</cross_modal_bridge>",
+        "judge_flags": null
+      },
+      {
+        "k": 1,
+        "question": "基于图1d,e 中(200)面晶格距从 1.90 Å 拉伸到约 1.95 Å 以及 GPA 显示的界面拉伸应变，结合文中 DFT 结果“在约 3% 拉伸应变下继续引入约 2 at.% Rb 掺杂可使氧空位形成能转为负值，自发生成大量氧空位”，现设想三种结构：  \nI. 仅有晶‑非晶界面张应变的 TiO₂/TB，等效应变≈3%，但无 Rb 掺杂；  \nII. Rb 掺杂量≈2 at.% 的 Rb‑TiO₂（无第二步 TBOT，几乎无界面应变）；  \nIII. 同图1 所示具有晶‑非晶界面且实测 Rb/Ti≈2% 的 Rb‑TiO₂/TB(3%)。  \n若三者颗粒尺寸均≈10 nm，可忽略尺寸对光散射差异，从“氧空位浓度→DEG 解离吸附→650 nm 处光学调制幅度与循环稳定性”这一链条综合判断，下列关于哪一结构最有利于获得>90%@650 nm 光学调制且在 50 个循环后仍保持>80% 调制幅度的说法最合理？  \n\nA. 结构 I 仅依靠≈3% 张应变即可将氧空位形成能降为负值，因此其氧空位浓度最高，DEG 解离吸附也最充分，预期比含 Rb 的 III 有更大的调制幅度和更好的循环稳定性。  \n\nB. 结构 II 中 Rb 掺杂通过电荷补偿足以使氧空位形成能变为负值，与是否存在晶格应变无关；因此在避免界面应变导致缺陷聚集的前提下，II 的长期循环稳定性应优于 III。  \n\nC. 结构 III 中 3% 级张应变先显著降低氧空位形成能，而约 2 at.% 的 Rb 掺杂进一步将其压低至负值，使氧空位浓度呈指数级提升，从而在不牺牲透明度的情况下最大化 DEG 解离吸附量，实验上也对应>90%@650 nm 的初始调制幅度及 50 个循环后仍>80% 的稳定对比度。  \n\nD. 由于 Rb 掺杂主要引入正电荷并抑制氧空位生成，真正决定氧空位浓度的是界面张应变；因此 I 和 III 在性能上应接近，而 II 的氧空位最少、着色速率最慢。",
+        "answer": "C：仅 III 同时需要应变与 Rb 使形成能为负",
+        "evidence": {
+          "doc_spans": [
+            "L12-L18",
+            "L182-L210",
+            "L356-L378"
+          ],
+          "image_regions": [
+            "中心区域高分辨TEM标注1.95 Å 与GPA应变分布"
+          ]
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": true,
+        "raw": "<question>基于图1d,e 中(200)面晶格距从 1.90 Å 拉伸到约 1.95 Å 以及 GPA 显示的界面拉伸应变，结合文中 DFT 结果“在约 3% 拉伸应变下继续引入约 2 at.% Rb 掺杂可使氧空位形成能转为负值，自发生成大量氧空位”，现设想三种结构：  \nI. 仅有晶‑非晶界面张应变的 TiO₂/TB，等效应变≈3%，但无 Rb 掺杂；  \nII. Rb 掺杂量≈2 at.% 的 Rb‑TiO₂（无第二步 TBOT，几乎无界面应变）；  \nIII. 同图1 所示具有晶‑非晶界面且实测 Rb/Ti≈2% 的 Rb‑TiO₂/TB(3%)。  \n若三者颗粒尺寸均≈10 nm，可忽略尺寸对光散射差异，从“氧空位浓度→DEG 解离吸附→650 nm 处光学调制幅度与循环稳定性”这一链条综合判断，下列关于哪一结构最有利于获得>90%@650 nm 光学调制且在 50 个循环后仍保持>80% 调制幅度的说法最合理？  \n\nA. 结构 I 仅依靠≈3% 张应变即可将氧空位形成能降为负值，因此其氧空位浓度最高，DEG 解离吸附也最充分，预期比含 Rb 的 III 有更大的调制幅度和更好的循环稳定性。  \n\nB. 结构 II 中 Rb 掺杂通过电荷补偿足以使氧空位形成能变为负值，与是否存在晶格应变无关；因此在避免界面应变导致缺陷聚集的前提下，II 的长期循环稳定性应优于 III。  \n\nC. 结构 III 中 3% 级张应变先显著降低氧空位形成能，而约 2 at.% 的 Rb 掺杂进一步将其压低至负值，使氧空位浓度呈指数级提升，从而在不牺牲透明度的情况下最大化 DEG 解离吸附量，实验上也对应>90%@650 nm 的初始调制幅度及 50 个循环后仍>80% 的稳定对比度。  \n\nD. 由于 Rb 掺杂主要引入正电荷并抑制氧空位生成，真正决定氧空位浓度的是界面张应变；因此 I 和 III 在性能上应接近，而 II 的氧空位最少、着色速率最慢。</question>  \n\n<answer>C：仅 III 同时需要应变与 Rb 使形成能为负</answer>  \n\n<evidence>{\"doc_spans\": [\"L12-L18\", \"L182-L210\", \"L356-L378\"], \"image_regions\": [\"中心区域高分辨TEM标注1.95 Å 与GPA应变分布\"]}</evidence>  \n\n<modal_use>both</modal_use>  \n\n<cross_modal_bridge>true</cross_modal_bridge>",
+        "judge_flags": null
+      },
+      {
+        "k": 2,
+        "question": "基于上一步结论“Rb 掺杂与晶格应变协同作用可最大化氧空位浓度”，并结合新信息“与未改性 Rb-TiO₂/TB 粒子平均尺寸 295 nm 相比，经复合硅烷表面改性后的 Rb-TiO₂/TB-CS 在 PGMEA 中平均粒径仅约 11.7 nm，小于 40 nm，可避免可见光瑞利散射”，请评估以下两种结构在 DEG/PGMEA 分散液中的综合光致变色潜力：  \n- **结构 X:** 未经表面改性的 Rb-TiO₂/TB (平均粒径 ≈ 295 nm)  \n- **结构 Y:** 经复合硅烷改性的 Rb-TiO₂/TB-CS (平均粒径 ≈ 11.7 nm)  \n哪项陈述最准确地评价了两者实现“高初始透明度(T₀ > 90%)”与“大光学调制幅度(ΔT > 90%@650nm)”目标的适用性？  \n\nA. 结构 X 因其 295 nm 的大尺寸会产生强烈瑞利散射，导致初始透明度极低，但其内部优化的氧空位结构依然能保证其在着色后，相对于自身浑浊的初始态，仍可获得超过 90% 的相对调制深度。  \n\nB. 结构 Y 中复合硅烷(CS)的表面包覆虽然实现了~11.7 nm 的小尺寸和高透明度，但同时会钝化表面的氧空位，阻碍 DEG 的解离吸附，因此其光学调制幅度会远低于拥有裸露活性位点的结构 X。  \n\nC. 结构 X 尽管拥有最高的氧空位浓度，但其~295 nm 的粒径远超瑞利散射极限，将导致分散液呈不透明的乳白色，无法满足高透明度前提。结构 Y 则通过表面改性将粒径降至~11.7 nm，在保证高初始透明度的同时，完整保留了 Rb 掺杂和界面应变协同诱导的高浓度氧空位，最终实现了 >90% 的光学调制幅度。  \n\nD. 光学调制性能主要取决于比表面积，结构 Y 的~11.7 nm 粒径使其比表面积远大于结构 X，这会内在地产生更多表面氧空位。因此，结构 Y 的优异性能主要归因于尺寸效应，而非 Rb 掺杂与应变的协同作用。",
+        "answer": "C：X因粒径大散射强而初始透明度低，Y兼具小尺寸高透明度和高氧空位浓度。",
+        "evidence": {
+          "doc_spans": [
+            "Compared to unmodified Rb-TiO₂/TB with an average size of 295 nm, the Rb-TiO₂/TB-CS exhibits an average size of 11.7 nm, which is roughly consistent with the statistics of the TEM, suggesting the monodispersion of Rb-TiO₂/TB-CS NPs in PGMEA. In addition, although the particle size of Rb-TiO₂/TB-CS is slightly increased in comparison to TiO₂-CS and TiO₂/TB-CS, it is sufficiently smaller than 40 nm to prevent Rayleigh scattering of visible light.",
+            "Notably, a large optical modulation amplitude is displayed, which is as high as 91.54% at 650 nm."
+          ],
+          "image_regions": [
+            "Figure 1b"
+          ]
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": true,
+        "raw": "<question>基于上一步结论“Rb 掺杂与晶格应变协同作用可最大化氧空位浓度”，并结合新信息“与未改性 Rb-TiO₂/TB 粒子平均尺寸 295 nm 相比，经复合硅烷表面改性后的 Rb-TiO₂/TB-CS 在 PGMEA 中平均粒径仅约 11.7 nm，小于 40 nm，可避免可见光瑞利散射”，请评估以下两种结构在 DEG/PGMEA 分散液中的综合光致变色潜力：  \n- **结构 X:** 未经表面改性的 Rb-TiO₂/TB (平均粒径 ≈ 295 nm)  \n- **结构 Y:** 经复合硅烷改性的 Rb-TiO₂/TB-CS (平均粒径 ≈ 11.7 nm)  \n哪项陈述最准确地评价了两者实现“高初始透明度(T₀ > 90%)”与“大光学调制幅度(ΔT > 90%@650nm)”目标的适用性？  \n\nA. 结构 X 因其 295 nm 的大尺寸会产生强烈瑞利散射，导致初始透明度极低，但其内部优化的氧空位结构依然能保证其在着色后，相对于自身浑浊的初始态，仍可获得超过 90% 的相对调制深度。  \n\nB. 结构 Y 中复合硅烷(CS)的表面包覆虽然实现了~11.7 nm 的小尺寸和高透明度，但同时会钝化表面的氧空位，阻碍 DEG 的解离吸附，因此其光学调制幅度会远低于拥有裸露活性位点的结构 X。  \n\nC. 结构 X 尽管拥有最高的氧空位浓度，但其~295 nm 的粒径远超瑞利散射极限，将导致分散液呈不透明的乳白色，无法满足高透明度前提。结构 Y 则通过表面改性将粒径降至~11.7 nm，在保证高初始透明度的同时，完整保留了 Rb 掺杂和界面应变协同诱导的高浓度氧空位，最终实现了 >90% 的光学调制幅度。  \n\nD. 光学调制性能主要取决于比表面积，结构 Y 的~11.7 nm 粒径使其比表面积远大于结构 X，这会内在地产生更多表面氧空位。因此，结构 Y 的优异性能主要归因于尺寸效应，而非 Rb 掺杂与应变的协同作用。</question>\n<answer>C：X因粒径大散射强而初始透明度低，Y兼具小尺寸高透明度和高氧空位浓度。</answer>\n<evidence>{\"doc_spans\": [\"Compared to unmodified Rb-TiO₂/TB with an average size of 295 nm, the Rb-TiO₂/TB-CS exhibits an average size of 11.7 nm, which is roughly consistent with the statistics of the TEM, suggesting the monodispersion of Rb-TiO₂/TB-CS NPs in PGMEA. In addition, although the particle size of Rb-TiO₂/TB-CS is slightly increased in comparison to TiO₂-CS and TiO₂/TB-CS, it is sufficiently smaller than 40 nm to prevent Rayleigh scattering of visible light.\", \"Notably, a large optical modulation amplitude is displayed, which is as high as 91.54% at 650 nm.\"], \"image_regions\": [\"Figure 1b\"]}</evidence>\n<modal_use>both</modal_use>\n<cross_modal_bridge>true</cross_modal_bridge>",
+        "judge_flags": null
+      }
+    ],
+    "difficulty_metrics": {
+      "medium_correct": false,
+      "strong_correct": true,
+      "difficulty_score": 1.0,
+      "cross_modal_used": true,
+      "num_hops": 3,
+      "medium_pred": null,
+      "strong_pred": "C",
+      "medium_raw": "",
+      "strong_raw": "<answer>C</answer>"
+    },
+    "solver_final_pred": "C",
+    "solver_final_raw": "<answer>C</answer>",
+    "reflect_feedback": "1. 在设定四种样品时，引入定量参数与反事实条件，例如给出不同 Rb 含量/应变对应的具体氧空位形成能数值区间，让考生根据数值推演排序，而非仅凭“正/负”“高/低”的定性描述即可排除选项。\n\n2. 让选项不只给出调制幅度排序，还分别针对 ΔT₀ 与 ΔT₅₀ 给出可能不一致的排序（如 ΔT₀：A>B>C>D，ΔT₅₀：B>C>A>D），并在选项中混入部分“半对半错”的微妙说法，需要考生结合 DFT、吸附能和循环稳定性三者交叉判断，而非整体一眼看出“最合理”。\n\n3. 增加对潜在副效应的考察，如引入 Rb₂O 析出导致散射增强、折射率变化、能带弯曲等竞争机制，并给出与粒径、掺杂梯度或界面浓度相关的定量或半定量信息，使考生必须权衡“缺陷带来的调制增益”与“光学损耗/结构退化”之间的平衡，而不是简单认为“Vo 越多越好”。",
+    "stop_reason": null
   }
 ]

@@ -1,14 +1,16 @@
----
+
+
 # AutoQA（强化版）：基于图文上下文的高难度 MCQ 自动生成（保持现有工程结构）
 
 AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用多轮迭代生成**高难度、可验证、强多模态依赖**的单选题（MCQ），并通过“求解模型 + 反思模型 + 过程裁判（可选）”闭环提升难度。
 
-> **注意：本强化版在“代码文件结构”上保持你当前项目的目录不变**（仍以 `main.py / config.py / api_client.py / prompts.py / pipeline.py / parsing.py / schema.py` 为主），仅在 `pipeline.py + prompts.py + schema.py + config.py` 内扩展：
+> **注意：本强化版保持入口与主要模块命名不变**（仍以 `main.py / config.py / api_client.py / prompts.py / pipeline.py / parsing.py / schema.py` 为主）。
+> 当前实现为了可维护性，将原先集中在 `pipeline.py` 的逻辑进一步拆分为 `pipeline_*.py` 小模块，但仍通过 `pipeline.py` 统一对外导出接口：
 >
 > - 把原 Stage1/2/3 变成 **可循环复用的 step 模板**（multi-hop extension）
 > - 在每轮内支持多次扩链、必要时 revise、最终 compress
 > - 引入双求解器（Medium/Strong）在线校准难度（若未配置则自动退化为单求解器）
----
+
 ## 目标与原则
 
 ### 目标
@@ -29,14 +31,14 @@ AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用�
 
 入口：`main.py`
 
-每一轮（`MAX_ROUNDS`）执行一个 Episode，由 `pipeline.py` 统一编排。整体仍保留你现在的“阶段式日志写法”（Stage1/2/3/Final + Solve/Analysis），但在内部新增 **Extension Loop**：
+每一轮（`MAX_ROUNDS`）执行一个 Episode，由 `pipeline.py`（门面模块）统一编排。整体仍保留“阶段式日志写法”（Stage1/2/3/Final + Solve/Analysis），但在内部新增 **Extension Loop**：
 
 ### 0) 预处理：图文锚点与候选事实
 
 - 从图片生成**视觉锚点**（中心区域对象/符号/结构/关系）与候选描述（anchor candidates）
 - 从文档上下文抽取**关键点/事实片段**（fact candidates，附带 span/段落索引）
 
-> 说明：预处理不要求你引入新文件，可直接在 `pipeline.py` 内实现简化版本：
+> 说明：当前实现的预处理位于 `pipeline_facts.py`（从文档抽取 fact candidates），视觉锚点主要通过 Stage prompt 引导输出。
 >
 > - 视觉锚点：由 Stage1 prompt 引导模型“只围绕中心区域锚点描述”即可
 > - 文档关键点：用文本模型从上下文抽取若干关键句或要点（带行号/段落索引）
@@ -66,7 +68,7 @@ AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用�
   - 要么换新的视觉锚点（同一中心区域内不同关系/符号/标注）
   - 并且至少一次 `cross_modal_bridge=true`（可由 judge 检测并强制 revise）
 
-> 这样你无需新增 `agent.py` 文件：Agent 决策逻辑直接写在 `pipeline.py` 中（例如：是否继续扩链、是否 revise、何时 compress）。
+> 这样你无需新增 `agent.py` 文件：Agent 决策逻辑集中在 Episode/Step 编排中（`pipeline_episode.py / pipeline_steps.py`），并由 `pipeline.py` 统一导出。
 
 ---
 
@@ -108,10 +110,10 @@ Revise 目标：
 - 改写题干，隐藏“单句命中”线索
 - 强化跨模态桥接：强制必须结合图与文才能作答
 
-> **实现方式（不改结构）**：
+> **实现方式（不增加新的“业务层级”文件）**：
 >
 > - 在 `prompts.py` 增加一个 `build_revise_prompt(...)`
-> - 在 `pipeline.py` 中当触发条件成立时调用 revise，并覆盖当前 step 或 final 草稿
+> - 在 `pipeline_steps.py`（step revise）与 `pipeline_episode.py`（final revise）中当触发条件成立时调用 revise，并覆盖草稿
 
 ---
 
@@ -143,7 +145,7 @@ Revise 目标：
 
 ### Round 层面提前停止
 
-- Solve 答错（说明已足够难，或需要回滚策略）
+- 最终求解器答错（说明已足够难，或需要回滚策略）
 - 反思反馈与上一轮一致（收敛）
 - 达到 `MAX_ROUNDS`
 
@@ -155,12 +157,16 @@ Revise 目标：
 - `config.py`：模型与运行参数配置（可用环境变量覆盖）
 - `api_client.py`：OpenAI 兼容接口调用（文本/视觉）
 - `prompts.py`：Stage1/2/3/Final + revise/judge（可选）等 prompt 构建
-- `pipeline.py`：阶段编排、Extension Loop、在线校验、revise、日志落盘
+- `pipeline.py`：门面模块（对外导出 `run_episode/save_round_questions/try_solve_question`）
+- `pipeline_episode.py`：Episode 编排（steps → compress → final revise → difficulty 评估）
+- `pipeline_steps.py`：Extension Loop（step 生成/校验/必要 revise）与 `StageResult` 派生
+- `pipeline_facts.py`：文档 fact candidates 抽取与提示格式化
+- `pipeline_solvers.py`：求解器调用、答案判定、难度指标评估
+- `pipeline_logging.py`：日志落盘（JSONL + 人类可读 JSON）
 - `parsing.py`：`<question>/<answer>` 标签提取、选项字母解析（可扩展 evidence 标签）
 - `schema.py`：`StageResult / StepResult / EpisodeResult` 数据结构
 
-> 你之前列的 `agent.py/difficulty.py/evidence.py/utils.py` 是“可拆分增强项”。
-> **本 README 版本默认不新增文件**，所有逻辑可先落在 `pipeline.py` 中。
+> 你之前列的 `agent.py/difficulty.py/evidence.py/utils.py` 仍属于“可进一步增强项”，当前以 `pipeline_*.py` 的拆分方式完成同等职责划分。
 
 ---
 
@@ -173,6 +179,7 @@ Revise 目标：
 python main.py
 ```
 
+运行时会在每一轮打印过程信息：step 链路（题目/答案/evidence）、最终题、以及各求解器输出。
 
 ## 配置（环境变量覆盖，兼容你当前变量名）
 
@@ -192,6 +199,7 @@ python main.py
 * `MODEL_SOLVE_MEDIUM`：中等求解器（用于难度标定，默认=`MODEL_SOLVE`）
 * `MODEL_SOLVE_STRONG`：强求解器（用于可解性验证，默认=`MODEL_SOLVE`）
 * `MODEL_SOLVE_FINAL`：最终求解模型（只输出 A/B/C/D，默认=`MODEL_SOLVE`）
+  - 当前提示词要求严格输出 `<answer>A</answer>` 格式（系统仍会做一定容错解析）。
 
 ### 扩链与阈值
 
@@ -205,14 +213,17 @@ python main.py
 
 ---
 
-## 输出与日志（JSONL，兼容现有 question_log.jsonl）
+## 输出与日志（JSONL + JSON）
 
-仍按你当前方式把 Stage1/2/3/Final 的 `question/answer/raw` 追加写入 `QUESTION_LOG_PATH`，并建议**新增一个 steps 字段**来记录扩链结果。
+默认写两个文件：
 
-### 建议的日志结构（每行一个 Episode）
+- `QUESTION_LOG_PATH`（默认 `question_log.jsonl`）：一行一个 Episode，便于流式追加与脚本处理（中文不再转义）。
+- 同名 `.json`（例如 `question_log.json`）：层级化 + 缩进格式，便于人工阅读（数组形式累计保存）。
 
-* `round_id`
-* `stage1` / `stage2` / `stage3` / `final`：保留你现有字段（兼容旧脚本）
+### 日志结构（每行一个 Episode）
+
+* `round`
+* `stage_1` / `stage_2` / `stage_3` / `stage_final`：保留阶段字段（兼容阶段式回看）
 * `steps`: `StepResult[]`（新增，记录 step_0..K）
 * `difficulty_metrics`：
   * `medium_correct`, `strong_correct`
@@ -252,7 +263,7 @@ python main.py
 ### Final（Compress）
 
 * 折叠中间结论，不要写“第一步/第二步”
-* 输出最终 MCQ：题干 + 4 选项 + `<answer>` 字母
+* 输出最终 MCQ：题干 + 4 选项 + `<answer>` 字母（题目生成阶段）
 
 ### Revise（去捷径）
 
@@ -269,5 +280,5 @@ python main.py
 ## 与旧版 Stage1/2/3/Final 的兼容说明
 
 * 旧版仍然可以只跑 Stage1→Stage2→Stage3→Final
-* 强化版在 `pipeline.py` 中把 Stage2/Stage3 当作“扩链模板”循环调用，从而实现 `step_3..K`
+* 强化版在 `pipeline_steps.py` 中把 Stage2/Stage3 当作“扩链模板”循环调用，从而实现 `step_3..K`
 * 日志仍保留 Stage1/2/3/Final，新增 `steps` 不影响旧工具读取
