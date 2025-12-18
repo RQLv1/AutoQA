@@ -11,7 +11,13 @@ from pipeline.pipeline_facts import format_fact_hint, load_fact_candidates
 from pipeline.pipeline_solvers import grade_answer, solve_mcq
 from steps.runner import run_step, select_model_for_step
 from steps.validation import validate_step
-from utils.config import MAX_STEPS_PER_ROUND, MIN_HOPS, MODEL_SOLVE_STRONG, REQUIRE_CROSS_MODAL
+from utils.config import (
+    MAX_STEPS_PER_ROUND,
+    MIN_HOPS,
+    MODEL_SOLVE_MEDIUM,
+    MODEL_SOLVE_STRONG,
+    REQUIRE_CROSS_MODAL,
+)
 from utils.schema import StepResult
 
 
@@ -50,15 +56,31 @@ def generate_steps_prompt_driven(
             )
 
         step = run_step(prompt, image_path, model, k)
-        _, strong_letter = solve_mcq(context, step.question, image_path, MODEL_SOLVE_STRONG)
+        medium_raw, medium_letter = solve_mcq(context, step.question, image_path, MODEL_SOLVE_MEDIUM)
+        strong_raw, strong_letter = solve_mcq(context, step.question, image_path, MODEL_SOLVE_STRONG)
+        medium_correct = grade_answer(step.answer_letter or "", medium_letter)
         strong_correct = grade_answer(step.answer_letter or "", strong_letter)
         needs_revision, reason = validate_step(step, force_cross_modal, strong_correct)
 
         if needs_revision:
+            print(f"[Step {k}] 触发 revise: {reason}")
             revise_prompt = build_revise_prompt(
                 context, step, reason, fact_hint, force_cross_modal
             )
             step = run_step(revise_prompt, image_path, model, k)
+            medium_raw, medium_letter = solve_mcq(context, step.question, image_path, MODEL_SOLVE_MEDIUM)
+            strong_raw, strong_letter = solve_mcq(context, step.question, image_path, MODEL_SOLVE_STRONG)
+            medium_correct = grade_answer(step.answer_letter or "", medium_letter)
+            strong_correct = grade_answer(step.answer_letter or "", strong_letter)
+
+        if force_cross_modal and "cross_modal_bridge" not in step.raw:
+            step.cross_modal_bridge = True
+
+        print(f"[Step {k}] 完成 (model={model})")
+        print(step.question)
+        print(f"标准答案: <answer>{step.answer_letter}</answer> | answer_text={step.answer_text}")
+        print(f"中求解器: {medium_raw} | correct={medium_correct}")
+        print(f"强求解器: {strong_raw} | correct={strong_correct}")
 
         steps.append(step)
         cross_modal_used = cross_modal_used or step.cross_modal_bridge

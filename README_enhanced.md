@@ -27,15 +27,15 @@ AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用�
 
 每一轮（`MAX_ROUNDS`）执行一个 Episode，由 `pipeline/`（门面包，`from pipeline import run_episode`）统一编排。对外仍保留“阶段式日志写法”（Stage1/2/3/Final + Solve/Analysis），但在内部新增 **Extension Loop**，并可选启用 **Graph Mode**（路径采样驱动）。
 
-### 0) 预处理：图文锚点、chunk 与候选事实
+### 0) 预处理：图文锚点与候选事实
 
 - **视觉锚点**：由 Stage1/Extend prompt 引导模型只描述/只出题于“图片中心区域的对象/符号/结构/关系”（anchor candidates）。
-- **文本 chunk**：将文档上下文按段落或固定词数切分（推荐段落优先 + 限制最大词数），生成 `chunk_id → text`。
+- **知识点链**：直接基于全文总结多条“串联的知识点链”，用于构建 Local KG。
 - **事实候选**（两种策略二选一，或同时运行）：
-  - Prompt 提取：从 chunk 抽取“关键点/事实片段”（fact candidates，带 span/段落索引）。
-  - Graph Mode：从 chunk 抽取 `(entity1, relation, entity2)` 三元组并挂载 `source_chunk_id`，构建 Local KG。
+  - Prompt 提取：从全文抽取“关键点/事实片段”（fact candidates，带 span/段落索引）。
+  - Graph Mode：从全文总结知识点链并构建 Local KG。
 
-> 说明：当前实现把文本关键点抽取放在 `pipeline/pipeline_facts.py`；Graph Mode 使用 `graph/pipeline_graph.py` 负责 chunk→triplets→KG。
+> 说明：当前实现把文本关键点抽取放在 `pipeline/pipeline_facts.py`；Graph Mode 使用 `graph/pipeline_graph.py` 负责 context→知识点链→KG。
 
 ### 1) Extension Loop（多次扩链：Prompt-driven 或 Graph Mode 产出 steps）
 
@@ -56,12 +56,12 @@ A) **Prompt-driven（默认，保持你现有 Stage1/2/3 复用方式）**
 - `step_1`：Stage2 模板（引入文档关键点 1）
 - `step_2`：Stage3 模板（引入关键点 2 或图中另一关系）
 - `step_3..K`：循环复用 Stage2/Stage3 模板（或统一 EXTEND prompt），每次强制：
-  - 换新的文档关键点（不同 chunk/不同实体），或换新的视觉锚点（同中心区域内不同关系）
+  - 换新的文档关键点（不同知识点/实体），或换新的视觉锚点（同中心区域内不同关系）
   - 至少一次 `cross_modal_bridge=true`（可由 judge 检测并强制 revise）
 
 B) **Graph Mode（推荐用于长文档，路径采样更稳定地产生“真多跳”）**
 
-- **路径采样**：从 Local KG 采样长度为 `K` 的路径，并要求 K 条边来自 **K 个不同 source chunk**。
+- **路径采样**：从 Local KG 采样长度为 `K` 的路径，尽量避免重复来源。
 - **1-hop 生成**：对路径的每条边先生成 1-hop 子问题（答案=entity1），并逐条验证可证据定位、无歧义、题干不包含答案。
 - **reverse-chaining 聚合**：从路径尾部的子问题开始反向串联，生成一个“自然的多跳问题骨架”；然后再进入本仓库的 revise/compress。
 
@@ -80,7 +80,7 @@ B) **Graph Mode（推荐用于长文档，路径采样更稳定地产生“真�
 
 - `medium_correct` vs `strong_correct`
 - 一致性投票（多次采样/多模型一致性，可选）
-- token 比、推理步数、信息分散度、distinct chunk 数等 proxy（可选）
+- token 比、推理步数、信息分散度、distinct sources 数等 proxy（可选）
 
 > **兼容策略**：未设置 `MODEL_SOLVE_STRONG/MEDIUM` 时，可默认等于 `MODEL_SOLVE`，接口不变。
 
@@ -111,7 +111,7 @@ Revise 目标：
 - 修复歧义、补齐证据链
 - 改写题干，隐藏“单句命中”线索
 - 强化跨模态桥接：强制必须结合图与文才能作答
-- 若启用 Graph Mode：必要时替换路径/替换某一跳的 source chunk，确保信息分散
+- 若启用 Graph Mode：必要时替换路径/替换某一跳的 source，确保信息分散
 
 ### 5) Compress（压缩合并为最终高难 MCQ）
 
@@ -169,11 +169,11 @@ Revise 目标：
 
 **论文思路落地的可选增强模块（推荐逐步加）**
 
-- `graph/pipeline_graph.py`：chunk → triplets → Local KG（节点/边挂载 source_chunk_id）
-- `graph/pipeline_path_sampling.py`：随机化 BFS 路径采样（支持 “distinct source chunk” 约束）
+- `graph/pipeline_graph.py`：全文 → 知识点链 → Local KG
+- `graph/pipeline_path_sampling.py`：随机化 BFS 路径采样（支持“distinct source”约束）
 - `pipeline_verify.py`：1-hop / multi-hop 的 verifier（可复用 `MODEL_JUDGE`）
 - `pipeline_shortcut.py`：捷径边检测（是否存在 head↔tail 直接证据导致伪多跳）
-- `text_chunker.py`：段落/词数切分与 span 映射工具
+- `text_chunker.py`：段落/词数切分与 span 映射工具（可选，当前 Graph Mode 不使用）
 - `normalization.py`：实体归一化（大小写/符号/缩写）辅助“答案泄露/多解”检测
 
 ---
@@ -213,8 +213,7 @@ Revise 目标：
 ### Graph Mode
 
 - `ENABLE_GRAPH_MODE`：是否启用 Local KG + 路径采样（true/false，默认 false）
-- `DOC_CHUNK_WORDS`：文本 chunk 目标词数（建议 120~200；段落优先）
-- `REQUIRE_DISTINCT_SOURCES`：路径每跳必须来自不同 chunk（true/false，默认 true）
+- `REQUIRE_DISTINCT_SOURCES`：路径每跳尽量来自不同知识链来源（true/false，默认 true）
 - `PATH_SAMPLER`：`rbfs` / `random_walk` 等（默认 `rbfs`）
 - `MAX_SHORTCUT_EDGES`：允许的捷径边数量（默认 0）
 
@@ -251,7 +250,7 @@ python main.py
 - `difficulty_metrics`：
   - `medium_correct`, `strong_correct`
   - `difficulty_score`, `cross_modal_used`, `num_hops`
-  - **建议新增**：`distinct_source_chunks`, `total_context_tokens`, `pooled_hop_tokens`, `shortcut_edges`
+  - **建议新增**：`distinct_sources`, `total_context_tokens`, `pooled_hop_tokens`, `shortcut_edges`
 - `solver_final_pred`（A/B/C/D）
 - `reflect_feedback`（三条可执行指引）
 - `stop_reason`
@@ -264,7 +263,7 @@ python main.py
 - `answer_text`（短实体/短短语；MCQ 时也建议存）
 - `answer_letter`（若该 step 本身是 MCQ，可选）
 - `evidence`：
-  - `doc_spans`: [start,end] 或 段落/行号/`chunk_id`
+  - `doc_spans`: [start,end] 或 段落/行号/上下文位置标记
   - `image_regions`: bbox/区域描述（若可用）
 - `modal_use`: image/text/both
 - `cross_modal_bridge`: bool
@@ -280,7 +279,7 @@ python main.py
 关键约束（强烈建议写进 prompt）：
 
 - **不要在题干中出现答案**（包括同义词/缩写，尽量做归一化检测）
-- 题目必须能**仅依赖给定 text/chunk**回答
+- 题目必须能**仅依赖给定 text**回答
 - 不要提及“在论文/表格/摘要/图中”等元叙事（避免把位置提示当捷径）
 - 若关系不够具体导致多解，必须用 text 中的描述补充限定，使答案唯一
 

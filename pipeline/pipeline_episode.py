@@ -27,8 +27,22 @@ def run_episode(
 
     final_prompt = build_final_compress_prompt(context, steps, feedback)
     stage_final = run_final(final_prompt, image_path, MODEL_SUM)
+    print("[Final] Compress 完成")
+    print(stage_final.question)
+    print("标准答案:", stage_final.answer)
     difficulty_metrics = evaluate_difficulty(
         context, stage_final, image_path, cross_modal_used, len(steps)
+    )
+    print(
+        "[Final] Difficulty 评估:",
+        f"medium_correct={difficulty_metrics.get('medium_correct')}",
+        f"strong_correct={difficulty_metrics.get('strong_correct')}",
+        f"score={difficulty_metrics.get('difficulty_score')}",
+    )
+    print(
+        "[Final] Solver 输出:",
+        f"medium={difficulty_metrics.get('medium_raw')}",
+        f"strong={difficulty_metrics.get('strong_raw')}",
     )
 
     revise_reasons = []
@@ -42,8 +56,17 @@ def run_episode(
             context, stage_final.question, stage_final.answer, " & ".join(revise_reasons)
         )
         stage_final = run_final(revise_prompt, image_path, MODEL_SUM)
+        print("[Final] Revise 完成:", " & ".join(revise_reasons))
+        print(stage_final.question)
+        print("标准答案:", stage_final.answer)
         difficulty_metrics = evaluate_difficulty(
             context, stage_final, image_path, cross_modal_used, len(steps)
+        )
+        print(
+            "[Final] Revise 后 Difficulty:",
+            f"medium_correct={difficulty_metrics.get('medium_correct')}",
+            f"strong_correct={difficulty_metrics.get('strong_correct')}",
+            f"score={difficulty_metrics.get('difficulty_score')}",
         )
 
     return EpisodeResult(

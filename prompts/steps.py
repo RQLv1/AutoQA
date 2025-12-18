@@ -12,9 +12,6 @@ def build_stage1_step_prompt(context: str, feedback: str, previous_question: str
         要求:
         - 题干包含 A-D 四个选项。
         - 题干必须首先依赖图片中心视觉锚点，必要时可结合文档。
-        - 输出 evidence(JSON)，包含 doc_spans 与 image_regions。
-        - modal_use 只能是 image/text/both。
-        - cross_modal_bridge 表示是否必须同时使用图文。
         {extra}{previous}
 
         文档内容:
@@ -22,11 +19,7 @@ def build_stage1_step_prompt(context: str, feedback: str, previous_question: str
 
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
-        <answer_letter>A/B/C/D</answer_letter>
-        <answer_text>正确选项对应的短实体/短短语(不超过12字)</answer_text>
-        <evidence>{{"doc_spans": ["L12-L18"], "image_regions": ["中心区域..."]}}</evidence>
-        <modal_use>image/text/both</modal_use>
-        <cross_modal_bridge>true/false</cross_modal_bridge>
+        <answer>A/B/C/D</answer>
         """
     ).strip()
 
@@ -58,11 +51,7 @@ def build_stage2_step_prompt(
 
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
-        <answer_letter>A/B/C/D</answer_letter>
-        <answer_text>正确选项对应的短实体/短短语(不超过12字)</answer_text>
-        <evidence>{{"doc_spans": ["L12-L18"], "image_regions": ["中心区域..."]}}</evidence>
-        <modal_use>image/text/both</modal_use>
-        <cross_modal_bridge>true/false</cross_modal_bridge>
+        <answer>A/B/C/D</answer>
         """
     ).strip()
 
@@ -94,11 +83,7 @@ def build_stage3_step_prompt(
 
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
-        <answer_letter>A/B/C/D</answer_letter>
-        <answer_text>正确选项对应的短实体/短短语(不超过12字)</answer_text>
-        <evidence>{{"doc_spans": ["L12-L18"], "image_regions": ["中心区域..."]}}</evidence>
-        <modal_use>image/text/both</modal_use>
-        <cross_modal_bridge>true/false</cross_modal_bridge>
+        <answer>A/B/C/D</answer>
         """
     ).strip()
 
@@ -130,11 +115,7 @@ def build_extend_step_prompt(
 
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
-        <answer_letter>A/B/C/D</answer_letter>
-        <answer_text>正确选项对应的短实体/短短语(不超过12字)</answer_text>
-        <evidence>{{"doc_spans": ["L12-L18"], "image_regions": ["中心区域..."]}}</evidence>
-        <modal_use>image/text/both</modal_use>
-        <cross_modal_bridge>true/false</cross_modal_bridge>
+        <answer>A/B/C/D</answer>
         """
     ).strip()
 
@@ -167,11 +148,7 @@ def build_revise_prompt(
 
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
-        <answer_letter>A/B/C/D</answer_letter>
-        <answer_text>正确选项对应的短实体/短短语(不超过12字)</answer_text>
-        <evidence>{{"doc_spans": ["L12-L18"], "image_regions": ["中心区域..."]}}</evidence>
-        <modal_use>image/text/both</modal_use>
-        <cross_modal_bridge>true/false</cross_modal_bridge>
+        <answer>A/B/C/D</answer>
         """
     ).strip()
 
@@ -179,8 +156,7 @@ def build_revise_prompt(
 def build_graph_1hop_step_prompt(
     *,
     anchor_question: str,
-    chunk_id: int,
-    chunk_text: str,
+    evidence_snippet: str,
     head: str,
     relation: str,
     tail: str,
@@ -193,9 +169,9 @@ def build_graph_1hop_step_prompt(
     distractors = ", ".join(distractor_entities[:12]) if distractor_entities else "(由你生成)"
     return dedent(
         f"""
-        你需要基于“本地知识图谱”的一条边生成 1-hop 子问题(单选题)。
+        你需要基于“本地知识点链”的一条关联生成 1-hop 子问题(单选题)。
         该子问题用于后续 reverse-chaining 合成多跳题，因此必须满足：
-        - 只凭文档 chunk 的证据就能确定正确选项，同时仍需结合图片中心视觉锚点避免纯文本捷径。
+        - 只凭文档证据就能确定正确选项，同时仍需结合图片中心视觉锚点避免纯文本捷径。
         - 题干中不要出现正确答案 head（包括同义词/缩写）。
         - {cross_modal}
 
@@ -203,24 +179,18 @@ def build_graph_1hop_step_prompt(
         {anchor_question.strip()}
 
         当前 hop 的结构化证据:
-        - chunk_id: {chunk_id}
-        - chunk_text(仅供你生成题目，不要原样复制进题干):
-        {chunk_text.strip()}
-        - triple: head={head} ; relation={relation} ; tail={tail}
+        - evidence_snippet(仅供你生成题目，不要原样复制进题干):
+        {evidence_snippet.strip() or "(未提供)"}
+        - knowledge_link: head={head} ; relation={relation} ; tail={tail}
         - 可用干扰实体候选(不含 head): {distractors}
         {extra}
 
         输出要求:
         - 生成 4 个选项 A-D，其中正确选项对应 head，其他 3 个为同类干扰项。
-        - answer_text 必须等于 head（短实体/短短语）。
-        - evidence 必须包含 chunk_id，并给出可验证片段说明。
+        - 题干避免泄露 head，确保答案唯一可验证。
 
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
-        <answer_letter>A/B/C/D</answer_letter>
-        <answer_text>{head}</answer_text>
-        <evidence>{{"chunk_id": {chunk_id}, "doc_spans": ["chunk:{chunk_id}"], "snippet": "...", "image_regions": ["中心区域..."]}}</evidence>
-        <modal_use>image/text/both</modal_use>
-        <cross_modal_bridge>true/false</cross_modal_bridge>
+        <answer>A/B/C/D</answer>
         """
     ).strip()

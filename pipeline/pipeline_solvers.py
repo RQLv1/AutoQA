@@ -4,17 +4,25 @@ from typing import Any
 from prompts import build_solver_prompt
 from utils.api_client import call_vision_model
 from utils.config import MODEL_SOLVE_MEDIUM, MODEL_SOLVE_STRONG
-from utils.parsing import parse_option_letter_optional, parse_tagged_option_letter
+from utils.parsing import extract_tag_optional, parse_option_letter_optional
 from utils.schema import StageResult
+
+
+def _normalize_solver_output(raw: str) -> tuple[str, str | None]:
+    tagged = extract_tag_optional(raw, "answer")
+    letter = parse_option_letter_optional(tagged) if tagged else None
+    if letter:
+        return f"<answer>{letter}</answer>", letter
+    return "<answer></answer>", None
 
 
 def solve_mcq(
     context: str, question: str, image_path: Path, model: str
 ) -> tuple[str, str | None]:
     solver_prompt = build_solver_prompt(context, question)
-    solver_raw = call_vision_model(solver_prompt, image_path, model, max_tokens=64, temperature=0)
-    solver_letter = parse_tagged_option_letter(solver_raw, "answer")
-    return solver_raw, solver_letter
+    solver_raw = call_vision_model(solver_prompt, image_path, model, max_tokens=16, temperature=0)
+    normalized_raw, solver_letter = _normalize_solver_output(solver_raw)
+    return normalized_raw, solver_letter
 
 
 def grade_answer(answer: str, solver_letter: str | None) -> bool:

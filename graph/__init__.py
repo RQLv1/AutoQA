@@ -1,28 +1,21 @@
 from graph.pipeline_graph import (
-    DocChunk,
-    Triplet,
+    KnowledgeEdge,
     build_entity_pool,
-    build_triplets_cached,
-    chunk_context,
-    extract_triplets_from_chunk,
-    get_chunks_cached,
-    group_triplets_by_head,
-    group_triplets_by_tail,
-    triplet_to_evidence_payload,
+    build_knowledge_edges_cached,
+    edge_to_evidence_payload,
+    extract_edges_from_context,
+    group_edges_by_head,
+    group_edges_by_tail,
 )
 from graph.pipeline_path_sampling import sample_path
 
 __all__ = [
-    "DocChunk",
-    "Triplet",
+    "KnowledgeEdge",
     "build_entity_pool",
-    "build_triplets_cached",
-    "chunk_context",
-    "extract_triplets_from_chunk",
-    "get_chunks_cached",
-    "group_triplets_by_head",
-    "group_triplets_by_tail",
-    "triplet_to_evidence_payload",
+    "build_knowledge_edges_cached",
+    "edge_to_evidence_payload",
+    "extract_edges_from_context",
+    "group_edges_by_head",
+    "group_edges_by_tail",
     "sample_path",
 ]
-

@@ -162,7 +162,7 @@ Revise 目标：
 - `pipeline/pipeline_facts.py`：文档 fact candidates 抽取与提示格式化
 - `pipeline/pipeline_solvers.py`：求解器调用、答案判定、难度指标评估
 - `pipeline/pipeline_logging.py`：日志落盘（JSONL + 人类可读 JSON）
-- `graph/pipeline_graph.py`：Graph Mode：chunk 切分、三元组抽取、Local KG 构建（可选）
+- `graph/pipeline_graph.py`：Graph Mode：全文知识点链总结、Local KG 构建（可选）
 - `graph/pipeline_path_sampling.py`：Graph Mode：路径采样（可选）
 - `utils/parsing.py`：`<question>/<answer>` 标签提取、选项字母解析（可扩展 evidence 标签）
 - `utils/schema.py`：`StageResult / StepResult / EpisodeResult` 数据结构
@@ -219,8 +219,7 @@ python main.py
 ### Graph Mode（可选，默认不启用）
 
 * `ENABLE_GRAPH_MODE`：是否启用 Local KG + 路径采样（默认 `false`，已实现基础版本）
-* `DOC_CHUNK_WORDS`：文本 chunk 目标词数（默认 160）
-* `REQUIRE_DISTINCT_SOURCES`：路径每跳必须来自不同 chunk（默认 `true`）
+* `REQUIRE_DISTINCT_SOURCES`：路径每跳尽量来自不同知识链来源（默认 `true`）
 * `PATH_SAMPLER`：路径采样器名称（默认 `rbfs`）
 * `MAX_SHORTCUT_EDGES`：允许的捷径边数量（默认 0）
 

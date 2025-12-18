@@ -1,43 +1,48 @@
 import random
 
-from graph.pipeline_graph import Triplet, group_triplets_by_head
+from graph.pipeline_graph import KnowledgeEdge, group_edges_by_head
 from utils.config import MAX_SHORTCUT_EDGES, PATH_SAMPLER, REQUIRE_DISTINCT_SOURCES
 
 
 def sample_path(
-    triplets: list[Triplet],
+    edges: list[KnowledgeEdge],
     length: int,
     *,
     require_distinct_sources: bool = REQUIRE_DISTINCT_SOURCES,
     sampler: str = PATH_SAMPLER,
     max_shortcut_edges: int = MAX_SHORTCUT_EDGES,
-) -> list[Triplet]:
+) -> list[KnowledgeEdge]:
     if length <= 0:
         return []
-    if not triplets:
+    if not edges:
         return []
 
     if sampler not in {"rbfs", "random_walk"}:
         sampler = "rbfs"
 
-    by_head = group_triplets_by_head(triplets)
+    by_head = group_edges_by_head(edges)
     heads = list(by_head.keys())
     random.shuffle(heads)
 
-    def is_shortcut(edge_a: Triplet, edge_b: Triplet) -> bool:
-        # Minimal heuristic: consider it a shortcut if both edges come from same chunk.
-        return edge_a.chunk_id == edge_b.chunk_id
+    def is_shortcut(edge_a: KnowledgeEdge, edge_b: KnowledgeEdge) -> bool:
+        if edge_a.source_id is None or edge_b.source_id is None:
+            return False
+        return edge_a.source_id == edge_b.source_id
 
     for start in heads:
-        path: list[Triplet] = []
-        used_chunks: set[int] = set()
+        path: list[KnowledgeEdge] = []
+        used_sources: set[int] = set()
         shortcut_edges = 0
         current = start
 
         for _ in range(length):
             candidates = by_head.get(current, [])
             if require_distinct_sources:
-                candidates = [t for t in candidates if t.chunk_id not in used_chunks]
+                candidates = [
+                    edge
+                    for edge in candidates
+                    if edge.source_id is None or edge.source_id not in used_sources
+                ]
             if not candidates:
                 break
             edge = random.choice(candidates)
@@ -46,12 +51,13 @@ def sample_path(
                 if shortcut_edges > max_shortcut_edges:
                     break
             path.append(edge)
-            used_chunks.add(edge.chunk_id)
+            if edge.source_id is not None:
+                used_sources.add(edge.source_id)
             current = edge.tail
 
         if len(path) == length:
             return path
 
-    shuffled = triplets[:]
+    shuffled = edges[:]
     random.shuffle(shuffled)
     return shuffled[:length]
