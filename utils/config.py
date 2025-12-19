@@ -19,6 +19,8 @@ MODEL_JUDGE = os.getenv("MODEL_JUDGE", "gemini-2.5-pro-06-17")
 
 API_BASE_URL = "https://idealab.alibaba-inc.com/api/openai/v1"
 API_KEY = "e086b5a947c3c2651165617b22318df5"
+API_MAX_RETRIES = int(os.getenv("API_MAX_RETRIES", "5"))
+API_RETRY_SLEEP_SECONDS = int(os.getenv("API_RETRY_SLEEP_SECONDS", "5"))
 
 MAX_ROUNDS = int(os.getenv("MAX_ROUNDS", "10"))
 QUESTION_LOG_PATH = os.getenv("QUESTION_LOG_PATH", "question_log.jsonl")

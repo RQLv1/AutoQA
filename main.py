@@ -1,10 +1,7 @@
 from pathlib import Path
 
-from pipeline import run_episode, save_round_questions, try_solve_question
-from prompts import build_analysis_prompt
-from utils.api_client import call_text_model
-from utils.config import MAX_ROUNDS, MODEL_ANALYSIS, MODEL_SOLVE_FINAL, QUESTION_LOG_PATH
-from utils.parsing import parse_option_letter_optional
+from pipeline import run_episode, save_round_questions
+from utils.config import MAX_ROUNDS, QUESTION_LOG_PATH
 
 
 def _pick_existing_path(candidates: list[Path]) -> Path:
@@ -19,66 +16,53 @@ def main() -> None:
     context_path = _pick_existing_path([Path("data/context.txt"), Path("context.txt")])
     context = context_path.read_text(encoding="utf-8")
 
-    feedback = ""
-    previous_feedback = None
-    previous_final_question = None
     log_path = Path(QUESTION_LOG_PATH)
-    for round_idx in range(1, MAX_ROUNDS + 1):
-        print(f"\n=== 第 {round_idx} 轮生成 ===")
-        stop_reason = None
-        solver_raw = None
-        solver_letter = None
-        reflect_feedback = None
+    generated_count = 0
+    hard_questions_found = 0
+    target_hard_questions = 5
+    max_attempts = MAX_ROUNDS * 3
 
-        episode = run_episode(context, image_path, feedback, previous_final_question)
-        previous_final_question = episode.stage_final.question
+    print(f"=== 开始对抗式生成模式 (Target: {target_hard_questions} Hard Questions) ===")
 
-        try:
-            solver_raw, solver_letter = try_solve_question(
-                episode.stage_final.question, image_path, MODEL_SOLVE_FINAL
-            )
-            standard_letter = parse_option_letter_optional(episode.stage_final.answer)
-            if solver_letter:
-                print("[Solve] 最终求解模型输出:", f"<answer>{solver_letter}</answer>")
-            else:
-                print(solver_raw)
-            if not standard_letter:
-                stop_reason = "standard_answer_parse_failed"
-            elif not solver_letter:
-                stop_reason = "solver_parse_failed"
-            elif solver_letter != standard_letter:
-                stop_reason = "solver_incorrect"
-            else:
-                analysis_prompt = build_analysis_prompt(
-                    episode.stage_final.question,
-                    episode.stage_final.answer,
-                    solver_raw,
-                )
-                feedback = call_text_model(analysis_prompt, MODEL_ANALYSIS)
-                reflect_feedback = feedback.strip()
-                print("[Reflection] 难度提升指引:", feedback)
-                if previous_feedback is not None and reflect_feedback == previous_feedback:
-                    stop_reason = "feedback_converged"
-                previous_feedback = reflect_feedback
-        except Exception as exc:  # noqa: BLE001
-            print(exc)
-            stop_reason = "solve_error"
+    while hard_questions_found < target_hard_questions:
+        generated_count += 1
+        print(f"\n>>> 尝试第 {generated_count} 次生成 ...")
+
+        episode = run_episode(context, image_path, feedback="", previous_final_question=None)
+
+        metrics = episode.difficulty_metrics
+        medium_correct = metrics.get("medium_correct", True)
+        strong_correct = metrics.get("strong_correct", True)
+
+        if medium_correct:
+            print("题目太简单：Medium Solver 做对了，直接废弃。")
+            if generated_count >= max_attempts:
+                print("达到最大尝试次数，停止。")
+                break
+            continue
+
+        print("发现难题：Medium Solver 失败。")
+        if not strong_correct:
+            print("Strong Solver 失败：可能是超难题或错题。")
+        else:
+            print("Strong Solver 成功：中等难度题。")
 
         save_round_questions(
             log_path,
-            round_idx,
+            hard_questions_found + 1,
             episode,
-            solver_final_pred=solver_letter,
-            solver_final_raw=solver_raw,
-            reflect_feedback=reflect_feedback,
-            stop_reason=stop_reason,
+            solver_final_pred=metrics.get("strong_pred"),
+            solver_final_raw=metrics.get("strong_raw"),
+            reflect_feedback="adversarial_filter_passed",
+            stop_reason="success_hard_question",
         )
 
-        if stop_reason:
-            print(f"轮次终止原因: {stop_reason}")
+        hard_questions_found += 1
+        if generated_count >= max_attempts:
+            print("达到最大尝试次数，停止。")
             break
-    else:
-        print("已达到最大轮次，停止。")
+
+    print(f"\n生成结束。共尝试 {generated_count} 次，筛选出 {hard_questions_found} 道难题。")
 
 
 if __name__ == "__main__":

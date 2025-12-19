@@ -1,14 +1,28 @@
 import base64
+import time
 from pathlib import Path
 
 from openai import OpenAI
 
-from utils.config import API_BASE_URL, API_KEY
+from utils.config import API_BASE_URL, API_KEY, API_MAX_RETRIES, API_RETRY_SLEEP_SECONDS
 
 
 def encode_image(image_path: Path) -> str:
     with image_path.open("rb") as f:
         return base64.b64encode(f.read()).decode("utf-8")
+
+
+def _sleep_before_retry(attempt: int, error: Exception) -> None:
+    if attempt >= max(1, API_MAX_RETRIES):
+        return
+    seconds = max(5, int(API_RETRY_SLEEP_SECONDS))
+    if seconds <= 0:
+        return
+    print(
+        f"[api_client] call failed (attempt {attempt}/{max(1, API_MAX_RETRIES)}), retry in {seconds}s: {type(error).__name__}: {error}",
+        flush=True,
+    )
+    time.sleep(seconds)
 
 
 def call_vision_model(
@@ -22,31 +36,38 @@ def call_vision_model(
     if not API_KEY:
         raise RuntimeError("缺少 API_KEY 配置，无法调用接口。")
 
-    client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
     base64_image = encode_image(image_path)
 
     kwargs: dict[str, object] = {}
     if max_tokens is not None:
         kwargs["max_tokens"] = max_tokens
 
-    resp = client.chat.completions.create(
-            model=model,
-            temperature=temperature,
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": prompt},
-                        {
-                            "type": "image_url",
-                            "image_url": {"url": f"data:image/png;base64,{base64_image}"},
-                        },
-                    ],
-                }
-            ],
-            **kwargs,
-        )
-    return resp.choices[0].message.content or ""
+    last_error: Exception | None = None
+    for attempt in range(1, max(1, API_MAX_RETRIES) + 1):
+        try:
+            client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
+            resp = client.chat.completions.create(
+                model=model,
+                temperature=temperature,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": prompt},
+                            {
+                                "type": "image_url",
+                                "image_url": {"url": f"data:image/png;base64,{base64_image}"},
+                            },
+                        ],
+                    }
+                ],
+                **kwargs,
+            )
+            return resp.choices[0].message.content or ""
+        except Exception as e:
+            last_error = e
+            _sleep_before_retry(attempt, e)
+    raise last_error  # type: ignore[misc]
 
 
 def call_text_model(
@@ -59,15 +80,22 @@ def call_text_model(
     if not API_KEY:
         raise RuntimeError("缺少 API_KEY 配置，无法调用接口。")
 
-    client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
     kwargs: dict[str, object] = {}
     if max_tokens is not None:
         kwargs["max_tokens"] = max_tokens
 
-    resp = client.chat.completions.create(
-        model=model,
-        temperature=temperature,
-        messages=[{"role": "user", "content": prompt}],
-        **kwargs,
-    )
-    return resp.choices[0].message.content or ""
+    last_error: Exception | None = None
+    for attempt in range(1, max(1, API_MAX_RETRIES) + 1):
+        try:
+            client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
+            resp = client.chat.completions.create(
+                model=model,
+                temperature=temperature,
+                messages=[{"role": "user", "content": prompt}],
+                **kwargs,
+            )
+            return resp.choices[0].message.content or ""
+        except Exception as e:
+            last_error = e
+            _sleep_before_retry(attempt, e)
+    raise last_error  # type: ignore[misc]
