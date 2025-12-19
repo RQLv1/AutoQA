@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from pipeline import run_episode, save_round_questions
-from utils.config import MAX_ROUNDS, QUESTION_LOG_PATH
+from pipeline import review_question, run_episode, save_genqa_question, save_round_questions
+from utils.config import GENQA_PATH, MAX_ROUNDS, QUESTION_LOG_PATH
 
 
 def _pick_existing_path(candidates: list[Path]) -> Path:
@@ -17,6 +17,7 @@ def main() -> None:
     context = context_path.read_text(encoding="utf-8")
 
     log_path = Path(QUESTION_LOG_PATH)
+    genqa_path = Path(GENQA_PATH)
     generated_count = 0
     hard_questions_found = 0
     target_hard_questions = 5
@@ -56,6 +57,28 @@ def main() -> None:
             reflect_feedback="adversarial_filter_passed",
             stop_reason="success_hard_question",
         )
+
+        review_raw = None
+        review_decision = None
+        if not strong_correct:
+            review_raw, review_passed = review_question(
+                episode.stage_final.question,
+                episode.stage_final.answer,
+                episode.stage_final.reasoning,
+                image_path,
+            )
+            if review_passed is True:
+                review_decision = "correct"
+                save_genqa_question(
+                    genqa_path,
+                    episode,
+                    review_raw=review_raw,
+                    review_decision=review_decision,
+                )
+            elif review_passed is False:
+                review_decision = "incorrect"
+            else:
+                review_decision = "unknown"
 
         hard_questions_found += 1
         if generated_count >= max_attempts:

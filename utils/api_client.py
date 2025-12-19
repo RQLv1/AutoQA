@@ -99,3 +99,13 @@ def call_text_model(
             last_error = e
             _sleep_before_retry(attempt, e)
     raise last_error  # type: ignore[misc]
+
+
+def call_no_image_model(
+    prompt: str,
+    model: str,
+    *,
+    max_tokens: int | None = None,
+    temperature: float = 0,
+) -> str:
+    return call_text_model(prompt, model, max_tokens=max_tokens, temperature=temperature)

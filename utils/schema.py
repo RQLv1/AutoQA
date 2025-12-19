@@ -7,6 +7,7 @@ class StageResult:
     question: str
     answer: str
     raw: str
+    reasoning: str | None = None
 
 
 @dataclass

@@ -35,7 +35,7 @@ AutoQA 是一个「图片为主 + 参考信息为辅」驱动的自动出题系�
 
 入口：`main.py`
 
-每一轮（`MAX_ROUNDS`）执行一个 Episode，由 `pipeline/`（门面包，`from pipeline import run_episode`）统一编排。整体仍保留“阶段式日志写法”（Stage1/2/3/Final + Difficulty），Episode 只负责生成与评估，难度筛选由 `main.py` 统一完成。在内部新增 **Extension Loop**：
+每一轮（`MAX_ROUNDS`）执行一个 Episode，由 `pipeline/`（门面包，`from pipeline import run_episode`）统一编排。整体仍保留“阶段式日志写法”（Stage1/2/3/Final + Difficulty），Episode 负责生成、评估与对抗式加难闭环，`main.py` 仅做最终筛选。在内部新增 **Extension Loop**：
 
 ### 0) 预处理：图像锚点与候选事实
 
@@ -75,7 +75,7 @@ AutoQA 是一个「图片为主 + 参考信息为辅」驱动的自动出题系�
 
 > 这样你无需新增 `agent.py` 文件：Agent 决策逻辑集中在 Episode/Step 编排中（`pipeline/pipeline_episode.py / steps/`），并由 `pipeline/` 统一导出。
 
-当前默认仅保留 step-level revise（`steps/` 内触发），Final revise 在默认流程中关闭。
+当前默认仅保留 step-level revise（`steps/` 内触发），Final revise 在默认流程中关闭；Final 通过 Episode 内的 harden loop 做强制重写。
 
 ---
 
@@ -85,21 +85,34 @@ AutoQA 是一个「图片为主 + 参考信息为辅」驱动的自动出题系�
 
 - [ ] 将部分中间结论“隐式化”（不直接明说）
 - [ ] 仅保留必要背景 + 终局问题
-- [ ] 输出仍保持你现有格式：`<question>...</question><answer>...</answer>`（答案为 A/B/C/D）
+- [ ] 输出仍保持你现有格式：`<question>...</question><answer>...</answer><reasoning>...</reasoning>`（答案为 A/B/C/D）
+
+---
+
+### 2.5) Adversarial Refinement Loop（不难不休：计算优先加难）
+
+Final 题目生成后，立即调用 `evaluate_difficulty` 做 Medium Attack：
+
+- 若 `medium_correct == true`：进入“加难模式”，强制模型将题目改写为**视觉计算题**（计数差值、总和、比例、范围判断等）。
+- 加难后再次评估；循环直到：
+  - Medium 失败（`medium_correct == false`）→ 题目通过 Episode 内难度门槛
+  - 或达到 `MAX_HARDEN_ATTEMPTS` → 保留当前版本（但 `main.py` 仍会做最终丢弃/入库判定）
+
+加难模式是**强制重写 + 再攻击**的闭环，且以**计算与量化推理**为第一优先级，数值必须来自图像可验证证据（计数/读数/标签）。
 
 ---
 
 ### 3) Difficulty 评估（Medium/Strong）
 
-对候选 Final 题进行在线评估：
+对候选 Final 题进行在线评估（强化版中可能发生多次：初版 Final + 若干次加难后的 Final）：
 
 - **Medium Solver**：难度过滤（Medium 能做对 → 题太简单）
 - **Strong Solver**：可解性验证（Strong 能做对 → 难题可信）
-- 可选附加检查：Text-Only / Black-Image 盲测，用于发现文本捷径
+- 可选附加检查：Text-Only / No-Image 盲测，用于发现文本捷径
 
 > 注意：求解器输入仅包含图片与题目文本（question），不会提供参考信息；因此题目必须在图片层面有明确锚点，不能是纯文本可解的“参考信息检索题”。
 
-系统维护 `difficulty_score`（可组合以下信号）：
+系统维护 `difficulty_score`（可组合以下信号），以最后一次通过门槛（或达到上限）时的 metrics 作为记录结果：
 
 - `medium_correct` vs `strong_correct`
 - token 比、推理步数、信息分散度等 proxy（可选）
@@ -110,10 +123,11 @@ AutoQA 是一个「图片为主 + 参考信息为辅」驱动的自动出题系�
 
 ### 4) Adversarial Filter（主循环筛选）
 
-`main.py` 负责筛选逻辑：
+`main.py` 负责最终筛选逻辑（`run_episode()` 内已包含加难闭环）：
 
-- `medium_correct == true` → 直接废弃，继续生成
-- `medium_correct == false` → 保留并记录，`strong_correct` 用于标记“中难/极难”
+- `medium_correct == true` → 说明 Episode 内已加难但仍偏简单，直接废弃并继续生成
+- `medium_correct == false` → 保留并记录，`strong_correct` 仅用于标记“中难/极难”
+- 若 `strong_correct == false` → 触发 Review 智能体复核；复核为正确则追加到 `GENQA_PATH`
 
 默认会一直生成直到找到固定数量的难题（见 `main.py` 的 `target_hard_questions`）。
 
@@ -125,6 +139,7 @@ AutoQA 是一个「图片为主 + 参考信息为辅」驱动的自动出题系�
 
 - 达到 `MIN_HOPS`（例如 ≥2）且出现至少一次 `cross_modal_bridge=true`
 - 或达到 `MAX_STEPS_PER_ROUND`
+- Episode 内加难轮数达到 `MAX_HARDEN_ATTEMPTS`（输出当前版本）
 
 ### Round 层面提前停止
 
@@ -148,7 +163,7 @@ AutoQA 是一个「图片为主 + 参考信息为辅」驱动的自动出题系�
 - `pipeline/pipeline_logging.py`：日志落盘（JSONL + 人类可读 JSON）
 - `graph/pipeline_graph.py`：Graph Mode：全文知识点链总结、Local KG 构建（可选）
 - `graph/pipeline_path_sampling.py`：Graph Mode：路径采样（可选）
-- `utils/parsing.py`：`<question>/<answer>` 标签提取、选项字母解析（可扩展 evidence 标签）
+- `utils/parsing.py`：`<question>/<answer>/<reasoning>` 标签提取、选项字母解析（可扩展 evidence 标签）
 - `utils/schema.py`：`StageResult / StepResult / EpisodeResult` 数据结构
 
 > 你之前列的 `agent.py/difficulty.py/evidence.py/utils.py` 仍属于“可进一步增强项”，当前以 `pipeline_*.py` 的拆分方式完成同等职责划分。
@@ -174,6 +189,7 @@ python main.py
 * `MODEL_SUM（或 MODEL_STAGE_SUM）`
 * `MAX_ROUNDS`
 * `QUESTION_LOG_PATH`
+* `GENQA_PATH`
 * `API_MAX_RETRIES`：API 最大重试次数（默认 5）
 * `API_RETRY_SLEEP_SECONDS`：API 报错后等待秒数再重试（默认 5）
 
@@ -190,6 +206,11 @@ python main.py
 * `MIN_HOPS`：最小推理跳数（例如 2）
 * `REQUIRE_CROSS_MODAL`：是否强制跨模态桥接（true/false，默认 true）
 
+### 加难闭环（Episode 内）
+
+* `MAX_HARDEN_ATTEMPTS`：Episode 内最大加难轮数（默认 3）
+* `HARDEN_MODE`：加难策略（默认 `calc_first`）
+
 ### Operate Agents（计算/对比草稿）
 
 每个 step/hop 生成后，会先调用两个 operate 智能体产出“下一步修改草稿”，并把草稿注入到下一步出题 Prompt 中（草稿只用于内部推理，不得出现在题干里）。
@@ -204,10 +225,13 @@ python main.py
 
 * `MODEL_JUDGE`：捷径/证据/干扰项检测模型（可选，默认流程未启用）
 
+### Review 智能体
+
+* `MODEL_REVIEW`：当 Strong Solver 失败时用于复核题目正确性（默认=`MODEL_SOLVE_STRONG`）
+
 ### 验证（可选）
 
 * `VERIFY_STRICT`：是否启用更严格的校验（如答案泄露粗检），默认 `false`
-* `ENABLE_BLACK_IMAGE_CHECK`：是否启用“黑图盲测”（给求解器一张全黑图片 + 题干，若仍答对则判定题干存在文本捷径），默认 `true`
 
 ### Graph Mode（可选）
 
@@ -220,21 +244,22 @@ python main.py
 
 ## 输出与日志（JSONL + JSON）
 
-默认写两个文件：
+默认写以下文件：
 
 - `QUESTION_LOG_PATH`（默认 `question_log.jsonl`）：一行一个 Episode，便于流式追加与脚本处理（中文不再转义）。
 - 同名 `.json`（例如 `question_log.json`）：层级化 + 缩进格式，便于人工阅读（数组形式累计保存）。
+- `GENQA_PATH`（默认 `genqa.json`）：当 Strong Solver 失败时，经 Review 判定题目正确才会加入。
 
 ### 日志结构（每行一个 Episode）
 
 * `round`
-* `stage_1` / `stage_2` / `stage_3` / `stage_final`：保留阶段字段（兼容阶段式回看）
+* `stage_1` / `stage_2` / `stage_3` / `stage_final`：保留阶段字段（兼容阶段式回看，含 reasoning）
 * `steps`: `StepResult[]`（新增，记录 step_0..K）
-* `final_question` / `final_answer`：最终题题面与答案（与 `stage_final` 冗余，便于直取）
+* `final_question` / `final_answer` / `final_reasoning`：最终题题面、答案与推理过程（与 `stage_final` 冗余，便于直取）
 * `difficulty_metrics`：
   * `medium_correct`, `strong_correct`
   * `strong_text_only_correct`（不看图仅看题干是否也能做对，用于检测纯文本捷径）
-  * `strong_black_correct`（喂全黑图片 + 题干是否也能做对，用于额外检测文本捷径）
+  * `strong_no_image_correct`（不传图片仅题干是否也能做对，用于额外检测文本捷径）
   * `difficulty_score`, `cross_modal_used`, `num_hops`
 * `solver_final_pred`（Strong Solver 的选项字母，A/B/C/D）
 * `solver_final_raw`（Strong Solver 原始输出，用于排查解析问题）
@@ -275,12 +300,20 @@ python main.py
 ### Final（Compress）
 
 * 折叠中间结论，不要写“第一步/第二步”
-* 输出最终 MCQ：题干 + 4 选项 + `<answer>` 字母（题目生成阶段）
+* 输出最终 MCQ：题干 + 4 选项 + `<answer>` 字母 + `<reasoning>`（题目生成阶段）
 * 题干必须围绕图片描述，不得出现“结合文献/依据文献/文档/上下文/context”等措辞
+
+### Hardening Prompt（计算优先加难模板）
+
+* 强制把“识别题”重写为“计算题/量化题”
+* 必须满足：
+  * 题目答案可由图像证据计算得到（计数、求和、差值、比例、阈值判断）
+  * 干扰项为数字或数值区间且彼此接近，降低蒙对概率
+  * 禁止外部知识；禁止把参考信息当成唯一证据来源（仍须以图像为核心证据）
 
 ### Revise（Step 级去捷径）
 
-仅用于 step-level revise（`steps/` 内触发），Final revise 默认关闭。
+仅用于 step-level revise（`steps/` 内触发），Final revise 默认关闭；Final 通过 harden loop 做强制重写加难。
 
 * 禁止“一句参考信息原话直接=答案”的线索
 * 禁止 Text-Only 可解（避免题干泄漏/纯文本捷径）
@@ -296,7 +329,7 @@ python main.py
 
 ## 对齐 change.md 的实现状态（简表）
 
-- 已实现：求解器只接收 `image + question`；Text-Only/Black-Image 盲测；Stage/Final Prompt 强化（图像中心锚点 + 禁止引用措辞 + Hard Negatives）；Medium/Strong 对抗筛选（Medium 过滤，Strong 验证）。
+- 已实现：求解器只接收 `image + question`；Text-Only/No-Image 盲测；Stage/Final Prompt 强化（图像中心锚点 + 禁止引用措辞 + Hard Negatives）；Episode 内 calc-first harden loop + Medium/Strong 对抗筛选（Medium 过滤，Strong 验证）。
 - 已实现：operate_distinction / operate_calculation 两个草稿智能体（每步生成后调用，并喂给下一步出题；计算优先）。
 - 待明确：Blindfold（Image-Only）用于“强制依赖参考信息”的判据（与“求解器不接收参考信息”的约束存在目标冲突）。
 
