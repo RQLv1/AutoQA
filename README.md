@@ -19,8 +19,8 @@ AutoQA 是一个「图片为主 + 参考信息为辅」驱动的自动出题系�
 ### 目标
 
 1. **更具挑战性的推理链**：题目必须体现多跳推理（建议 ≥2 hops），尽量避免“单句命中答案”的检索式问题。
-2. **更贴近多模态**：至少包含一次**跨模态桥接**（图 → 参考信息 或 参考信息 → 图），避免只看其中一个模态即可解题。
-3. **答案可验证**：正确答案与关键推理证据必须能在给定图片与参考信息中定位（可选：输出证据 span/索引）。
+2. **更贴近多模态**：至少包含一次**跨模态桥接**（图像视觉证据 ↔ 题干中给出的事实/条件）。其中“事实/条件”可以来自参考信息抽取，但必须以**中性陈述**写入题干（不得提及来源），确保答题侧只用 `image + question` 仍可解题。
+3. **答案可验证**：正确答案与关键推理证据必须能在给定图片中定位；若题干使用了来自参考信息的数字/定义/条件，需在日志中记录其证据 span/索引以便回溯（但不出现在题干的“引用措辞”中）。
 
 ### 强约束（硬性）
 
@@ -106,15 +106,16 @@ AutoQA 是一个「图片为主 + 参考信息为辅」驱动的自动出题系�
 触发条件（示例）：
 
 - Strong solver 失败或出现多解/歧义
-- 存在明显捷径：只看参考信息或只看图即可直接命中答案
+- 存在明显捷径：**不看图（Text-Only）也能做对**（题干泄漏/纯文本可解）
 - 证据无法定位或引用不一致
 - 选项不均衡、干扰项过弱
+- 启发式对抗检查命中（如选项缺失、长度偏置等）
 
 Revise 目标：
 
 - 修复歧义、补齐证据链
 - 改写题干，隐藏“单句命中”线索
-- 强化跨模态桥接：强制必须结合图片与参考信息才能作答
+- 强化“必须看图”的锚点与约束；若需要参考信息中的数据/定义，需把必要条件**写进题干**（不得出现“结合文献/依据文献/文档/上下文/context”等措辞）
 
 > **实现方式（不增加新的“业务层级”文件）**：
 >
@@ -167,6 +168,7 @@ Revise 目标：
 - `pipeline/pipeline_episode.py`：Episode 编排（steps → compress → final revise → difficulty 评估）
 - `steps/`：每轮的 Extension Loop（step 生成/校验/必要 revise），并提供 `derive_stage_results/step_to_dict`
 - `pipeline/pipeline_facts.py`：参考信息 fact candidates 抽取与提示格式化
+- `pipeline/pipeline_judge.py`：启发式对抗检查（选项完整性/长度偏置等）
 - `pipeline/pipeline_solvers.py`：求解器调用、答案判定、难度指标评估
 - `pipeline/pipeline_logging.py`：日志落盘（JSONL + 人类可读 JSON）
 - `graph/pipeline_graph.py`：Graph Mode：全文知识点链总结、Local KG 构建（可选）
@@ -224,9 +226,9 @@ python main.py
 
 * `VERIFY_STRICT`：是否启用更严格的校验（如答案泄露粗检），默认 `false`
 
-### Graph Mode（可选，默认不启用）
+### Graph Mode（可选）
 
-* `ENABLE_GRAPH_MODE`：是否启用 Local KG + 路径采样（默认 `false`，已实现基础版本）
+* `ENABLE_GRAPH_MODE`：是否启用 Local KG + 路径采样（默认 `true`，已实现基础版本）
 * `REQUIRE_DISTINCT_SOURCES`：路径每跳尽量来自不同知识链来源（默认 `true`）
 * `PATH_SAMPLER`：路径采样器名称（默认 `rbfs`）
 * `MAX_SHORTCUT_EDGES`：允许的捷径边数量（默认 0）
@@ -248,6 +250,7 @@ python main.py
 * `final_question` / `final_answer`：最终题题面与答案（与 `stage_final` 冗余，便于直取）
 * `difficulty_metrics`：
   * `medium_correct`, `strong_correct`
+  * `strong_text_only_correct`（不看图仅看题干是否也能做对，用于检测纯文本捷径）
   * `difficulty_score`, `cross_modal_used`, `num_hops`
 * `solver_final_pred`（A/B/C/D）
 * `solver_final_raw`（最终求解器原始输出，用于排查解析问题）
@@ -280,8 +283,8 @@ python main.py
 
 ### Stage2/Stage3（可复用为 Extend）
 
-* 每次引入“新的关键信息/新关系”，并明确证据 span（证据来自参考信息，但不得在题干中提及）
-* 强制至少一次 `cross_modal_bridge=true`
+* 每次引入“新的关键信息/新关系”，并明确证据 span（证据来自参考信息，但不得在题干中提及其来源）
+* 强制至少一次 `cross_modal_bridge=true`（含义：题干必须同时依赖图像视觉证据 + 题干中给出的条件/事实）
 * 输出结构化字段：`question/answer_letter/answer_text/evidence/modal_use/cross_modal_bridge`
 
 ### Final（Compress）
@@ -293,12 +296,20 @@ python main.py
 ### Revise（去捷径）
 
 * 禁止“一句参考信息原话直接=答案”的线索
-* 强制跨模态桥接（若此前缺失）
+* 禁止 Text-Only 可解（避免题干泄漏/纯文本捷径）
+* 强化图像锚点与约束（必要时把参考信息中的关键数据/定义以中性条件写进题干）
 * 干扰项同类同粒度，且看似合理但被条件排除
 
 ### Judge
 
-* 检查：证据是否足够、是否存在单模态捷径、干扰项是否过弱
+* 检查：证据是否足够、是否存在 Text-Only 捷径、干扰项是否过弱、以及启发式对抗检查（选项缺失/长度偏置等）
+
+---
+
+## 对齐 change.md 的实现状态（简表）
+
+- 已实现：求解器只接收 `image + question`；Text-Only Blindfold 检查；Stage/Final Prompt 强化（图像中心锚点 + 禁止引用措辞 + Hard Negatives）；Final 启发式对抗检查并可触发 revise。
+- 待明确：Blindfold（Image-Only）用于“强制依赖参考信息”的判据（与“求解器不接收参考信息”的约束存在目标冲突）。
 
 ---
 
