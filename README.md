@@ -104,11 +104,7 @@ AutoQA 是一个「图片为主 + 参考信息为辅」驱动的自动出题系�
 - `medium_correct` vs `strong_correct`
 - token 比、推理步数、信息分散度等 proxy（可选）
 
-> **兼容策略**：如果你不想新增太多配置：
->
-> - 未设置 `MODEL_SOLVE_STRONG` 时，默认 `MODEL_SOLVE_STRONG = MODEL_SOLVE`
-> - 未设置 `MODEL_SOLVE_MEDIUM` 时，默认 `MODEL_SOLVE_MEDIUM = MODEL_SOLVE`
->   即自动退化为单 solver，但接口不变。
+> **配置建议**：如需单一求解器，将 `MODEL_SOLVE_MEDIUM` 与 `MODEL_SOLVE_STRONG` 设置为同一模型即可。
 
 ---
 
@@ -176,7 +172,6 @@ python main.py
 
 * `MODEL_STAGE_1 / MODEL_STAGE_2 / MODEL_STAGE_3`
 * `MODEL_SUM（或 MODEL_STAGE_SUM）`
-* `MODEL_SOLVE`
 * `MAX_ROUNDS`
 * `QUESTION_LOG_PATH`
 * `API_MAX_RETRIES`：API 最大重试次数（默认 5）
@@ -186,9 +181,8 @@ python main.py
 
 ### 求解器
 
-* `MODEL_SOLVE_MEDIUM`：中等求解器（用于难度标定，默认=`MODEL_SOLVE`）
-* `MODEL_SOLVE_STRONG`：强求解器（用于可解性验证，默认=`MODEL_SOLVE`）
-* `MODEL_SOLVE_FINAL`：最终求解模型（可选，默认=`MODEL_SOLVE`，当前对抗筛选主流程未使用）
+* `MODEL_SOLVE_MEDIUM`：中等求解器（用于难度标定，默认值见 `utils/config.py`）
+* `MODEL_SOLVE_STRONG`：强求解器（用于可解性验证，默认值见 `utils/config.py`）
 
 ### 扩链与阈值
 

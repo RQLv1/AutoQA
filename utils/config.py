@@ -4,18 +4,14 @@ MODEL_STAGE_1 = os.getenv("MODEL_STAGE_1", "gpt-5-chat-0807-global")
 MODEL_STAGE_2 = os.getenv("MODEL_STAGE_2", "claude_sonnet4_5")
 MODEL_STAGE_3 = os.getenv("MODEL_STAGE_3", "gpt-51-1113-global")
 MODEL_SUM = os.getenv("MODEL_SUM", os.getenv("MODEL_STAGE_SUM", "gpt-51-1113-global"))
-MODEL_OPERATE = os.getenv("MODEL_OPERATE", MODEL_STAGE_3)
+MODEL_OPERATE = os.getenv("MODEL_OPERATE", MODEL_STAGE_2)
 MODEL_OPERATE_DISTINCTION = os.getenv("MODEL_OPERATE_DISTINCTION", MODEL_OPERATE)
 MODEL_OPERATE_CALCULATION = os.getenv("MODEL_OPERATE_CALCULATION", MODEL_OPERATE)
 
-MODEL_SOLVE = os.getenv("MODEL_SOLVE", "gemini-2.5-pro-06-17")
-MODEL_ANALYSIS = os.getenv("MODEL_ANALYSIS", "gpt-51-1113-global")
-
 MODEL_SOLVE_MEDIUM = os.getenv("MODEL_SOLVE_MEDIUM", "gpt-5-mini-0807-global")
 MODEL_SOLVE_STRONG = os.getenv("MODEL_SOLVE_STRONG", "claude_sonnet4_5")
-MODEL_SOLVE_FINAL = os.getenv("MODEL_SOLVE_FINAL", "gemini-2.5-pro-06-17")
 
-MODEL_JUDGE = os.getenv("MODEL_JUDGE", "gemini-2.5-pro-06-17")
+MODEL_JUDGE = os.getenv("MODEL_JUDGE", "gpt-51-1113-global")
 
 API_BASE_URL = "https://idealab.alibaba-inc.com/api/openai/v1"
 API_KEY = "e086b5a947c3c2651165617b22318df5"
