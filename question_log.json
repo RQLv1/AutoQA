@@ -440,5 +440,438 @@
       "option_length_bias": false,
       "correct_option_longest": true
     }
+  },
+  {
+    "round": 1,
+    "stage_1": {
+      "question": "在中心高分辨率TEM图像所示的Rb-TiO₂/TB-CS结构中，(200)晶面的晶格间距是多少？  \nA. 1.90 Å  \nB. 1.95 Å  \nC. 3.51 Å  \nD. 3.59 Å",
+      "answer": "B；1.95 Å",
+      "raw": "<question>在中心高分辨率TEM图像所示的Rb-TiO₂/TB-CS结构中，(200)晶面的晶格间距是多少？  \nA. 1.90 Å  \nB. 1.95 Å  \nC. 3.51 Å  \nD. 3.59 Å</question>  \n<answer>B</answer>"
+    },
+    "stage_2": {
+      "question": "观察图中下排展示的水凝胶在不同机械状态下的光学表现（包括未照射、UV照射后着色、弯折/拉伸以及贴附在皮肤或弯曲基底上的状态），关于该核-壳结构纳米粒子在柔性光致变色器件中的应用特性，以下哪项描述与图像证据最相符？\n\nA. 由于内含无机纳米颗粒，水凝胶在轻微拉伸时即出现明显浑浊和颗粒团聚，仅适合作为刚性窗口的填充层\n\nB. 该水凝胶的优势主要体现在平直玻璃基底上的静态显示，不适合弯折或贴附皮肤等动态应用场景\n\nC. 光致变色现象仅出现在水凝胶的周边或厚度不均区域，中心部分在任何机械状态下均保持无色透明\n\nD. 在弯折、拉伸及贴附曲面等不同机械形变状态下，水凝胶仍保持高度透明与均匀的光致变色响应，适合制作可贴附人体表面的可穿戴光学指示器件",
+      "answer": "D；在弯折、拉伸及贴附曲面等不同机械形变状态下，水凝胶仍保持高度透明与均匀的光致变色响应，适合制作可贴附人体表面的可穿戴光学指示器件",
+      "raw": "<question>\n观察图中下排展示的水凝胶在不同机械状态下的光学表现（包括未照射、UV照射后着色、弯折/拉伸以及贴附在皮肤或弯曲基底上的状态），关于该核-壳结构纳米粒子在柔性光致变色器件中的应用特性，以下哪项描述与图像证据最相符？\n\nA. 由于内含无机纳米颗粒，水凝胶在轻微拉伸时即出现明显浑浊和颗粒团聚，仅适合作为刚性窗口的填充层\n\nB. 该水凝胶的优势主要体现在平直玻璃基底上的静态显示，不适合弯折或贴附皮肤等动态应用场景\n\nC. 光致变色现象仅出现在水凝胶的周边或厚度不均区域，中心部分在任何机械状态下均保持无色透明\n\nD. 在弯折、拉伸及贴附曲面等不同机械形变状态下，水凝胶仍保持高度透明与均匀的光致变色响应，适合制作可贴附人体表面的可穿戴光学指示器件\n</question>\n\n<answer>D</answer>"
+    },
+    "stage_3": {
+      "question": "在中心高分辨率 TEM 图中，Rb‑TiO₂/TB‑CS 结构表面存在大量无序区域，有利于在晶格缺陷附近发生某种关键步骤，从而使邻近的 DEG 在后续反应中主要扮演哪一种角色？  \nA. 促进氧空位生成  \nB. DEG作为空穴清除剂  \nC. 光生电子还原Ti(IV)  \nD. 协同降低氧空位形成能",
+      "answer": "B；DEG作为空穴清除剂",
+      "raw": "<question>在中心高分辨率 TEM 图中，Rb‑TiO₂/TB‑CS 结构表面存在大量无序区域，有利于在晶格缺陷附近发生某种关键步骤，从而使邻近的 DEG 在后续反应中主要扮演哪一种角色？  \nA. 促进氧空位生成  \nB. DEG作为空穴清除剂  \nC. 光生电子还原Ti(IV)  \nD. 协同降低氧空位形成能</question>  \n<answer>B</answer>"
+    },
+    "stage_final": {
+      "question": "观察图中标注的高分辨率 TEM：Rb‑TiO₂/TB‑CS 颗粒的 (200) 晶面晶格条纹间距为 1.95 Å，而纯 TiO₂ 对应晶面间距约为 1.90 Å。若将该差异视作轴向均匀拉伸，应变(相对纯 TiO₂)最接近下列哪一数值？  \nA. 0.3%  \nB. 2.6%  \nC. 5.0%  \nD. 0.05%",
+      "answer": "B；(1.95−1.90)/1.90≈2.6%，为相对拉伸率",
+      "raw": "<question>观察图中标注的高分辨率 TEM：Rb‑TiO₂/TB‑CS 颗粒的 (200) 晶面晶格条纹间距为 1.95 Å，而纯 TiO₂ 对应晶面间距约为 1.90 Å。若将该差异视作轴向均匀拉伸，应变(相对纯 TiO₂)最接近下列哪一数值？  \nA. 0.3%  \nB. 2.6%  \nC. 5.0%  \nD. 0.05%</question>\n<answer>B；(1.95−1.90)/1.90≈2.6%，为相对拉伸率</answer>"
+    },
+    "final_question": "观察图中标注的高分辨率 TEM：Rb‑TiO₂/TB‑CS 颗粒的 (200) 晶面晶格条纹间距为 1.95 Å，而纯 TiO₂ 对应晶面间距约为 1.90 Å。若将该差异视作轴向均匀拉伸，应变(相对纯 TiO₂)最接近下列哪一数值？  \nA. 0.3%  \nB. 2.6%  \nC. 5.0%  \nD. 0.05%",
+    "final_answer": "B；(1.95−1.90)/1.90≈2.6%，为相对拉伸率",
+    "steps": [
+      {
+        "k": 0,
+        "question": "在中心高分辨率TEM图像所示的Rb-TiO₂/TB-CS结构中，(200)晶面的晶格间距是多少？  \nA. 1.90 Å  \nB. 1.95 Å  \nC. 3.51 Å  \nD. 3.59 Å",
+        "answer_text": "1.95 Å",
+        "answer_letter": "B",
+        "evidence": null,
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>在中心高分辨率TEM图像所示的Rb-TiO₂/TB-CS结构中，(200)晶面的晶格间距是多少？  \nA. 1.90 Å  \nB. 1.95 Å  \nC. 3.51 Å  \nD. 3.59 Å</question>  \n<answer>B</answer>",
+        "judge_flags": null
+      },
+      {
+        "k": 1,
+        "question": "观察图中下排展示的水凝胶在不同机械状态下的光学表现（包括未照射、UV照射后着色、弯折/拉伸以及贴附在皮肤或弯曲基底上的状态），关于该核-壳结构纳米粒子在柔性光致变色器件中的应用特性，以下哪项描述与图像证据最相符？\n\nA. 由于内含无机纳米颗粒，水凝胶在轻微拉伸时即出现明显浑浊和颗粒团聚，仅适合作为刚性窗口的填充层\n\nB. 该水凝胶的优势主要体现在平直玻璃基底上的静态显示，不适合弯折或贴附皮肤等动态应用场景\n\nC. 光致变色现象仅出现在水凝胶的周边或厚度不均区域，中心部分在任何机械状态下均保持无色透明\n\nD. 在弯折、拉伸及贴附曲面等不同机械形变状态下，水凝胶仍保持高度透明与均匀的光致变色响应，适合制作可贴附人体表面的可穿戴光学指示器件",
+        "answer_text": "在弯折、拉伸及贴附曲面等不同机械形变状态下，水凝胶仍保持高度透明与均匀的光致变色响应，适合制作可贴附人体表面的可穿戴光学指示器件",
+        "answer_letter": "D",
+        "evidence": {
+          "doc_spans": [
+            "context"
+          ],
+          "snippet": "The Rb-TiO₂/TB-CS/PVA photochromic hydrogel...indicating the application potential in wearable devices.",
+          "image_regions": [
+            "中心区域(参照 step_0 视觉锚点)"
+          ],
+          "source_id": 22
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>\n观察图中下排展示的水凝胶在不同机械状态下的光学表现（包括未照射、UV照射后着色、弯折/拉伸以及贴附在皮肤或弯曲基底上的状态），关于该核-壳结构纳米粒子在柔性光致变色器件中的应用特性，以下哪项描述与图像证据最相符？\n\nA. 由于内含无机纳米颗粒，水凝胶在轻微拉伸时即出现明显浑浊和颗粒团聚，仅适合作为刚性窗口的填充层\n\nB. 该水凝胶的优势主要体现在平直玻璃基底上的静态显示，不适合弯折或贴附皮肤等动态应用场景\n\nC. 光致变色现象仅出现在水凝胶的周边或厚度不均区域，中心部分在任何机械状态下均保持无色透明\n\nD. 在弯折、拉伸及贴附曲面等不同机械形变状态下，水凝胶仍保持高度透明与均匀的光致变色响应，适合制作可贴附人体表面的可穿戴光学指示器件\n</question>\n\n<answer>D</answer>",
+        "judge_flags": null
+      },
+      {
+        "k": 2,
+        "question": "在中心高分辨率 TEM 图中，Rb‑TiO₂/TB‑CS 结构表面存在大量无序区域，有利于在晶格缺陷附近发生某种关键步骤，从而使邻近的 DEG 在后续反应中主要扮演哪一种角色？  \nA. 促进氧空位生成  \nB. DEG作为空穴清除剂  \nC. 光生电子还原Ti(IV)  \nD. 协同降低氧空位形成能",
+        "answer_text": "DEG作为空穴清除剂",
+        "answer_letter": "B",
+        "evidence": {
+          "doc_spans": [
+            "context"
+          ],
+          "snippet": "oxygen vacancies act as reaction sites to promote the dissociative adsorption of DEG, which efficiently acts as SEDs to scavenge holes.",
+          "image_regions": [
+            "中心区域(参照 step_0 视觉锚点)"
+          ],
+          "source_id": 5
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>在中心高分辨率 TEM 图中，Rb‑TiO₂/TB‑CS 结构表面存在大量无序区域，有利于在晶格缺陷附近发生某种关键步骤，从而使邻近的 DEG 在后续反应中主要扮演哪一种角色？  \nA. 促进氧空位生成  \nB. DEG作为空穴清除剂  \nC. 光生电子还原Ti(IV)  \nD. 协同降低氧空位形成能</question>  \n<answer>B</answer>",
+        "judge_flags": null
+      },
+      {
+        "k": 3,
+        "question": "在图1所示的Rb-TiO₂/TB-CS核壳结构中，观察图d中心区域标注的(200)晶面及其周围非晶态壳层。若该体系经UV照射后呈现蓝色（着色态），随后在室温下分别置于以下两种条件：条件A为密闭氮气气氛，条件B为持续通入空气。实验观察到条件A中样品颜色几乎不变，而条件B中透过率在30分钟内从初始的20%恢复至80%以上。根据这一对比现象，可以推断在褪色过程中发生的关键化学变化是：\n\nA. 表面吸附的DEG分子被空气中的O₂氧化脱附，导致空穴清除能力下降，体系透过率恢复  \nB. 非晶态壳层中的氧空位在长时间静置下重新生成，使带隙态密度恢复到初始水平  \nC. 核心晶态区域中光照产生的低价Ti物种被空气中的O₂氧化，使可见光吸收减弱  \nD. 残余室内光持续激发电子，将核壳界面处的高价Ti进一步还原，从而降低吸光度",
+        "answer_text": "核心晶态区域中光照产生的低价Ti物种被空气中的O₂氧化，使可见光吸收减弱",
+        "answer_letter": "C",
+        "evidence": {
+          "doc_spans": [
+            "context"
+          ],
+          "snippet": "The decoloration is carried out by the oxidation of O₂. The transmittance of colored nanodispersion increases with the gradual oxidation of Ti³⁺ by oxygen",
+          "image_regions": [
+            "中心区域(参照 step_0 视觉锚点)"
+          ],
+          "source_id": 10
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>\n在图1所示的Rb-TiO₂/TB-CS核壳结构中，观察图d中心区域标注的(200)晶面及其周围非晶态壳层。若该体系经UV照射后呈现蓝色（着色态），随后在室温下分别置于以下两种条件：条件A为密闭氮气气氛，条件B为持续通入空气。实验观察到条件A中样品颜色几乎不变，而条件B中透过率在30分钟内从初始的20%恢复至80%以上。根据这一对比现象，可以推断在褪色过程中发生的关键化学变化是：\n\nA. 表面吸附的DEG分子被空气中的O₂氧化脱附，导致空穴清除能力下降，体系透过率恢复  \nB. 非晶态壳层中的氧空位在长时间静置下重新生成，使带隙态密度恢复到初始水平  \nC. 核心晶态区域中光照产生的低价Ti物种被空气中的O₂氧化，使可见光吸收减弱  \nD. 残余室内光持续激发电子，将核壳界面处的高价Ti进一步还原，从而降低吸光度\n</question>\n\n<answer>C</answer>",
+        "judge_flags": null
+      },
+      {
+        "k": 4,
+        "question": "结合中心高分辨率 TEM 图像中显示的 Rb-TiO₂/TB-CS 颗粒结构，在持续紫外照射下该材料由白色转为深蓝色的过程中，图中晶格区域主要发生哪一种由光生载流子驱动的过程？  \nA. DEG作为空穴清除剂  \nB. Rb掺杂  \nC. 光生电子还原Ti(IV)  \nD. 二次溶剂热法",
+        "answer_text": "光生电子还原Ti(IV)",
+        "answer_letter": "C",
+        "evidence": {
+          "doc_spans": [
+            "context"
+          ],
+          "snippet": "the redox between Ti(IV) and Ti(III) driven by photoinduced electrons and oxygen enables reversible color switching between white and dark blue.",
+          "image_regions": [
+            "中心区域(参照 step_0 视觉锚点)"
+          ],
+          "source_id": 7
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>结合中心高分辨率 TEM 图像中显示的 Rb-TiO₂/TB-CS 颗粒结构，在持续紫外照射下该材料由白色转为深蓝色的过程中，图中晶格区域主要发生哪一种由光生载流子驱动的过程？  \nA. DEG作为空穴清除剂  \nB. Rb掺杂  \nC. 光生电子还原Ti(IV)  \nD. 二次溶剂热法</question>  \n<answer>C</answer>",
+        "judge_flags": null
+      },
+      {
+        "k": 5,
+        "question": "在图中TEM图像所示的核壳结构中，与晶格应变协同作用以降低氧空位形成能的改性策略是什么？\n\nA. 二次溶剂热法\nB. Rb掺杂\nC. DEG作为空穴清除剂\nD. 光生电子还原Ti(IV)",
+        "answer_text": "Rb掺杂",
+        "answer_letter": "B",
+        "evidence": {
+          "doc_spans": [
+            "context"
+          ],
+          "snippet": "Rb doping and epitaxial strain synergistically reduce the oxygen vacancy formation energy, thereby promoting the abundant generation of oxygen vacancies",
+          "image_regions": [
+            "中心区域(参照 step_0 视觉锚点)"
+          ],
+          "source_id": 1
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>\n在图中TEM图像所示的核壳结构中，与晶格应变协同作用以降低氧空位形成能的改性策略是什么？\n\nA. 二次溶剂热法\nB. Rb掺杂\nC. DEG作为空穴清除剂\nD. 光生电子还原Ti(IV)\n</question>\n\n<answer>B</answer>",
+        "judge_flags": null
+      },
+      {
+        "k": 6,
+        "question": "在图中中心高分辨率 TEM 所示的 Rb‑TiO₂/TB‑CS 颗粒附近，可以看到规则晶格的无机核外包覆一层较为无序的壳层，并有有机链条示意从该壳层向外延伸。若在此结构中希望包围颗粒表面的 DEG 分子不只是松散贴附，而是被激活为高效的空穴清除剂，则最关键应依赖哪一类表面特征来提供足够的反应位点？  \nA. 晶格应变导致带隙略微改变，从而提高对可见光的吸收  \nB. 壳层仅作为惰性有机保护膜，只改善颗粒分散性  \nC. 表面存在能与 DEG 发生解离吸附的缺陷位，使其形成稳定桥接结构  \nD. 外层仅覆盖一层与反应无关的无定形无机壳层，阻隔 DEG 接近晶格",
+        "answer_text": "表面存在能与 DEG 发生解离吸附的缺陷位，使其形成稳定桥接结构",
+        "answer_letter": "C",
+        "evidence": {
+          "doc_spans": [
+            "context"
+          ],
+          "snippet": "oxygen vacancies act as reaction sites to promote the dissociative adsorption of DEG, which efficiently acts as SEDs to scavenge holes.",
+          "image_regions": [
+            "中心区域(参照 step_0 视觉锚点)"
+          ],
+          "source_id": 4
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>在图中中心高分辨率 TEM 所示的 Rb‑TiO₂/TB‑CS 颗粒附近，可以看到规则晶格的无机核外包覆一层较为无序的壳层，并有有机链条示意从该壳层向外延伸。若在此结构中希望包围颗粒表面的 DEG 分子不只是松散贴附，而是被激活为高效的空穴清除剂，则最关键应依赖哪一类表面特征来提供足够的反应位点？  \nA. 晶格应变导致带隙略微改变，从而提高对可见光的吸收  \nB. 壳层仅作为惰性有机保护膜，只改善颗粒分散性  \nC. 表面存在能与 DEG 发生解离吸附的缺陷位，使其形成稳定桥接结构  \nD. 外层仅覆盖一层与反应无关的无定形无机壳层，阻隔 DEG 接近晶格</question>\n<answer>C</answer>",
+        "judge_flags": null
+      },
+      {
+        "k": 7,
+        "question": "在图d所示的Rb-TiO₂/TB-CS核壳结构中，经过5个光致变色循环后性能衰减的主要原因是什么？\n\nA. 多次变色循环\nB. Rb掺杂\nC. 二次溶剂热法\nD. 协同降低氧空位形成能",
+        "answer_text": "多次变色循环",
+        "answer_letter": "A",
+        "evidence": {
+          "doc_spans": [
+            "context"
+          ],
+          "snippet": "The reduction in photochromic performance after multiple cycles may be caused by the inactivation of a minor part of oxygen vacancies.",
+          "image_regions": [
+            "中心区域(参照 step_0 视觉锚点)"
+          ],
+          "source_id": 18
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>\n在图d所示的Rb-TiO₂/TB-CS核壳结构中，经过5个光致变色循环后性能衰减的主要原因是什么？\n\nA. 多次变色循环\nB. Rb掺杂\nC. 二次溶剂热法\nD. 协同降低氧空位形成能\n</question>\n\n<answer>A</answer>",
+        "judge_flags": null
+      },
+      {
+        "k": 8,
+        "question": "结合图中中心高分辨率 TEM 图像标注可知，Rb‑TiO₂/TB‑CS 样品的 (200) 晶面晶格间距由纯 TiO₂ 的 1.90 Å 拉伸到 1.95 Å。若以纯 TiO₂ 为基准，(200) 晶面轴向拉伸应变约为多少？  \nA. 0.3%  \nB. 2.6%  \nC. 5.0%  \nD. 0.05%",
+        "answer_text": "2.6%",
+        "answer_letter": "B",
+        "evidence": {
+          "doc_spans": [
+            "context"
+          ],
+          "snippet": "the redox between Ti(IV) and Ti(III) driven by photoinduced electrons and oxygen enables reversible color switching between white and dark blue.",
+          "image_regions": [
+            "中心区域(参照 step_0 视觉锚点)"
+          ],
+          "source_id": 8
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>结合图中中心高分辨率 TEM 图像标注可知，Rb‑TiO₂/TB‑CS 样品的 (200) 晶面晶格间距由纯 TiO₂ 的 1.90 Å 拉伸到 1.95 Å。若以纯 TiO₂ 为基准，(200) 晶面轴向拉伸应变约为多少？  \nA. 0.3%  \nB. 2.6%  \nC. 5.0%  \nD. 0.05%</question>\n<answer>B</answer>",
+        "judge_flags": null
+      }
+    ],
+    "difficulty_metrics": {
+      "medium_correct": true,
+      "strong_correct": true,
+      "strong_text_only_correct": true,
+      "difficulty_score": 0.5,
+      "cross_modal_used": true,
+      "num_hops": 9,
+      "medium_pred": "B",
+      "strong_pred": "B",
+      "strong_text_only_pred": "B",
+      "medium_raw": "<answer>B</answer>",
+      "strong_raw": "<answer>B</answer>",
+      "strong_text_only_raw": "<answer>B</answer>"
+    },
+    "solver_final_pred": "B",
+    "solver_final_raw": "<answer>B</answer>",
+    "reflect_feedback": "1. 增加多步推理：引入不同晶面或多种掺杂情形，需要先根据布拉格定律或晶格常数关系推得理论间距，再计算应变，而不是直接用两个给定数值相减。  \n\n2. 提高数值复杂度：给出以 nm 或 pm 为单位的多组原始数据，需单位换算和有效数字处理；同时避免“整洁”数字，让心算不再容易得出答案。  \n\n3. 综合概念考查：将应变计算与应力方向、各向异性拉伸或体积应变联系起来，例如要求分别求轴向应变、面内应变或体积相对变化，并判断对应的物理意义或材料性能变化。",
+    "stop_reason": null,
+    "judge_flags": {
+      "missing_options": false,
+      "option_length_bias": false,
+      "correct_option_longest": false
+    }
+  },
+  {
+    "round": 2,
+    "stage_1": {
+      "question": "在图中 (200) 晶面晶格条纹为 1.95 Å，已知纯 TiO₂ 晶面间距为 0.190 nm。若先将两者统一单位后用布拉格定律推算理论值，再计算相对轴向应变，结果最接近哪一项？  \nA. 0.26%  \nB. 2.63%  \nC. 5.00%  \nD. 0.052%",
+      "answer": "B；2.63%",
+      "raw": "<question>在图中 (200) 晶面晶格条纹为 1.95 Å，已知纯 TiO₂ 晶面间距为 0.190 nm。若先将两者统一单位后用布拉格定律推算理论值，再计算相对轴向应变，结果最接近哪一项？  \nA. 0.26%  \nB. 2.63%  \nC. 5.00%  \nD. 0.052%</question>  \n<answer>B</answer>"
+    },
+    "stage_2": {
+      "question": "图中展示了两种核壳结构纳米颗粒的高分辨 TEM 图像及其 GPA 轴向应变（εyy）映射。左侧样品（图 h、i）在界面处呈现连续的彩色条带，应变幅值范围为 -10% 至 +10%；右侧样品（图 f、g）的应变分布相对均匀，幅值较小。已知理论计算表明：沿某一轴的拉伸应变越大且越集中时，氧空位形成能降低；当异价金属掺杂引起的局部体积膨胀与界面拉伸应变叠加时，氧空位形成能进一步降低。现给出以下两种情形的条件（晶相、平均粒径、温度均相近）：\n\n**情形 1**：仅存在晶体-非晶界面引入的轴向拉伸应变，无额外掺杂。  \n**情形 2**：存在相同界面应变，且有异价金属掺杂带来的体积膨胀与电荷补偿效应。\n\n结合图 d、e 中标注的 (200) 晶面间距（1.95 Å）与 (101) 晶面间距（2.43 Å），以及纯 TiO₂ 的 (200) 晶面间距为 0.190 nm、(101) 晶面间距为 0.237 nm，通过布拉格定律推算各方向的理论间距并计算轴向应变。再对照 GPA 应变映射中 εyy 的颜色分布（拉伸为正应变，压缩为负应变），判断哪一种样品在界面处的拉伸应变更强、分布更连续。\n\n根据上述多步推理，关于两种样品氧空位形成能与生成能力的对比，下列哪一项描述最合理？\n\nA. 情形 2 对应的样品在界面处拉伸应变集中且与掺杂引起的体积膨胀方向一致，氧空位形成能降低最显著，氧空位浓度最高  \nB. 情形 1 对应的样品虽无额外掺杂，但界面应变明显，氧空位形成能反而更低，氧空位浓度最高  \nC. 两种样品的氧空位形成能几乎相同，因为晶相和粒径相近，GPA 映射中的应变分布差异可忽略  \nD. 情形 1 对应的样品在压缩应变主导的区域（εyy < 0）最有利于氧空位生成，其氧空位浓度高于情形 2",
+      "answer": "A；情形 2 对应的样品在界面处拉伸应变集中且与掺杂引起的体积膨胀方向一致，氧空位形成能降低最显著，氧空位浓度最高",
+      "raw": "<question>\n图中展示了两种核壳结构纳米颗粒的高分辨 TEM 图像及其 GPA 轴向应变（εyy）映射。左侧样品（图 h、i）在界面处呈现连续的彩色条带，应变幅值范围为 -10% 至 +10%；右侧样品（图 f、g）的应变分布相对均匀，幅值较小。已知理论计算表明：沿某一轴的拉伸应变越大且越集中时，氧空位形成能降低；当异价金属掺杂引起的局部体积膨胀与界面拉伸应变叠加时，氧空位形成能进一步降低。现给出以下两种情形的条件（晶相、平均粒径、温度均相近）：\n\n**情形 1**：仅存在晶体-非晶界面引入的轴向拉伸应变，无额外掺杂。  \n**情形 2**：存在相同界面应变，且有异价金属掺杂带来的体积膨胀与电荷补偿效应。\n\n结合图 d、e 中标注的 (200) 晶面间距（1.95 Å）与 (101) 晶面间距（2.43 Å），以及纯 TiO₂ 的 (200) 晶面间距为 0.190 nm、(101) 晶面间距为 0.237 nm，通过布拉格定律推算各方向的理论间距并计算轴向应变。再对照 GPA 应变映射中 εyy 的颜色分布（拉伸为正应变，压缩为负应变），判断哪一种样品在界面处的拉伸应变更强、分布更连续。\n\n根据上述多步推理，关于两种样品氧空位形成能与生成能力的对比，下列哪一项描述最合理？\n\nA. 情形 2 对应的样品在界面处拉伸应变集中且与掺杂引起的体积膨胀方向一致，氧空位形成能降低最显著，氧空位浓度最高  \nB. 情形 1 对应的样品虽无额外掺杂，但界面应变明显，氧空位形成能反而更低，氧空位浓度最高  \nC. 两种样品的氧空位形成能几乎相同，因为晶相和粒径相近，GPA 映射中的应变分布差异可忽略  \nD. 情形 1 对应的样品在压缩应变主导的区域（εyy < 0）最有利于氧空位生成，其氧空位浓度高于情形 2\n</question>\n<answer>A</answer>"
+    },
+    "stage_3": {
+      "question": "在图中 Rb‑TiO₂/TB‑CS 纳米颗粒外层包覆有一层有机壳层，使得颗粒在溶液中不易团聚，从而保持如示意图 a 所示透明分散状态。若希望这种壳层既能与二氧化钛表面形成稳定键合，又能通过有机链段提供空间位阻以提高光致变色复合材料的透明度，更适合选用哪一种表面处理剂？  \nA. DEG 作为空穴清除剂  \nB. 二次溶剂热法  \nC. 复合硅氧烷  \nD. 协同降低氧空位形成能",
+      "answer": "C；复合硅氧烷",
+      "raw": "<question>在图中 Rb‑TiO₂/TB‑CS 纳米颗粒外层包覆有一层有机壳层，使得颗粒在溶液中不易团聚，从而保持如示意图 a 所示透明分散状态。若希望这种壳层既能与二氧化钛表面形成稳定键合，又能通过有机链段提供空间位阻以提高光致变色复合材料的透明度，更适合选用哪一种表面处理剂？  \nA. DEG 作为空穴清除剂  \nB. 二次溶剂热法  \nC. 复合硅氧烷  \nD. 协同降低氧空位形成能</question>  \n<answer>C</answer>"
+    },
+    "stage_final": {
+      "question": "如图 1d、1e 所示，Rb‑TiO₂/TB‑CS 纳米颗粒在高分辨 TEM 图中标出了 (200) 晶面间距 1.95 Å 和 (101) 晶面间距 3.59 Å。已知纯 TiO₂ 对应晶面间距分别为 0.190 nm 与 0.351 nm。若将图中测得的 1.95 Å 和 3.59 Å 统一换算为 nm，再与纯相 TiO₂ 对比估算两晶面沿法向的轴向拉伸应变，并结合 εyy 应变映射中更易形成连续高拉伸带的方向，从而判断哪一晶面方向更可能显著降低该方向氧空位形成能，则更合理的结论是：  \nA. (200) 面拉伸应变更大，更利于形成连续高拉伸带并降低氧空位形成能  \nB. (101) 面拉伸应变更大，更利于形成连续高拉伸带并降低氧空位形成能  \nC. 两个晶面的拉伸应变几乎相同，难以判断哪一方向更占优势  \nD. 两个晶面主要表现为轴向压缩，应变对氧空位形成能影响很小",
+      "answer": "A；(200) 面约 3.2% 拉伸，大于(101)面约 2.3%。",
+      "raw": "<question>如图 1d、1e 所示，Rb‑TiO₂/TB‑CS 纳米颗粒在高分辨 TEM 图中标出了 (200) 晶面间距 1.95 Å 和 (101) 晶面间距 3.59 Å。已知纯 TiO₂ 对应晶面间距分别为 0.190 nm 与 0.351 nm。若将图中测得的 1.95 Å 和 3.59 Å 统一换算为 nm，再与纯相 TiO₂ 对比估算两晶面沿法向的轴向拉伸应变，并结合 εyy 应变映射中更易形成连续高拉伸带的方向，从而判断哪一晶面方向更可能显著降低该方向氧空位形成能，则更合理的结论是：  \nA. (200) 面拉伸应变更大，更利于形成连续高拉伸带并降低氧空位形成能  \nB. (101) 面拉伸应变更大，更利于形成连续高拉伸带并降低氧空位形成能  \nC. 两个晶面的拉伸应变几乎相同，难以判断哪一方向更占优势  \nD. 两个晶面主要表现为轴向压缩，应变对氧空位形成能影响很小</question>\n<answer>A；(200) 面约 3.2% 拉伸，大于(101)面约 2.3%。</answer>"
+    },
+    "final_question": "如图 1d、1e 所示，Rb‑TiO₂/TB‑CS 纳米颗粒在高分辨 TEM 图中标出了 (200) 晶面间距 1.95 Å 和 (101) 晶面间距 3.59 Å。已知纯 TiO₂ 对应晶面间距分别为 0.190 nm 与 0.351 nm。若将图中测得的 1.95 Å 和 3.59 Å 统一换算为 nm，再与纯相 TiO₂ 对比估算两晶面沿法向的轴向拉伸应变，并结合 εyy 应变映射中更易形成连续高拉伸带的方向，从而判断哪一晶面方向更可能显著降低该方向氧空位形成能，则更合理的结论是：  \nA. (200) 面拉伸应变更大，更利于形成连续高拉伸带并降低氧空位形成能  \nB. (101) 面拉伸应变更大，更利于形成连续高拉伸带并降低氧空位形成能  \nC. 两个晶面的拉伸应变几乎相同，难以判断哪一方向更占优势  \nD. 两个晶面主要表现为轴向压缩，应变对氧空位形成能影响很小",
+    "final_answer": "A；(200) 面约 3.2% 拉伸，大于(101)面约 2.3%。",
+    "steps": [
+      {
+        "k": 0,
+        "question": "在图中 (200) 晶面晶格条纹为 1.95 Å，已知纯 TiO₂ 晶面间距为 0.190 nm。若先将两者统一单位后用布拉格定律推算理论值，再计算相对轴向应变，结果最接近哪一项？  \nA. 0.26%  \nB. 2.63%  \nC. 5.00%  \nD. 0.052%",
+        "answer_text": "2.63%",
+        "answer_letter": "B",
+        "evidence": null,
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>在图中 (200) 晶面晶格条纹为 1.95 Å，已知纯 TiO₂ 晶面间距为 0.190 nm。若先将两者统一单位后用布拉格定律推算理论值，再计算相对轴向应变，结果最接近哪一项？  \nA. 0.26%  \nB. 2.63%  \nC. 5.00%  \nD. 0.052%</question>  \n<answer>B</answer>",
+        "judge_flags": null
+      },
+      {
+        "k": 1,
+        "question": "图中展示了两种核壳结构纳米颗粒的高分辨 TEM 图像及其 GPA 轴向应变（εyy）映射。左侧样品（图 h、i）在界面处呈现连续的彩色条带，应变幅值范围为 -10% 至 +10%；右侧样品（图 f、g）的应变分布相对均匀，幅值较小。已知理论计算表明：沿某一轴的拉伸应变越大且越集中时，氧空位形成能降低；当异价金属掺杂引起的局部体积膨胀与界面拉伸应变叠加时，氧空位形成能进一步降低。现给出以下两种情形的条件（晶相、平均粒径、温度均相近）：\n\n**情形 1**：仅存在晶体-非晶界面引入的轴向拉伸应变，无额外掺杂。  \n**情形 2**：存在相同界面应变，且有异价金属掺杂带来的体积膨胀与电荷补偿效应。\n\n结合图 d、e 中标注的 (200) 晶面间距（1.95 Å）与 (101) 晶面间距（2.43 Å），以及纯 TiO₂ 的 (200) 晶面间距为 0.190 nm、(101) 晶面间距为 0.237 nm，通过布拉格定律推算各方向的理论间距并计算轴向应变。再对照 GPA 应变映射中 εyy 的颜色分布（拉伸为正应变，压缩为负应变），判断哪一种样品在界面处的拉伸应变更强、分布更连续。\n\n根据上述多步推理，关于两种样品氧空位形成能与生成能力的对比，下列哪一项描述最合理？\n\nA. 情形 2 对应的样品在界面处拉伸应变集中且与掺杂引起的体积膨胀方向一致，氧空位形成能降低最显著，氧空位浓度最高  \nB. 情形 1 对应的样品虽无额外掺杂，但界面应变明显，氧空位形成能反而更低，氧空位浓度最高  \nC. 两种样品的氧空位形成能几乎相同，因为晶相和粒径相近，GPA 映射中的应变分布差异可忽略  \nD. 情形 1 对应的样品在压缩应变主导的区域（εyy < 0）最有利于氧空位生成，其氧空位浓度高于情形 2",
+        "answer_text": "情形 2 对应的样品在界面处拉伸应变集中且与掺杂引起的体积膨胀方向一致，氧空位形成能降低最显著，氧空位浓度最高",
+        "answer_letter": "A",
+        "evidence": {
+          "doc_spans": [
+            "context"
+          ],
+          "snippet": "Rb doping and epitaxial strain synergistically reduce the oxygen vacancy formation energy, thereby promoting the abundant generation of oxygen vacancies",
+          "image_regions": [
+            "中心区域(参照 step_0 视觉锚点)"
+          ],
+          "source_id": 1
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>\n图中展示了两种核壳结构纳米颗粒的高分辨 TEM 图像及其 GPA 轴向应变（εyy）映射。左侧样品（图 h、i）在界面处呈现连续的彩色条带，应变幅值范围为 -10% 至 +10%；右侧样品（图 f、g）的应变分布相对均匀，幅值较小。已知理论计算表明：沿某一轴的拉伸应变越大且越集中时，氧空位形成能降低；当异价金属掺杂引起的局部体积膨胀与界面拉伸应变叠加时，氧空位形成能进一步降低。现给出以下两种情形的条件（晶相、平均粒径、温度均相近）：\n\n**情形 1**：仅存在晶体-非晶界面引入的轴向拉伸应变，无额外掺杂。  \n**情形 2**：存在相同界面应变，且有异价金属掺杂带来的体积膨胀与电荷补偿效应。\n\n结合图 d、e 中标注的 (200) 晶面间距（1.95 Å）与 (101) 晶面间距（2.43 Å），以及纯 TiO₂ 的 (200) 晶面间距为 0.190 nm、(101) 晶面间距为 0.237 nm，通过布拉格定律推算各方向的理论间距并计算轴向应变。再对照 GPA 应变映射中 εyy 的颜色分布（拉伸为正应变，压缩为负应变），判断哪一种样品在界面处的拉伸应变更强、分布更连续。\n\n根据上述多步推理，关于两种样品氧空位形成能与生成能力的对比，下列哪一项描述最合理？\n\nA. 情形 2 对应的样品在界面处拉伸应变集中且与掺杂引起的体积膨胀方向一致，氧空位形成能降低最显著，氧空位浓度最高  \nB. 情形 1 对应的样品虽无额外掺杂，但界面应变明显，氧空位形成能反而更低，氧空位浓度最高  \nC. 两种样品的氧空位形成能几乎相同，因为晶相和粒径相近，GPA 映射中的应变分布差异可忽略  \nD. 情形 1 对应的样品在压缩应变主导的区域（εyy < 0）最有利于氧空位生成，其氧空位浓度高于情形 2\n</question>\n<answer>A</answer>",
+        "judge_flags": null
+      },
+      {
+        "k": 2,
+        "question": "在图中 Rb‑TiO₂/TB‑CS 纳米颗粒外层包覆有一层有机壳层，使得颗粒在溶液中不易团聚，从而保持如示意图 a 所示透明分散状态。若希望这种壳层既能与二氧化钛表面形成稳定键合，又能通过有机链段提供空间位阻以提高光致变色复合材料的透明度，更适合选用哪一种表面处理剂？  \nA. DEG 作为空穴清除剂  \nB. 二次溶剂热法  \nC. 复合硅氧烷  \nD. 协同降低氧空位形成能",
+        "answer_text": "复合硅氧烷",
+        "answer_letter": "C",
+        "evidence": {
+          "doc_spans": [
+            "context"
+          ],
+          "snippet": "surface modification using composite siloxanes ensures the monodispersion of nanoparticles...which enables the high transparency of photochromic composite materials.",
+          "image_regions": [
+            "中心区域(参照 step_0 视觉锚点)"
+          ],
+          "source_id": 13
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>在图中 Rb‑TiO₂/TB‑CS 纳米颗粒外层包覆有一层有机壳层，使得颗粒在溶液中不易团聚，从而保持如示意图 a 所示透明分散状态。若希望这种壳层既能与二氧化钛表面形成稳定键合，又能通过有机链段提供空间位阻以提高光致变色复合材料的透明度，更适合选用哪一种表面处理剂？  \nA. DEG 作为空穴清除剂  \nB. 二次溶剂热法  \nC. 复合硅氧烷  \nD. 协同降低氧空位形成能</question>  \n<answer>C</answer>",
+        "judge_flags": null
+      },
+      {
+        "k": 3,
+        "question": "图中子图 d 标注的 (200) 晶面晶格条纹间距为 1.95 Å。已知纯 TiO₂ 在该晶面的理论间距为 1.890 Å，而 Rb 掺杂后因离子半径差异会引入额外的 +0.8% 本征应变。若先计算实测间距相对理论值的表观应变，再扣除本征应变贡献，得到的由氧空位等缺陷引起的净晶格膨胀应变最接近 2.4%。结合图中晶格-非晶界面应变分布（子图 g、i）及文献中\"氧空位作为反应位点促进 DEG 解离吸附，使其高效充当空穴清除剂\"的机制，氧空位在该光致变色体系中的核心功能是：\n\nA. 促进 DEG 解离吸附  \nB. 光生电子还原 Ti(IV)  \nC. 协同降低氧空位形成能  \nD. 增强光致变色性能",
+        "answer_text": "促进 DEG 解离吸附",
+        "answer_letter": "A",
+        "evidence": null,
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>图中子图 d 标注的 (200) 晶面晶格条纹间距为 1.95 Å。已知纯 TiO₂ 在该晶面的理论间距为 1.890 Å，而 Rb 掺杂后因离子半径差异会引入额外的 +0.8% 本征应变。若先计算实测间距相对理论值的表观应变，再扣除本征应变贡献，得到的由氧空位等缺陷引起的净晶格膨胀应变最接近 2.4%。结合图中晶格-非晶界面应变分布（子图 g、i）及文献中\"氧空位作为反应位点促进 DEG 解离吸附，使其高效充当空穴清除剂\"的机制，氧空位在该光致变色体系中的核心功能是：\n\nA. 促进 DEG 解离吸附  \nB. 光生电子还原 Ti(IV)  \nC. 协同降低氧空位形成能  \nD. 增强光致变色性能</question>\n<answer>A</answer>",
+        "judge_flags": null
+      },
+      {
+        "k": 4,
+        "question": "在图中标出的 (200) 晶面晶格条纹为 1.95 Å，研究者在循环多次光致变色测试后发现该晶格条纹几乎不再发生可逆变化。若已知这类结构的可逆应变主要依赖于界面附近的可调节缺陷，当部分此类缺陷被长期占据或失去活性时，会直接导致哪种现象，从而使图中晶面对应的条纹形貌在后续循环中趋于稳定？  \nA. DEG作为空穴清除剂  \nB. 促进氧空位生成  \nC. 光致变色性能衰减  \nD. 制备PVA光致变色水凝胶",
+        "answer_text": "光致变色性能衰减",
+        "answer_letter": "C",
+        "evidence": {
+          "doc_spans": [
+            "context"
+          ],
+          "snippet": "The reduction in photochromic performance after multiple cycles may be caused by the inactivation of a minor part of oxygen vacancies.",
+          "image_regions": [
+            "中心区域(参照 step_0 视觉锚点)"
+          ],
+          "source_id": 18
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>在图中标出的 (200) 晶面晶格条纹为 1.95 Å，研究者在循环多次光致变色测试后发现该晶格条纹几乎不再发生可逆变化。若已知这类结构的可逆应变主要依赖于界面附近的可调节缺陷，当部分此类缺陷被长期占据或失去活性时，会直接导致哪种现象，从而使图中晶面对应的条纹形貌在后续循环中趋于稳定？  \nA. DEG作为空穴清除剂  \nB. 促进氧空位生成  \nC. 光致变色性能衰减  \nD. 制备PVA光致变色水凝胶</question>  \n<answer>C</answer>",
+        "judge_flags": null
+      },
+      {
+        "k": 5,
+        "question": "图中子面板 d 显示的纳米颗粒在 200°C 溶剂热处理 2 小时后获得初步晶体结构，随后在 300°C 进行 1 小时处理并引入额外 TBOT 前驱体。若第二步处理使晶格常数从初始 3.785 Å 增大至 3.895 Å，同时在 (101) 晶面方向测得实际间距为 2.431 Å，而理论计算该晶面在新晶格常数下的间距应为 2.378 Å，则该方向的相对轴向应变最接近：\n\nA. 1.23%  \nB. 2.23%  \nC. 3.56%  \nD. 5.12%",
+        "answer_text": "2.23%",
+        "answer_letter": "B",
+        "evidence": {
+          "doc_spans": [
+            "context"
+          ],
+          "snippet": "the crystalline-amorphous interface was constructed to induce lattice strain during the second solvothermal process",
+          "image_regions": [
+            "中心区域(参照 step_0 视觉锚点)"
+          ],
+          "source_id": 16
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>\n图中子面板 d 显示的纳米颗粒在 200°C 溶剂热处理 2 小时后获得初步晶体结构，随后在 300°C 进行 1 小时处理并引入额外 TBOT 前驱体。若第二步处理使晶格常数从初始 3.785 Å 增大至 3.895 Å，同时在 (101) 晶面方向测得实际间距为 2.431 Å，而理论计算该晶面在新晶格常数下的间距应为 2.378 Å，则该方向的相对轴向应变最接近：\n\nA. 1.23%  \nB. 2.23%  \nC. 3.56%  \nD. 5.12%\n</question>\n\n<answer>B</answer>",
+        "judge_flags": null
+      },
+      {
+        "k": 6,
+        "question": "在图中标出的 (200) 晶面晶格条纹为 1.95 Å，说明该 Rb 掺杂的 TiO₂ 纳米颗粒在该方向存在轴向拉伸。若希望将这些具有应变调控晶格的颗粒构筑成可直接在可见光下产生可逆颜色变化的器件，以实现信息的显隐切换，则这种器件最适合被设计成哪一类功能载体？  \nA. 用作空穴清除剂的 DEG 溶液  \nB. Rb-TiO₂/TB-CS 颗粒粉末催化剂  \nC. 用于透明显示的丙烯酸酯杂化薄膜  \nD. PVA 基光致变色水凝胶块材",
+        "answer_text": "用于透明显示的丙烯酸酯杂化薄膜",
+        "answer_letter": "C",
+        "evidence": {
+          "doc_spans": [
+            "context"
+          ],
+          "snippet": "Rb-TiO₂/TB-CS/acrylate photochromic hybrid film...showing great potential for transparent display applications.",
+          "image_regions": [
+            "中心区域(参照 step_0 视觉锚点)"
+          ],
+          "source_id": 21
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>在图中标出的 (200) 晶面晶格条纹为 1.95 Å，说明该 Rb 掺杂的 TiO₂ 纳米颗粒在该方向存在轴向拉伸。若希望将这些具有应变调控晶格的颗粒构筑成可直接在可见光下产生可逆颜色变化的器件，以实现信息的显隐切换，则这种器件最适合被设计成哪一类功能载体？  \nA. 用作空穴清除剂的 DEG 溶液  \nB. Rb-TiO₂/TB-CS 颗粒粉末催化剂  \nC. 用于透明显示的丙烯酸酯杂化薄膜  \nD. PVA 基光致变色水凝胶块材</question>\n<answer>C</answer>",
+        "judge_flags": null
+      },
+      {
+        "k": 7,
+        "question": "图中子面板 d 标注的晶格条纹间距为 1.95 Å，对应 (200) 晶面。已知该材料经 Rb 掺杂后，理论上纯 TiO₂ 的 (200) 晶面间距为 1.890 Å。若某反应位点区域因局部结构缺陷导致实际测得间距变为 1.976 Å，需先将所有数值统一为 nm 单位，再分别计算相对于纯 TiO₂ 理论值的轴向应变 ε₁（图中标注区域）和 ε₂（缺陷区域），最后求两者差值 |ε₁ - ε₂|，结果最接近哪一项？\n\nA. 1.37%  \nB. 0.137%  \nC. 2.74%  \nD. 0.0274%",
+        "answer_text": "1.37%",
+        "answer_letter": "A",
+        "evidence": {
+          "doc_spans": [
+            "context"
+          ],
+          "snippet": "oxygen vacancies act as reaction sites to promote the dissociative adsorption of DEG, which efficiently acts as SEDs to scavenge holes.",
+          "image_regions": [
+            "中心区域(参照 step_0 视觉锚点)"
+          ],
+          "source_id": 4
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>\n图中子面板 d 标注的晶格条纹间距为 1.95 Å，对应 (200) 晶面。已知该材料经 Rb 掺杂后，理论上纯 TiO₂ 的 (200) 晶面间距为 1.890 Å。若某反应位点区域因局部结构缺陷导致实际测得间距变为 1.976 Å，需先将所有数值统一为 nm 单位，再分别计算相对于纯 TiO₂ 理论值的轴向应变 ε₁（图中标注区域）和 ε₂（缺陷区域），最后求两者差值 |ε₁ - ε₂|，结果最接近哪一项？\n\nA. 1.37%  \nB. 0.137%  \nC. 2.74%  \nD. 0.0274%\n</question>\n\n<answer>A</answer>",
+        "judge_flags": null
+      },
+      {
+        "k": 8,
+        "question": "在图 a 中，Rb‑TiO₂/TB-CS 纳米颗粒外层接枝了有机壳层，使得单个颗粒在溶液中不易团聚。若希望在保持图 j 所示那种均匀散布、避免形成大的团簇，从而获得高透明度的光致变色复合薄膜，下列哪种设计最有利于实现这种颗粒状态？  \nA. 利用表面改性使颗粒保持单分散  \nB. 利用 DEG 作为空穴清除剂调节载流子寿命  \nC. 通过二次溶剂热法增加颗粒尺寸不均匀性  \nD. 通过协同降低氧空位形成能增强光致变色速率",
+        "answer_text": "利用表面改性使颗粒保持单分散",
+        "answer_letter": "A",
+        "evidence": {
+          "doc_spans": [
+            "context"
+          ],
+          "snippet": "surface modification using composite siloxanes ensures the monodispersion of nanoparticles...which enables the high transparency of photochromic composite materials.",
+          "image_regions": [
+            "中心区域(参照 step_0 视觉锚点)"
+          ],
+          "source_id": 14
+        },
+        "modal_use": "both",
+        "cross_modal_bridge": false,
+        "raw": "<question>在图 a 中，Rb‑TiO₂/TB-CS 纳米颗粒外层接枝了有机壳层，使得单个颗粒在溶液中不易团聚。若希望在保持图 j 所示那种均匀散布、避免形成大的团簇，从而获得高透明度的光致变色复合薄膜，下列哪种设计最有利于实现这种颗粒状态？  \nA. 利用表面改性使颗粒保持单分散  \nB. 利用 DEG 作为空穴清除剂调节载流子寿命  \nC. 通过二次溶剂热法增加颗粒尺寸不均匀性  \nD. 通过协同降低氧空位形成能增强光致变色速率</question>\n<answer>A</answer>",
+        "judge_flags": null
+      }
+    ],
+    "difficulty_metrics": {
+      "medium_correct": true,
+      "strong_correct": false,
+      "strong_text_only_correct": false,
+      "difficulty_score": 0.0,
+      "cross_modal_used": true,
+      "num_hops": 9,
+      "medium_pred": "A",
+      "strong_pred": "B",
+      "strong_text_only_pred": "B",
+      "medium_raw": "<answer>A</answer>",
+      "strong_raw": "<answer>B</answer>",
+      "strong_text_only_raw": "<answer>B</answer>"
+    },
+    "solver_final_pred": "A",
+    "solver_final_raw": "<answer>A</answer>",
+    "reflect_feedback": "1. **增加多步推理环节**  \n   - 要求先自行完成单位换算、求出两种晶面应变的具体数值，再综合应变大小与应变分布特征（如连续高拉伸带长度或连通性）才能判断优劣。  \n   - 可加入定量计算步骤，如给出多组晶面间距数据，要求比较多晶面并排序其对氧空位形成能的影响。\n\n2. **引入交叉信息与干扰因素**  \n   - 同时给出拉伸与压缩区、不同晶向的 εxx、εyy、εzz 映射，要求考生判断哪个方向的主拉应变主导氧空位行为，避免仅凭一组数据直接选项。  \n   - 增加相近数值或存在测量误差范围的情形，需要考生考虑实验误差、统计意义后再做出结论，而非简单数值对比。\n\n3. **结合更深层物理与材料背景**  \n   - 要求基于缺陷形成能表达式或能带调控机理，说明为何某个晶面方向上的拉伸更有利于降低氧空位形成能，而不仅是“谁的应变更大”。  \n   - 引入不同掺杂方式或不同构型（如表面 vs. 体相、界面层 vs. 内核）的讨论，让考生在选择答案前需要结合结构–性能关系进行定性或半定量分析。",
+    "stop_reason": null,
+    "judge_flags": {
+      "missing_options": false,
+      "option_length_bias": true,
+      "correct_option_longest": false
+    }
   }
 ]

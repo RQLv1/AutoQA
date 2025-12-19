@@ -218,6 +218,16 @@ python main.py
 * `MIN_HOPS`：最小推理跳数（例如 2）
 * `REQUIRE_CROSS_MODAL`：是否强制跨模态桥接（true/false，默认 true）
 
+### Operate Agents（计算/对比草稿）
+
+每个 step/hop 生成后，会先调用两个 operate 智能体产出“下一步修改草稿”，并把草稿注入到下一步出题 Prompt 中（草稿只用于内部推理，不得出现在题干里）。
+
+* `MODEL_OPERATE`：operate 默认模型（默认复用 `MODEL_STAGE_2`）
+* `MODEL_OPERATE_DISTINCTION`：差异对比草稿模型（默认=`MODEL_OPERATE`）
+* `MODEL_OPERATE_CALCULATION`：条件计算草稿模型（默认=`MODEL_OPERATE`）
+
+当前出题风格偏向条件计算：优先把 `operate_calculation` 草稿落地为“数值/区间/等级”可验证题，只有确实无法计算时才退化为对比/异常检测。
+
 ### 裁判
 
 * `MODEL_JUDGE`：捷径/证据/干扰项检测模型（默认可复用 `MODEL_ANALYSIS`）
@@ -285,6 +295,7 @@ python main.py
 
 * 每次引入“新的关键信息/新关系”，并明确证据 span（证据来自参考信息，但不得在题干中提及其来源）
 * 强制至少一次 `cross_modal_bridge=true`（含义：题干必须同时依赖图像视觉证据 + 题干中给出的条件/事实）
+* 计算优先：默认优先生成“条件计算”题（数值/区间/等级选项），无法形成可验证计算时才退化为对比/异常检测
 * 输出结构化字段：`question/answer_letter/answer_text/evidence/modal_use/cross_modal_bridge`
 
 ### Final（Compress）
@@ -309,6 +320,7 @@ python main.py
 ## 对齐 change.md 的实现状态（简表）
 
 - 已实现：求解器只接收 `image + question`；Text-Only Blindfold 检查；Stage/Final Prompt 强化（图像中心锚点 + 禁止引用措辞 + Hard Negatives）；Final 启发式对抗检查并可触发 revise。
+- 已实现：operate_distinction / operate_calculation 两个草稿智能体（每步生成后调用，并喂给下一步出题；计算优先）。
 - 待明确：Blindfold（Image-Only）用于“强制依赖参考信息”的判据（与“求解器不接收参考信息”的约束存在目标冲突）。
 
 ---
