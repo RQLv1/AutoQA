@@ -56,8 +56,8 @@ def generate_steps_prompt_driven(
             )
 
         step = run_step(prompt, image_path, model, k)
-        medium_raw, medium_letter = solve_mcq(context, step.question, image_path, MODEL_SOLVE_MEDIUM)
-        strong_raw, strong_letter = solve_mcq(context, step.question, image_path, MODEL_SOLVE_STRONG)
+        medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
+        strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
         medium_correct = grade_answer(step.answer_letter or "", medium_letter)
         strong_correct = grade_answer(step.answer_letter or "", strong_letter)
         needs_revision, reason = validate_step(step, force_cross_modal, strong_correct)
@@ -68,8 +68,8 @@ def generate_steps_prompt_driven(
                 context, step, reason, fact_hint, force_cross_modal
             )
             step = run_step(revise_prompt, image_path, model, k)
-            medium_raw, medium_letter = solve_mcq(context, step.question, image_path, MODEL_SOLVE_MEDIUM)
-            strong_raw, strong_letter = solve_mcq(context, step.question, image_path, MODEL_SOLVE_STRONG)
+            medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
+            strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
             medium_correct = grade_answer(step.answer_letter or "", medium_letter)
             strong_correct = grade_answer(step.answer_letter or "", strong_letter)
 

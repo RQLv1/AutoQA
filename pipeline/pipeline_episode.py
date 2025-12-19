@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from pipeline.pipeline_judge import judge_mcq
 from pipeline.pipeline_solvers import evaluate_difficulty
 from prompts import build_final_compress_prompt, build_final_revise_prompt
 from steps import derive_stage_results, generate_steps
@@ -30,9 +31,8 @@ def run_episode(
     print("[Final] Compress 完成")
     print(stage_final.question)
     print("标准答案:", stage_final.answer)
-    difficulty_metrics = evaluate_difficulty(
-        context, stage_final, image_path, cross_modal_used, len(steps)
-    )
+    difficulty_metrics = evaluate_difficulty(stage_final, image_path, cross_modal_used, len(steps))
+    judge_flags = judge_mcq(stage_final.question, stage_final.answer)
     print(
         "[Final] Difficulty 评估:",
         f"medium_correct={difficulty_metrics.get('medium_correct')}",
@@ -50,6 +50,11 @@ def run_episode(
         revise_reasons.append("missing cross-modal bridge")
     if not difficulty_metrics.get("strong_correct", False):
         revise_reasons.append("strong solver failed")
+    if difficulty_metrics.get("strong_text_only_correct", False):
+        revise_reasons.append("text-only shortcut found")
+    if any(judge_flags.values()):
+        flagged = ", ".join(k for k, v in judge_flags.items() if v)
+        revise_reasons.append(f"adversarial_check_failed({flagged})")
 
     if revise_reasons:
         revise_prompt = build_final_revise_prompt(
@@ -60,8 +65,9 @@ def run_episode(
         print(stage_final.question)
         print("标准答案:", stage_final.answer)
         difficulty_metrics = evaluate_difficulty(
-            context, stage_final, image_path, cross_modal_used, len(steps)
+            stage_final, image_path, cross_modal_used, len(steps)
         )
+        judge_flags = judge_mcq(stage_final.question, stage_final.answer)
         print(
             "[Final] Revise 后 Difficulty:",
             f"medium_correct={difficulty_metrics.get('medium_correct')}",
@@ -76,4 +82,5 @@ def run_episode(
         stage_final=stage_final,
         steps=steps,
         difficulty_metrics=difficulty_metrics,
+        judge_flags=judge_flags,
     )

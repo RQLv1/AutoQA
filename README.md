@@ -1,6 +1,11 @@
-# AutoQA（强化版）：基于图文上下文的高难度 MCQ 自动生成（保持现有工程结构）
+# AutoQA（强化版）：基于图片 + 参考信息的高难度 MCQ 自动生成（保持现有工程结构）
 
-AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用多轮迭代生成**高难度、可验证、强多模态依赖**的单选题（MCQ），并通过“求解模型 + 反思模型 + 过程裁判（可选）”闭环提升难度。
+AutoQA 是一个「图片为主 + 参考信息为辅」驱动的自动出题系统，用多轮迭代生成**高难度、可验证、强多模态依赖**的单选题（MCQ），并通过“求解模型 + 反思模型 + 过程裁判（可选）”闭环提升难度。
+
+关键约束：
+- 出题阶段：题干必须围绕图片中心视觉锚点展开，参考信息仅供内部推理，不得在题干中显式提到或“引导读者查阅”。
+- 求解阶段：求解器模型**只接收图片 + question**，不会喂入参考信息。
+- 题干禁止出现引用措辞：如“结合文献 / 依据文献 / 文档 / 上下文 / context”等。
 
 > **注意：本强化版保持入口不变**（`main.py`）。
 > 目前项目按职责拆分为目录包：`utils/`（配置/解析/API/schema）、`pipeline/`（episode/logging/solvers/facts 门面）、`steps/`（每轮扩链）、`graph/`（Graph Mode）、`prompts/`（提示词）。
@@ -14,8 +19,8 @@ AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用�
 ### 目标
 
 1. **更具挑战性的推理链**：题目必须体现多跳推理（建议 ≥2 hops），尽量避免“单句命中答案”的检索式问题。
-2. **更贴近多模态**：至少包含一次**跨模态桥接**（图 → 文 或 文 → 图），避免只看其中一个模态即可解题。
-3. **答案可验证**：正确答案与关键推理证据必须能在给定图文上下文中定位（可选：输出证据 span/索引）。
+2. **更贴近多模态**：至少包含一次**跨模态桥接**（图 → 参考信息 或 参考信息 → 图），避免只看其中一个模态即可解题。
+3. **答案可验证**：正确答案与关键推理证据必须能在给定图片与参考信息中定位（可选：输出证据 span/索引）。
 
 ### 强约束（硬性）
 
@@ -31,15 +36,15 @@ AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用�
 
 每一轮（`MAX_ROUNDS`）执行一个 Episode，由 `pipeline/`（门面包，`from pipeline import run_episode`）统一编排。整体仍保留“阶段式日志写法”（Stage1/2/3/Final + Solve/Analysis），但在内部新增 **Extension Loop**：
 
-### 0) 预处理：图文锚点与候选事实
+### 0) 预处理：图像锚点与候选事实
 
 - 从图片生成**视觉锚点**（中心区域对象/符号/结构/关系）与候选描述（anchor candidates）
-- 从文档上下文抽取**关键点/事实片段**（fact candidates，附带 span/段落索引）
+- 从参考信息抽取**关键点/事实片段**（fact candidates，附带 span/段落索引）
 
-> 说明：当前实现的预处理位于 `pipeline/pipeline_facts.py`（从文档抽取 fact candidates），视觉锚点主要通过 Stage prompt 引导输出。
+> 说明：当前实现的预处理位于 `pipeline/pipeline_facts.py`（从参考信息抽取 fact candidates），视觉锚点主要通过 Stage prompt 引导输出。
 >
 > - 视觉锚点：由 Stage1 prompt 引导模型“只围绕中心区域锚点描述”即可
-> - 文档关键点：用文本模型从上下文抽取若干关键句或要点（带行号/段落索引）
+> - 参考信息关键点：用文本模型从参考信息中抽取若干关键句或要点（带行号/段落索引）
 
 ---
 
@@ -50,7 +55,7 @@ AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用�
 在一个 Episode 内，允许多次扩链 `step_k (k=0..K)`，每步产出一个 `StepResult`：
 
 - `question`: 子问题（中间问题，不一定是最终 MCQ）
-- `answer_text`: 子问题答案的短实体/短短语（必须可在上下文中定位）
+- `answer_text`: 子问题答案的短实体/短短语（必须可在参考信息中定位）
 - `answer_letter`: 若该 step 本身是 MCQ，对应正确选项字母（A/B/C/D）
 - `evidence`: 证据定位（doc span/段落索引；可选 image 区域描述）
 - `modal_use`: image/text/both
@@ -60,10 +65,10 @@ AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用�
 **如何保持“现有 Stage1/2/3”但支持多次扩链？**
 
 - `step_0`：使用 **Stage1 模板**（强视觉锚点，尽量只依赖图）
-- `step_1`：使用 **Stage2 模板**（引入文档关键点 1，形成第一跳推理）
-- `step_2`：使用 **Stage3 模板**（再引入文档关键点 2 或图中另一个关系，形成第二跳推理）
+- `step_1`：使用 **Stage2 模板**（引入参考信息关键点 1，形成第一跳推理）
+- `step_2`：使用 **Stage3 模板**（再引入参考信息关键点 2 或图中另一个关系，形成第二跳推理）
 - `step_3..K`：**循环复用 Stage2/Stage3 模板**（或统一用一个 “EXTEND” prompt），每次强制：
-  - 要么换新的文档关键点（不同段落/不同实体）
+  - 要么换新的参考信息关键点（不同段落/不同实体）
   - 要么换新的视觉锚点（同一中心区域内不同关系/符号/标注）
   - 并且至少一次 `cross_modal_bridge=true`（可由 judge 检测并强制 revise）
 
@@ -79,6 +84,8 @@ AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用�
   - Strong 都答不对：大概率题坏/证据不足 → 触发 revise 或回滚
 - **Medium Solver**：衡量难度增长
   - 理想状态：Medium 开始失败，而 Strong 仍可成功（难度有效提升）
+
+> 注意：求解器输入仅包含图片与题目文本（question），不会提供参考信息；因此题目必须在图片层面有明确锚点，不能是纯文本可解的“参考信息检索题”。
 
 系统维护 `difficulty_score`（可组合以下信号）：
 
@@ -99,7 +106,7 @@ AutoQA 是一个「图片 + 文档上下文」驱动的自动出题系统，用�
 触发条件（示例）：
 
 - Strong solver 失败或出现多解/歧义
-- 存在明显捷径：只看文或只看图即可直接命中答案
+- 存在明显捷径：只看参考信息或只看图即可直接命中答案
 - 证据无法定位或引用不一致
 - 选项不均衡、干扰项过弱
 
@@ -107,7 +114,7 @@ Revise 目标：
 
 - 修复歧义、补齐证据链
 - 改写题干，隐藏“单句命中”线索
-- 强化跨模态桥接：强制必须结合图与文才能作答
+- 强化跨模态桥接：强制必须结合图片与参考信息才能作答
 
 > **实现方式（不增加新的“业务层级”文件）**：
 >
@@ -152,14 +159,14 @@ Revise 目标：
 
 ## 目录结构（保持你当前结构）
 
-- `main.py`：主入口；读取图片、准备文档上下文、控制多轮循环与停止条件
+- `main.py`：主入口；读取图片、准备参考信息、控制多轮循环与停止条件
 - `utils/config.py`：模型与运行参数配置（可用环境变量覆盖）
 - `utils/api_client.py`：OpenAI 兼容接口调用（文本/视觉）
 - `prompts/`：Stage1/2/3/Final + extend/revise/judge 等 prompt 构建
 - `pipeline/`：门面包（对外导出 `run_episode/save_round_questions/try_solve_question`）
 - `pipeline/pipeline_episode.py`：Episode 编排（steps → compress → final revise → difficulty 评估）
 - `steps/`：每轮的 Extension Loop（step 生成/校验/必要 revise），并提供 `derive_stage_results/step_to_dict`
-- `pipeline/pipeline_facts.py`：文档 fact candidates 抽取与提示格式化
+- `pipeline/pipeline_facts.py`：参考信息 fact candidates 抽取与提示格式化
 - `pipeline/pipeline_solvers.py`：求解器调用、答案判定、难度指标评估
 - `pipeline/pipeline_logging.py`：日志落盘（JSONL + 人类可读 JSON）
 - `graph/pipeline_graph.py`：Graph Mode：全文知识点链总结、Local KG 构建（可选）
@@ -201,6 +208,7 @@ python main.py
 * `MODEL_SOLVE_STRONG`：强求解器（用于可解性验证，默认=`MODEL_SOLVE`）
 * `MODEL_SOLVE_FINAL`：最终求解模型（只输出 A/B/C/D，默认=`MODEL_SOLVE`）
   - 当前提示词要求严格输出 `<answer>A</answer>` 格式（系统仍会做一定容错解析）。
+  - 该阶段不会传入参考信息：只传图片与 question。
 
 ### 扩链与阈值
 
@@ -267,12 +275,12 @@ python main.py
 
 ### Stage1（视觉锚点）
 
-* 只围绕图像中心区域锚点出题
-* 要求答案可从图中定位（若需要文档也必须显式标记为 both）
+* 只围绕图像中心区域锚点出题（题干必须像“看图题”）
+* 题干不得出现“文献/文档/上下文/context/结合文献/依据文献”等引用措辞
 
 ### Stage2/Stage3（可复用为 Extend）
 
-* 每次引入“新的文档关键点/新关系”，并明确证据 span
+* 每次引入“新的关键信息/新关系”，并明确证据 span（证据来自参考信息，但不得在题干中提及）
 * 强制至少一次 `cross_modal_bridge=true`
 * 输出结构化字段：`question/answer_letter/answer_text/evidence/modal_use/cross_modal_bridge`
 
@@ -280,10 +288,11 @@ python main.py
 
 * 折叠中间结论，不要写“第一步/第二步”
 * 输出最终 MCQ：题干 + 4 选项 + `<answer>` 字母（题目生成阶段）
+* 题干必须围绕图片描述，不得出现“结合文献/依据文献/文档/上下文/context”等措辞
 
 ### Revise（去捷径）
 
-* 禁止“一句文档原话直接=答案”的线索
+* 禁止“一句参考信息原话直接=答案”的线索
 * 强制跨模态桥接（若此前缺失）
 * 干扰项同类同粒度，且看似合理但被条件排除
 

@@ -11,10 +11,11 @@ def build_stage1_step_prompt(context: str, feedback: str, previous_question: str
         你需要围绕图片“中心区域”的视觉锚点，生成一个多跳题的第1步子问题(单选题)。
         要求:
         - 题干包含 A-D 四个选项。
-        - 题干必须首先依赖图片中心视觉锚点，必要时可结合文档。
+        - 题干必须围绕图片中心视觉锚点，不得引导读者查阅文档/文献。
+        - 题干中禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
         {extra}{previous}
 
-        文档内容:
+        参考信息(仅供内部推理，不得在题干中提到):
         {context.strip()}
 
         只输出以下格式:
@@ -32,7 +33,7 @@ def build_stage2_step_prompt(
     force_cross_modal: bool,
 ) -> str:
     extra = f"\n提升难度指引: {feedback.strip()}" if feedback else ""
-    cross_modal = "必须跨模态桥接(同时依赖图与文)。" if force_cross_modal else "可以跨模态桥接。"
+    cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
     return dedent(
         f"""
         这是上一步的子问题与答案:
@@ -40,13 +41,20 @@ def build_stage2_step_prompt(
         答案字母: {previous_step.answer_letter}
         答案短语: {previous_step.answer_text}
 
-        现在生成第2步子问题(单选题)，需在视觉锚点基础上引入新的文档关键点形成推理。
-        - 新问题必须使用新的文档关键点: {fact_hint}
+        现在生成第2步子问题(单选题)，需在视觉锚点基础上引入新的关键信息形成推理。
+        - 新问题必须使用新的关键信息: {fact_hint}
         - {cross_modal}
-        - 题干包含 A-D 选项，答案可在文档中定位。
+        - 题干包含 A-D 选项，答案需可验证。
+        - 题干必须围绕图片中心视觉锚点，禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
+        - 禁止“纯实体匹配/纯定义检索”题（例如“X 是什么/哪个是 X/下列哪项描述正确”但不依赖图像细节）。
+        - 必须至少使用以下难度算子之一作为核心（不要在题干中写出算子名）：
+          A 差异对比：参考信息给出相近概念/条件，题干要求根据图中视觉证据区分并推断结论。
+          B 条件计算：参考信息给出公式/数据/阈值，题干要求结合图中参数/关系进行计算或条件推断（选项为数值/区间/等级）。
+          C 异常检测：参考信息给出标准流程/组成，题干要求从图中找出缺失/多余/冲突点并判断影响。
+        - 干扰项必须是参考信息中出现过的同类真实概念/实体/条件，但在当前图像语境下为错误（Hard Negatives）。
         {extra}
 
-        文档内容:
+        参考信息(仅供内部推理，不得在题干中提到):
         {context.strip()}
 
         只输出以下格式:
@@ -64,7 +72,7 @@ def build_stage3_step_prompt(
     force_cross_modal: bool,
 ) -> str:
     extra = f"\n提升难度指引: {feedback.strip()}" if feedback else ""
-    cross_modal = "必须跨模态桥接(同时依赖图与文)。" if force_cross_modal else "可以跨模态桥接。"
+    cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
     return dedent(
         f"""
         这是上一步的子问题与答案:
@@ -73,12 +81,19 @@ def build_stage3_step_prompt(
         答案短语: {previous_step.answer_text}
         {extra}
 
-        现在生成第3步子问题(单选题)，继续引入新的文档关键点形成更深推理。
-        - 新问题必须使用新的文档关键点: {fact_hint}
+        现在生成第3步子问题(单选题)，继续引入新的关键信息形成更深推理。
+        - 新问题必须使用新的关键信息: {fact_hint}
         - {cross_modal}
-        - 题干包含 A-D 选项，答案可在文档中定位。
+        - 题干包含 A-D 选项，答案需可验证。
+        - 题干必须围绕图片中心视觉锚点，禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
+        - 禁止“纯实体匹配/纯定义检索”题（例如“X 是什么/哪个是 X/下列哪项描述正确”但不依赖图像细节）。
+        - 必须至少使用以下难度算子之一作为核心（不要在题干中写出算子名）：
+          A 差异对比：参考信息给出相近概念/条件，题干要求根据图中视觉证据区分并推断结论。
+          B 条件计算：参考信息给出公式/数据/阈值，题干要求结合图中参数/关系进行计算或条件推断（选项为数值/区间/等级）。
+          C 异常检测：参考信息给出标准流程/组成，题干要求从图中找出缺失/多余/冲突点并判断影响。
+        - 干扰项必须是参考信息中出现过的同类真实概念/实体/条件，但在当前图像语境下为错误（Hard Negatives）。
 
-        文档内容:
+        参考信息(仅供内部推理，不得在题干中提到):
         {context.strip()}
 
         只输出以下格式:
@@ -96,7 +111,7 @@ def build_extend_step_prompt(
     force_cross_modal: bool,
 ) -> str:
     extra = f"\n提升难度指引: {feedback.strip()}" if feedback else ""
-    cross_modal = "必须跨模态桥接(同时依赖图与文)。" if force_cross_modal else "可以跨模态桥接。"
+    cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
     return dedent(
         f"""
         这是上一步的子问题与答案:
@@ -105,12 +120,15 @@ def build_extend_step_prompt(
         答案短语: {previous_step.answer_text}
 
         请继续扩链生成新的子问题(单选题)，要求:
-        - 使用新的文档关键点或新的视觉关系: {fact_hint}
+        - 使用新的关键信息或新的视觉关系: {fact_hint}
         - {cross_modal}
-        - 题干包含 A-D 选项，答案可在文档中定位。
+        - 题干包含 A-D 选项，答案需可验证。
+        - 题干必须围绕图片中心视觉锚点，禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
+        - 禁止“纯实体匹配/纯定义检索”题；必须以对比/计算/异常检测中的至少一种为核心。
+        - 干扰项必须是参考信息中出现过的同类真实概念/实体/条件，但在当前图像语境下为错误（Hard Negatives）。
         {extra}
 
-        文档内容:
+        参考信息(仅供内部推理，不得在题干中提到):
         {context.strip()}
 
         只输出以下格式:
@@ -127,7 +145,7 @@ def build_revise_prompt(
     fact_hint: str,
     force_cross_modal: bool,
 ) -> str:
-    cross_modal = "必须跨模态桥接(同时依赖图与文)。" if force_cross_modal else "可以跨模态桥接。"
+    cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
     return dedent(
         f"""
         需要修订以下子问题(单选题)，原因: {reason}
@@ -140,10 +158,13 @@ def build_revise_prompt(
 
         修订要求:
         - {cross_modal}
-        - 使用新的文档关键点或明确证据: {fact_hint}
+        - 使用新的关键信息或明确证据: {fact_hint}
         - 题干包含 A-D 选项，答案唯一且可验证。
+        - 题干必须围绕图片中心视觉锚点，禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
+        - 禁止“纯实体匹配/纯定义检索”题；必须以对比/计算/异常检测中的至少一种为核心。
+        - 干扰项必须是参考信息中出现过的同类真实概念/实体/条件，但在当前图像语境下为错误（Hard Negatives）。
 
-        文档内容:
+        参考信息(仅供内部推理，不得在题干中提到):
         {context.strip()}
 
         只输出以下格式:
@@ -165,20 +186,21 @@ def build_graph_1hop_step_prompt(
     force_cross_modal: bool,
 ) -> str:
     extra = f"\n提升难度指引: {feedback.strip()}" if feedback else ""
-    cross_modal = "必须跨模态桥接(同时依赖图与文)。" if force_cross_modal else "可以跨模态桥接。"
+    cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
     distractors = ", ".join(distractor_entities[:12]) if distractor_entities else "(由你生成)"
     return dedent(
         f"""
         你需要基于“本地知识点链”的一条关联生成 1-hop 子问题(单选题)。
         该子问题用于后续 reverse-chaining 合成多跳题，因此必须满足：
-        - 只凭文档证据就能确定正确选项，同时仍需结合图片中心视觉锚点避免纯文本捷径。
+        - 证据来自参考信息，但题干必须围绕图片中心视觉锚点，避免纯文本捷径。
         - 题干中不要出现正确答案 head（包括同义词/缩写）。
         - {cross_modal}
+        - 题干中禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
 
         图片视觉锚点参考(来自 step_0 题目，请沿用其中心区域锚点语境):
         {anchor_question.strip()}
 
-        当前 hop 的结构化证据:
+        当前 hop 的结构化证据(仅供内部推理，不要原样复制进题干):
         - evidence_snippet(仅供你生成题目，不要原样复制进题干):
         {evidence_snippet.strip() or "(未提供)"}
         - knowledge_link: head={head} ; relation={relation} ; tail={tail}

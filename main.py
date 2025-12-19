@@ -35,7 +35,7 @@ def main() -> None:
 
         try:
             solver_raw, solver_letter = try_solve_question(
-                context, episode.stage_final.question, image_path, MODEL_SOLVE_FINAL
+                episode.stage_final.question, image_path, MODEL_SOLVE_FINAL
             )
             standard_letter = parse_option_letter_optional(episode.stage_final.answer)
             if solver_letter:
