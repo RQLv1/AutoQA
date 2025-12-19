@@ -6,6 +6,7 @@ from prompts import build_graph_1hop_step_prompt, build_revise_prompt, build_sta
 from pipeline.pipeline_solvers import grade_answer, solve_mcq
 from steps.operate_calculation_agent import run_operate_calculation_agent
 from steps.operate_distinction_agent import run_operate_distinction_agent
+from steps.quality import is_low_quality_entity_matching
 from steps.runner import run_step, select_model_for_step
 from steps.validation import validate_step
 from utils.config import MAX_STEPS_PER_ROUND, MIN_HOPS, MODEL_SOLVE_MEDIUM, MODEL_SOLVE_STRONG
@@ -90,6 +91,14 @@ def generate_steps_graph_mode(
         medium_correct = grade_answer(step.answer_letter or "", medium_letter)
         strong_correct = grade_answer(step.answer_letter or "", strong_letter)
         needs_revision, reason = validate_step(step, False, strong_correct)
+        if not needs_revision and is_low_quality_entity_matching(step.question):
+            needs_revision, reason = True, "LOW_QUALITY (entity matching / missing operator)"
+        if (
+            not needs_revision
+            and step.modal_use in {"text", "image"}
+            and steps[-1].modal_use == step.modal_use
+        ):
+            needs_revision, reason = True, f"modal_use consecutive pure({step.modal_use})"
         if needs_revision:
             print(f"[Step {k}] 触发 revise: {reason}")
             revise_prompt = build_revise_prompt(
@@ -97,6 +106,8 @@ def generate_steps_graph_mode(
                 step,
                 reason,
                 f"knowledge_link=({edge.head},{edge.relation},{edge.tail})",
+                operate_distinction.draft,
+                operate_calculation.draft,
                 False,
             )
             step = run_step(revise_prompt, image_path, model, k)

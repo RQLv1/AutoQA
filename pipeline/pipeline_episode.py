@@ -52,6 +52,8 @@ def run_episode(
         revise_reasons.append("strong solver failed")
     if difficulty_metrics.get("strong_text_only_correct", False):
         revise_reasons.append("text-only shortcut found")
+    if difficulty_metrics.get("strong_black_correct", False):
+        revise_reasons.append("black-image shortcut found")
     if any(judge_flags.values()):
         flagged = ", ".join(k for k, v in judge_flags.items() if v)
         revise_reasons.append(f"adversarial_check_failed({flagged})")

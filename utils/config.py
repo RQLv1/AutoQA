@@ -22,11 +22,12 @@ API_KEY = "e086b5a947c3c2651165617b22318df5"
 
 MAX_ROUNDS = int(os.getenv("MAX_ROUNDS", "10"))
 QUESTION_LOG_PATH = os.getenv("QUESTION_LOG_PATH", "question_log.jsonl")
-MAX_STEPS_PER_ROUND = int(os.getenv("MAX_STEPS_PER_ROUND", "9"))
-MIN_HOPS = int(os.getenv("MIN_HOPS", "8"))
+MAX_STEPS_PER_ROUND = int(os.getenv("MAX_STEPS_PER_ROUND", "6"))
+MIN_HOPS = int(os.getenv("MIN_HOPS", "5"))
 REQUIRE_CROSS_MODAL = os.getenv("REQUIRE_CROSS_MODAL", "true").lower() in {"1", "true", "yes"}
 
 VERIFY_STRICT = os.getenv("VERIFY_STRICT", "false").lower() in {"1", "true", "yes"}
+ENABLE_BLACK_IMAGE_CHECK = os.getenv("ENABLE_BLACK_IMAGE_CHECK", "true").lower() in {"1", "true", "yes"}
 
 ENABLE_GRAPH_MODE = os.getenv("ENABLE_GRAPH_MODE", "true").lower() in {"1", "true", "yes"}
 DOC_CHUNK_WORDS = int(os.getenv("DOC_CHUNK_WORDS", "160"))

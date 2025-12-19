@@ -3,6 +3,7 @@
 AutoQA 是一个「图片为主 + 参考信息为辅」驱动的自动出题系统，用多轮迭代生成**高难度、可验证、强多模态依赖**的单选题（MCQ），并通过“求解模型 + 反思模型 + 过程裁判（可选）”闭环提升难度。
 
 关键约束：
+
 - 出题阶段：题干必须围绕图片中心视觉锚点展开，参考信息仅供内部推理，不得在题干中显式提到或“引导读者查阅”。
 - 求解阶段：求解器模型**只接收图片 + question**，不会喂入参考信息。
 - 题干禁止出现引用措辞：如“结合文献 / 依据文献 / 文档 / 上下文 / context”等。
@@ -235,6 +236,7 @@ python main.py
 ### 验证（可选）
 
 * `VERIFY_STRICT`：是否启用更严格的校验（如答案泄露粗检），默认 `false`
+* `ENABLE_BLACK_IMAGE_CHECK`：是否启用“黑图盲测”（给求解器一张全黑图片 + 题干，若仍答对则判定题干存在文本捷径），默认 `true`
 
 ### Graph Mode（可选）
 
@@ -261,6 +263,7 @@ python main.py
 * `difficulty_metrics`：
   * `medium_correct`, `strong_correct`
   * `strong_text_only_correct`（不看图仅看题干是否也能做对，用于检测纯文本捷径）
+  * `strong_black_correct`（喂全黑图片 + 题干是否也能做对，用于额外检测文本捷径）
   * `difficulty_score`, `cross_modal_used`, `num_hops`
 * `solver_final_pred`（A/B/C/D）
 * `solver_final_raw`（最终求解器原始输出，用于排查解析问题）

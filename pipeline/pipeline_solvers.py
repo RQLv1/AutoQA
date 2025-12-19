@@ -3,7 +3,8 @@ from typing import Any
 
 from prompts import build_solver_prompt, build_solver_prompt_text_only
 from utils.api_client import call_text_model, call_vision_model
-from utils.config import MODEL_SOLVE_MEDIUM, MODEL_SOLVE_STRONG
+from utils.blank_image import get_black_png_path
+from utils.config import ENABLE_BLACK_IMAGE_CHECK, MODEL_SOLVE_MEDIUM, MODEL_SOLVE_STRONG
 from utils.parsing import extract_tag_optional, parse_option_letter_optional
 from utils.schema import StageResult
 
@@ -30,6 +31,11 @@ def solve_mcq_text_only(question: str, model: str) -> tuple[str, str | None]:
     return normalized_raw, solver_letter
 
 
+def solve_mcq_black_image(question: str, model: str) -> tuple[str, str | None]:
+    black = get_black_png_path()
+    return solve_mcq(question, black, model)
+
+
 def grade_answer(answer: str, solver_letter: str | None) -> bool:
     standard = parse_option_letter_optional(answer)
     if not standard or not solver_letter:
@@ -48,23 +54,31 @@ def evaluate_difficulty(
     strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
         final.question, MODEL_SOLVE_STRONG
     )
+    strong_black_raw = "<answer></answer>"
+    strong_black_letter = None
+    if ENABLE_BLACK_IMAGE_CHECK:
+        strong_black_raw, strong_black_letter = solve_mcq_black_image(final.question, MODEL_SOLVE_STRONG)
     medium_correct = grade_answer(final.answer, medium_letter)
     strong_correct = grade_answer(final.answer, strong_letter)
     strong_text_only_correct = grade_answer(final.answer, strong_text_only_letter)
+    strong_black_correct = grade_answer(final.answer, strong_black_letter) if ENABLE_BLACK_IMAGE_CHECK else False
     difficulty_score = 1.0 if (strong_correct and not medium_correct) else 0.5 if strong_correct else 0.0
     return {
         "medium_correct": medium_correct,
         "strong_correct": strong_correct,
         "strong_text_only_correct": strong_text_only_correct,
+        "strong_black_correct": strong_black_correct,
         "difficulty_score": difficulty_score,
         "cross_modal_used": cross_modal_used,
         "num_hops": num_hops,
         "medium_pred": medium_letter,
         "strong_pred": strong_letter,
         "strong_text_only_pred": strong_text_only_letter,
+        "strong_black_pred": strong_black_letter,
         "medium_raw": medium_raw,
         "strong_raw": strong_raw,
         "strong_text_only_raw": strong_text_only_raw,
+        "strong_black_raw": strong_black_raw,
     }
 
 

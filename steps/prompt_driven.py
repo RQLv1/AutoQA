@@ -11,6 +11,7 @@ from pipeline.pipeline_facts import format_fact_hint, load_fact_candidates
 from pipeline.pipeline_solvers import grade_answer, solve_mcq
 from steps.operate_calculation_agent import run_operate_calculation_agent
 from steps.operate_distinction_agent import run_operate_distinction_agent
+from steps.quality import is_low_quality_entity_matching
 from steps.runner import run_step, select_model_for_step
 from steps.validation import validate_step
 from utils.config import (
@@ -104,10 +105,27 @@ def generate_steps_prompt_driven(
         strong_correct = grade_answer(step.answer_letter or "", strong_letter)
         needs_revision, reason = validate_step(step, force_cross_modal, strong_correct)
 
+        if not needs_revision and k > 0 and is_low_quality_entity_matching(step.question):
+            needs_revision, reason = True, "LOW_QUALITY (entity matching / missing operator)"
+
+        if (
+            not needs_revision
+            and k > 0
+            and step.modal_use in {"text", "image"}
+            and steps[-1].modal_use == step.modal_use
+        ):
+            needs_revision, reason = True, f"modal_use consecutive pure({step.modal_use})"
+
         if needs_revision:
             print(f"[Step {k}] 触发 revise: {reason}")
             revise_prompt = build_revise_prompt(
-                context, step, reason, fact_hint, force_cross_modal
+                context,
+                step,
+                reason,
+                fact_hint,
+                operate_distinction_draft,
+                operate_calculation_draft,
+                force_cross_modal,
             )
             step = run_step(revise_prompt, image_path, model, k)
             medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
