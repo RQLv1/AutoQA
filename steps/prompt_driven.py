@@ -9,6 +9,8 @@ from prompts import (
 )
 from pipeline.pipeline_facts import format_fact_hint, load_fact_candidates
 from pipeline.pipeline_solvers import grade_answer, solve_mcq
+from steps.operate_calculation_agent import run_operate_calculation_agent
+from steps.operate_distinction_agent import run_operate_distinction_agent
 from steps.runner import run_step, select_model_for_step
 from steps.validation import validate_step
 from utils.config import (
@@ -40,19 +42,59 @@ def generate_steps_prompt_driven(
         force_cross_modal = REQUIRE_CROSS_MODAL and not cross_modal_used and k >= 1
         model = select_model_for_step(k)
 
+        operate_distinction_draft = ""
+        operate_calculation_draft = ""
+        if k > 0 and steps:
+            operate_distinction = run_operate_distinction_agent(
+                context=context,
+                image_path=image_path,
+                previous_step=steps[-1],
+                fact_hint=fact_hint,
+                feedback=feedback,
+                force_cross_modal=force_cross_modal,
+            )
+            operate_calculation = run_operate_calculation_agent(
+                context=context,
+                image_path=image_path,
+                previous_step=steps[-1],
+                fact_hint=fact_hint,
+                feedback=feedback,
+                force_cross_modal=force_cross_modal,
+            )
+            operate_distinction_draft = operate_distinction.draft
+            operate_calculation_draft = operate_calculation.draft
+
         if k == 0:
             prompt = build_stage1_step_prompt(context, feedback, previous_final_question)
         elif k == 1:
             prompt = build_stage2_step_prompt(
-                context, steps[-1], fact_hint, feedback, force_cross_modal
+                context,
+                steps[-1],
+                fact_hint,
+                operate_distinction_draft,
+                operate_calculation_draft,
+                feedback,
+                force_cross_modal,
             )
         elif k == 2:
             prompt = build_stage3_step_prompt(
-                context, steps[-1], fact_hint, feedback, force_cross_modal
+                context,
+                steps[-1],
+                fact_hint,
+                operate_distinction_draft,
+                operate_calculation_draft,
+                feedback,
+                force_cross_modal,
             )
         else:
             prompt = build_extend_step_prompt(
-                context, steps[-1], fact_hint, feedback, force_cross_modal
+                context,
+                steps[-1],
+                fact_hint,
+                operate_distinction_draft,
+                operate_calculation_draft,
+                feedback,
+                force_cross_modal,
             )
 
         step = run_step(prompt, image_path, model, k)

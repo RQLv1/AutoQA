@@ -10,6 +10,13 @@ class StageResult:
 
 
 @dataclass
+class OperateResult:
+    operator_type: str
+    draft: str
+    raw: str
+
+
+@dataclass
 class StepResult:
     k: int
     question: str

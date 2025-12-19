@@ -4,6 +4,8 @@ from graph.pipeline_graph import build_entity_pool, build_knowledge_edges_cached
 from graph.pipeline_path_sampling import sample_path
 from prompts import build_graph_1hop_step_prompt, build_revise_prompt, build_stage1_step_prompt
 from pipeline.pipeline_solvers import grade_answer, solve_mcq
+from steps.operate_calculation_agent import run_operate_calculation_agent
+from steps.operate_distinction_agent import run_operate_distinction_agent
 from steps.runner import run_step, select_model_for_step
 from steps.validation import validate_step
 from utils.config import MAX_STEPS_PER_ROUND, MIN_HOPS, MODEL_SOLVE_MEDIUM, MODEL_SOLVE_STRONG
@@ -44,12 +46,36 @@ def generate_steps_graph_mode(
 
     for k, edge in enumerate(reversed(path), start=1):
         distractors = [e for e in entity_pool if e != edge.head]
+        operate_fact_hint = (
+            f"evidence_snippet={edge.evidence or ''}\n"
+            f"knowledge_link: head={edge.head} ; relation={edge.relation} ; tail={edge.tail}"
+        )
+        operate_distinction = run_operate_distinction_agent(
+            context=context,
+            image_path=image_path,
+            previous_step=steps[-1],
+            fact_hint=operate_fact_hint,
+            feedback=feedback,
+            force_cross_modal=False,
+            forbidden_terms=[edge.head],
+        )
+        operate_calculation = run_operate_calculation_agent(
+            context=context,
+            image_path=image_path,
+            previous_step=steps[-1],
+            fact_hint=operate_fact_hint,
+            feedback=feedback,
+            force_cross_modal=False,
+            forbidden_terms=[edge.head],
+        )
         prompt = build_graph_1hop_step_prompt(
             anchor_question=step0.question,
             evidence_snippet=edge.evidence or "",
             head=edge.head,
             relation=edge.relation,
             tail=edge.tail,
+            operate_distinction_draft=operate_distinction.draft,
+            operate_calculation_draft=operate_calculation.draft,
             distractor_entities=distractors,
             feedback=feedback,
             force_cross_modal=False,
