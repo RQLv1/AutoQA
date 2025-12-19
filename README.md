@@ -127,7 +127,7 @@ Final 题目生成后，立即调用 `evaluate_difficulty` 做 Medium Attack：
 
 - `medium_correct == true` → 说明 Episode 内已加难但仍偏简单，直接废弃并继续生成
 - `medium_correct == false` → 保留并记录，`strong_correct` 仅用于标记“中难/极难”
-- 若 `strong_correct == false` → 触发 Review 智能体复核；复核为正确则追加到 `GENQA_PATH`
+- 若 `medium_correct == false` → 触发 Review 智能体复核；复核为正确则写入 `GENQA_SIMPLE_PATH` 或 `GENQA_HARD_PATH`
 
 默认会一直生成直到找到固定数量的难题（见 `main.py` 的 `target_hard_questions`）。
 
@@ -189,7 +189,8 @@ python main.py
 * `MODEL_SUM（或 MODEL_STAGE_SUM）`
 * `MAX_ROUNDS`
 * `QUESTION_LOG_PATH`
-* `GENQA_PATH`
+* `GENQA_SIMPLE_PATH`
+* `GENQA_HARD_PATH`
 * `API_MAX_RETRIES`：API 最大重试次数（默认 5）
 * `API_RETRY_SLEEP_SECONDS`：API 报错后等待秒数再重试（默认 5）
 
@@ -248,7 +249,8 @@ python main.py
 
 - `QUESTION_LOG_PATH`（默认 `question_log.jsonl`）：一行一个 Episode，便于流式追加与脚本处理（中文不再转义）。
 - 同名 `.json`（例如 `question_log.json`）：层级化 + 缩进格式，便于人工阅读（数组形式累计保存）。
-- `GENQA_PATH`（默认 `genqa.json`）：当 Strong Solver 失败时，经 Review 判定题目正确才会加入。
+- `GENQA_SIMPLE_PATH`（默认 `genqa_simple.json`）：Medium 失败 & Strong 成功，经 Review 判定题目正确才会加入（包含 step/final）。
+- `GENQA_HARD_PATH`（默认 `genqa_hard.json`）：Medium 失败 & Strong 失败，经 Review 判定题目正确才会加入（包含 step/final）。
 
 ### 日志结构（每行一个 Episode）
 
@@ -280,6 +282,7 @@ python main.py
 * `cross_modal_bridge`: bool
 * `judge_flags`: `leakage/ambiguity/unsupported/distractors_weak` 等（可选）
 * `raw`
+* `reasoning`
 
 ---
 
@@ -295,7 +298,7 @@ python main.py
 * 每次引入“新的关键信息/新关系”，并明确证据 span（证据来自参考信息，但不得在题干中提及其来源）
 * 强制至少一次 `cross_modal_bridge=true`（含义：题干必须同时依赖图像视觉证据 + 题干中给出的条件/事实）
 * 计算优先：默认优先生成“条件计算”题（数值/区间/等级选项），无法形成可验证计算时才退化为对比/异常检测
-* 输出结构化字段：`question/answer_letter/answer_text/evidence/modal_use/cross_modal_bridge`
+* 输出结构化字段：`question/answer_letter/answer_text/evidence/modal_use/cross_modal_bridge/reasoning`
 
 ### Final（Compress）
 

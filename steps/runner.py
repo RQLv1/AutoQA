@@ -50,6 +50,7 @@ def run_step(prompt: str, image_path: Path, model: str, k: int) -> StepResult:
         raw, "cross_modal_bridge"
     )
     cross_modal_bridge = parse_bool(cross_modal_raw)
+    reasoning = extract_tag_optional(raw, "reasoning")
 
     return StepResult(
         k=k,
@@ -60,4 +61,5 @@ def run_step(prompt: str, image_path: Path, model: str, k: int) -> StepResult:
         modal_use=modal_use,
         cross_modal_bridge=cross_modal_bridge,
         raw=raw,
+        reasoning=reasoning,
     )

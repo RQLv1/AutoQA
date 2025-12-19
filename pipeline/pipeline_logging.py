@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from steps import step_to_dict
+from utils.genqa import save_genqa_item
 from utils.schema import EpisodeResult
 
 
@@ -87,7 +88,6 @@ def save_genqa_question(
     review_raw: str | None = None,
     review_decision: str | None = None,
 ) -> None:
-    genqa_path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "question": episode.stage_final.question,
         "answer": episode.stage_final.answer,
@@ -96,20 +96,4 @@ def save_genqa_question(
         "review_decision": review_decision,
         "review_raw": review_raw,
     }
-    existing: list[dict[str, object]] = []
-    if genqa_path.exists():
-        try:
-            loaded = json.loads(genqa_path.read_text(encoding="utf-8"))
-            if isinstance(loaded, list):
-                existing = loaded  # type: ignore[assignment]
-            elif isinstance(loaded, dict):
-                existing = [loaded]  # type: ignore[list-item]
-            else:
-                existing = []
-        except json.JSONDecodeError:
-            existing = []
-    existing.append(payload)
-    genqa_path.write_text(
-        json.dumps(existing, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
+    save_genqa_item(genqa_path, payload)

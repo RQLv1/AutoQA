@@ -28,6 +28,7 @@ class StepResult:
     cross_modal_bridge: bool
     raw: str
     judge_flags: dict[str, bool] | None = None
+    reasoning: str | None = None
 
 
 @dataclass

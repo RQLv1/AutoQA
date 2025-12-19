@@ -21,6 +21,7 @@ def build_stage1_step_prompt(context: str, feedback: str, previous_question: str
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
         <answer>A/B/C/D</answer>
+        <reasoning>简要推理过程(不超过4句)</reasoning>
         """
     ).strip()
 
@@ -73,6 +74,7 @@ def build_stage2_step_prompt(
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
         <answer>A/B/C/D</answer>
+        <reasoning>简要推理过程(不超过4句)</reasoning>
         """
     ).strip()
 
@@ -125,6 +127,7 @@ def build_stage3_step_prompt(
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
         <answer>A/B/C/D</answer>
+        <reasoning>简要推理过程(不超过4句)</reasoning>
         """
     ).strip()
 
@@ -175,6 +178,7 @@ def build_extend_step_prompt(
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
         <answer>A/B/C/D</answer>
+        <reasoning>简要推理过程(不超过4句)</reasoning>
         """
     ).strip()
 
@@ -223,6 +227,7 @@ def build_revise_prompt(
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
         <answer>A/B/C/D</answer>
+        <reasoning>简要推理过程(不超过4句)</reasoning>
         """
     ).strip()
 
@@ -281,5 +286,6 @@ def build_graph_1hop_step_prompt(
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
         <answer>A/B/C/D</answer>
+        <reasoning>简要推理过程(不超过4句)</reasoning>
         """
     ).strip()

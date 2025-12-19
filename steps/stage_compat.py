@@ -10,7 +10,10 @@ def derive_stage_results(steps: list[StepResult]) -> tuple[StageResult, StageRes
         return f"{step.answer_letter}；{step.answer_text}" if step.answer_letter else step.answer_text
 
     stage_1 = StageResult(
-        question=steps[0].question, answer=stage_answer(steps[0]), raw=steps[0].raw, reasoning=None
+        question=steps[0].question,
+        answer=stage_answer(steps[0]),
+        raw=steps[0].raw,
+        reasoning=steps[0].reasoning,
     )
     stage_2_source = steps[1] if len(steps) > 1 else steps[0]
     stage_3_source = steps[2] if len(steps) > 2 else stage_2_source
@@ -18,13 +21,13 @@ def derive_stage_results(steps: list[StepResult]) -> tuple[StageResult, StageRes
         question=stage_2_source.question,
         answer=stage_answer(stage_2_source),
         raw=stage_2_source.raw,
-        reasoning=None,
+        reasoning=stage_2_source.reasoning,
     )
     stage_3 = StageResult(
         question=stage_3_source.question,
         answer=stage_answer(stage_3_source),
         raw=stage_3_source.raw,
-        reasoning=None,
+        reasoning=stage_3_source.reasoning,
     )
     return stage_1, stage_2, stage_3
 
@@ -40,4 +43,5 @@ def step_to_dict(step: StepResult) -> dict[str, object]:
         "cross_modal_bridge": step.cross_modal_bridge,
         "raw": step.raw,
         "judge_flags": step.judge_flags,
+        "reasoning": step.reasoning,
     }

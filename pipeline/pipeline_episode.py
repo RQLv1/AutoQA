@@ -38,6 +38,11 @@ def run_episode(
         f"strong_correct={difficulty_metrics.get('strong_correct')}",
         f"score={difficulty_metrics.get('difficulty_score')}",
     )
+    if not (
+        difficulty_metrics.get("medium_correct", False)
+        and difficulty_metrics.get("strong_correct", False)
+    ) and stage_final.reasoning:
+        print(f"推理过程: <reasoning>{stage_final.reasoning}</reasoning>")
     harden_attempts = 0
     max_harden_attempts = max(0, MAX_HARDEN_ATTEMPTS)
     while difficulty_metrics.get("medium_correct", False) and harden_attempts < max_harden_attempts:
@@ -61,6 +66,11 @@ def run_episode(
             f"strong_correct={difficulty_metrics.get('strong_correct')}",
             f"score={difficulty_metrics.get('difficulty_score')}",
         )
+        if not (
+            difficulty_metrics.get("medium_correct", False)
+            and difficulty_metrics.get("strong_correct", False)
+        ) and stage_final.reasoning:
+            print(f"推理过程: <reasoning>{stage_final.reasoning}</reasoning>")
 
     return EpisodeResult(
         stage_1=stage_1,
