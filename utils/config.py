@@ -3,7 +3,7 @@ import os
 MODEL_STAGE_1 = os.getenv("MODEL_STAGE_1", "gpt-5-chat-0807-global")
 MODEL_STAGE_2 = os.getenv("MODEL_STAGE_2", "claude_sonnet4_5")
 MODEL_STAGE_3 = os.getenv("MODEL_STAGE_3", "gpt-51-1113-global")
-MODEL_SUM = os.getenv("MODEL_SUM", os.getenv("MODEL_STAGE_SUM", "gpt-51-1113-global"))
+MODEL_SUM = os.getenv("MODEL_SUM", os.getenv("MODEL_STAGE_SUM", "gpt-5-pro-1006-global"))
 MODEL_OPERATE = os.getenv("MODEL_OPERATE", MODEL_STAGE_2)
 MODEL_OPERATE_DISTINCTION = os.getenv("MODEL_OPERATE_DISTINCTION", MODEL_OPERATE)
 MODEL_OPERATE_CALCULATION = os.getenv("MODEL_OPERATE_CALCULATION", MODEL_OPERATE)

@@ -1,0 +1,36 @@
+[
+  {
+    "source": "final",
+    "question": "在图中中心颗粒放大的高分辨 TEM 图（标出(200)晶面间距的那一幅）与其右侧对应的应变分布伪彩色图中，可以读出该界面区域的(200)晶面间距相对于未掺杂样品略有增加，同时主应变带的颜色落在标尺右侧接近“3% 拉伸”的区间。若已知这种拉伸应变与图中可见的外来离子掺入协同作用，会使该界面处氧空位形成自由能降到“略为负值但未超过强自发区”，则与图像相符的 ΔG 数值区间最可能是哪一项？  \nA. ΔG ≈ -0.5 eV 至 -0.2 eV  \nB. ΔG ≈ -0.2 eV 至 0 eV  \nC. ΔG ≈ 0 eV 至 +0.2 eV  \nD. ΔG ≈ -0.8 eV 以下",
+    "answer": "A",
+    "reasoning": "由应变图可读出界面拉伸约为 3%，与中心区域放大的(200)晶面间距增加相吻合，说明 Rb⁺ 掺杂确实引起晶格膨胀。理论上 3% 拉伸本身即可明显降低氧空位形成能，掺杂进一步将其压到负值但仍处于适中水平。综合可知 ΔG 应落在“弱至中等自发”负值区间，对应 A 选项（-0.5 到 -0.2 eV）。",
+    "difficulty_metrics": {
+      "medium_correct": false,
+      "strong_correct": false,
+      "strong_text_only_correct": false,
+      "strong_no_image_correct": false,
+      "difficulty_score": 0.0,
+      "cross_modal_used": true,
+      "num_hops": 4,
+      "medium_pred": "B",
+      "strong_pred": "B",
+      "strong_text_only_pred": "B",
+      "strong_no_image_pred": "B",
+      "medium_raw": "<answer>B</answer>",
+      "strong_raw": "<answer>B</answer>",
+      "strong_text_only_raw": "<answer>B</answer>",
+      "strong_no_image_raw": "<answer>B</answer>"
+    },
+    "review_decision": "correct",
+    "review_raw": "<answer>correct</answer>"
+  },
+  {
+    "source": "step",
+    "step_k": 3,
+    "question": "根据图1a右侧放大示意图中标注的绿色短链修饰剂的结构特征及其在颗粒表面的空间位置，结合该修饰剂在UV固化过程中的作用机制，若已知单颗粒平均粒径为10.5 nm（球形近似），该修饰剂投料量为0.05 g（分子量248 g/mol），每分子含1个可参与交联的官能团，颗粒总数为5×10¹⁶个，则该体系的交联密度等级属于：\n\nA. 高交联（A级），交联密度 > 0.8 sites/nm²  \nB. 中交联（B级），交联密度 0.5–0.8 sites/nm²  \nC. 低交联（C级），交联密度 0.3–0.5 sites/nm²  \nD. 不足交联（D级），交联密度 < 0.3 sites/nm²",
+    "answer": "D",
+    "reasoning": "从图1a右侧放大图可识别绿色短链为APSi修饰剂，其丙烯酸酯结构在UV固化中作为交联位点。计算步骤：(1) APSi摩尔数 = 0.05 g / 248 g/mol ≈ 2.02×10⁻⁴ mol；(2) 单颗粒表面积 = 4π(10.5/2)² ≈ 346 nm²；(3) 交联密度 = (2.02×10⁻⁴ mol × 6.02×10²³ / 5×10¹⁶个) / 346 nm² ≈ 0.07 sites/nm²。该数值远低于0.3 sites/nm²的阈值，属于D级不足交联。",
+    "review_decision": "correct",
+    "review_raw": "<answer>correct</answer>"
+  }
+]

@@ -83,9 +83,11 @@ AutoQA 是一个「图片为主 + 参考信息为辅」驱动的自动出题系�
 
 当达到阈值后，把多步链路压缩成一个最终 MCQ：
 
-- [ ] 将部分中间结论“隐式化”（不直接明说）
-- [ ] 仅保留必要背景 + 终局问题
-- [ ] 输出仍保持你现有格式：`<question>...</question><answer>...</answer><reasoning>...</reasoning>`（答案为 A/B/C/D）
+将部分中间结论“隐式化”（不直接明说）
+
+仅保留必要背景 + 终局问题
+
+输出仍保持你现有格式：`<question>...</question><answer>...</answer><reasoning>...</reasoning>`（答案为 A/B/C/D）
 
 ---
 
