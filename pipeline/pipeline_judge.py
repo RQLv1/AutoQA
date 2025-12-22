@@ -4,6 +4,10 @@ from utils.parsing import parse_option_letter_optional
 
 
 _OPTION_MARKER = re.compile(r"(?i)(?P<letter>[A-D])\s*[\.．、】【\)]\s*")
+_UNIT_RE = re.compile(
+    r"(?i)\b(%|℃|°c|kpa|mpa|pa|kv|v|ma|a|mw|kw|w|nm|um|mm|cm|m|kg|g|mg|s|min|h)\b"
+)
+_NUMBER_RE = re.compile(r"(?i)(?P<num>[\+\-]?\d+(?:\.\d+)?)")
 
 
 def _extract_options(question: str) -> dict[str, str]:
@@ -22,6 +26,27 @@ def _extract_options(question: str) -> dict[str, str]:
     return options
 
 
+def _extract_unit(option_text: str) -> str | None:
+    if not option_text:
+        return None
+    matches = _UNIT_RE.findall(option_text)
+    if not matches:
+        return None
+    return matches[-1].lower()
+
+
+def _extract_decimal_places(option_text: str) -> int | None:
+    if not option_text:
+        return None
+    match = _NUMBER_RE.search(option_text)
+    if not match:
+        return None
+    num = match.group("num")
+    if "." not in num:
+        return 0
+    return len(num.split(".", 1)[1])
+
+
 def judge_mcq(question: str, answer: str) -> dict[str, bool]:
     options = _extract_options(question)
     correct = parse_option_letter_optional(answer) or ""
@@ -35,10 +60,24 @@ def judge_mcq(question: str, answer: str) -> dict[str, bool]:
             max_len = max(lengths.values())
             min_len = min(lengths.values())
             flags["option_length_bias"] = (min_len > 0) and (max_len / min_len >= 2.5)
+            flags["option_length_variance_20pct"] = (min_len > 0) and (max_len / min_len >= 1.2)
             if correct and correct in lengths:
                 flags["correct_option_longest"] = lengths[correct] == max_len and max_len > 0
+
+        units = {k: _extract_unit(v) for k, v in options.items()}
+        present_units = [u for u in units.values() if u]
+        flags["unit_inconsistent"] = len(set(present_units)) >= 2 if present_units else False
+
+        decimals = {k: _extract_decimal_places(v) for k, v in options.items()}
+        present_decimals = [d for d in decimals.values() if d is not None]
+        flags["decimal_places_inconsistent"] = (
+            len(set(present_decimals)) >= 2 if len(present_decimals) >= 3 else False
+        )
     else:
         flags["option_length_bias"] = False
+        flags["option_length_variance_20pct"] = False
         flags["correct_option_longest"] = False
+        flags["unit_inconsistent"] = False
+        flags["decimal_places_inconsistent"] = False
 
     return flags

@@ -7,6 +7,14 @@ class StageResult:
     question: str
     answer: str
     raw: str
+    reasoning: str | None = None
+
+
+@dataclass
+class OperateResult:
+    operator_type: str
+    draft: str
+    raw: str
 
 
 @dataclass
@@ -20,6 +28,7 @@ class StepResult:
     cross_modal_bridge: bool
     raw: str
     judge_flags: dict[str, bool] | None = None
+    reasoning: str | None = None
 
 
 @dataclass

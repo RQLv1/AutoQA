@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from steps import step_to_dict
+from utils.genqa import save_genqa_item
 from utils.schema import EpisodeResult
 
 
@@ -20,25 +21,30 @@ def save_round_questions(
         "stage_1": {
             "question": episode.stage_1.question,
             "answer": episode.stage_1.answer,
+            "reasoning": episode.stage_1.reasoning,
             "raw": episode.stage_1.raw,
         },
         "stage_2": {
             "question": episode.stage_2.question,
             "answer": episode.stage_2.answer,
+            "reasoning": episode.stage_2.reasoning,
             "raw": episode.stage_2.raw,
         },
         "stage_3": {
             "question": episode.stage_3.question,
             "answer": episode.stage_3.answer,
+            "reasoning": episode.stage_3.reasoning,
             "raw": episode.stage_3.raw,
         },
         "stage_final": {
             "question": episode.stage_final.question,
             "answer": episode.stage_final.answer,
+            "reasoning": episode.stage_final.reasoning,
             "raw": episode.stage_final.raw,
         },
         "final_question": episode.stage_final.question,
         "final_answer": episode.stage_final.answer,
+        "final_reasoning": episode.stage_final.reasoning,
         "steps": [step_to_dict(step) for step in episode.steps],
         "difficulty_metrics": episode.difficulty_metrics,
         "solver_final_pred": solver_final_pred,
@@ -74,3 +80,20 @@ def save_round_questions(
         json.dumps(existing, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+
+
+def save_genqa_question(
+    genqa_path: Path,
+    episode: EpisodeResult,
+    review_raw: str | None = None,
+    review_decision: str | None = None,
+) -> None:
+    payload = {
+        "question": episode.stage_final.question,
+        "answer": episode.stage_final.answer,
+        "reasoning": episode.stage_final.reasoning,
+        "difficulty_metrics": episode.difficulty_metrics,
+        "review_decision": review_decision,
+        "review_raw": review_raw,
+    }
+    save_genqa_item(genqa_path, payload)
