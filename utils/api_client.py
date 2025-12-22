@@ -4,7 +4,12 @@ from pathlib import Path
 
 from openai import OpenAI
 
-from utils.config import API_BASE_URL, API_KEY, API_MAX_RETRIES, API_RETRY_SLEEP_SECONDS
+from utils.config import (
+    API_BASE_URL,
+    API_KEY,
+    API_RECONNECT_RETRIES,
+    API_RECONNECT_SLEEP_SECONDS,
+)
 
 
 def encode_image(image_path: Path) -> str:
@@ -13,13 +18,14 @@ def encode_image(image_path: Path) -> str:
 
 
 def _sleep_before_retry(attempt: int, error: Exception) -> None:
-    if attempt >= max(1, API_MAX_RETRIES):
+    max_attempts = max(5, int(API_RECONNECT_RETRIES))
+    if attempt >= max_attempts:
         return
-    seconds = max(5, int(API_RETRY_SLEEP_SECONDS))
+    seconds = max(10, int(API_RECONNECT_SLEEP_SECONDS))
     if seconds <= 0:
         return
     print(
-        f"[api_client] call failed (attempt {attempt}/{max(1, API_MAX_RETRIES)}), retry in {seconds}s: {type(error).__name__}: {error}",
+        f"[api_client] call failed (attempt {attempt}/{max_attempts}), retry in {seconds}s: {type(error).__name__}: {error}",
         flush=True,
     )
     time.sleep(seconds)
@@ -43,7 +49,8 @@ def call_vision_model(
         kwargs["max_tokens"] = max_tokens
 
     last_error: Exception | None = None
-    for attempt in range(1, max(1, API_MAX_RETRIES) + 1):
+    max_attempts = max(5, int(API_RECONNECT_RETRIES))
+    for attempt in range(1, max_attempts + 1):
         try:
             client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
             resp = client.chat.completions.create(
@@ -85,7 +92,8 @@ def call_text_model(
         kwargs["max_tokens"] = max_tokens
 
     last_error: Exception | None = None
-    for attempt in range(1, max(1, API_MAX_RETRIES) + 1):
+    max_attempts = max(5, int(API_RECONNECT_RETRIES))
+    for attempt in range(1, max_attempts + 1):
         try:
             client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
             resp = client.chat.completions.create(

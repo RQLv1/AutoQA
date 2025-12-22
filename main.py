@@ -24,6 +24,7 @@ def main() -> None:
     hard_questions_found = 0
     target_hard_questions = 5
     max_attempts = MAX_ROUNDS * 3
+    feedback = ""
 
     print(f"=== 开始对抗式生成模式 (Target: {target_hard_questions} Hard Questions) ===")
 
@@ -31,11 +32,15 @@ def main() -> None:
         generated_count += 1
         print(f"\n>>> 尝试第 {generated_count} 次生成 ...")
 
-        episode = run_episode(context, image_path, feedback="", previous_final_question=None)
+        episode = run_episode(context, image_path, feedback=feedback, previous_final_question=None)
+        feedback = episode.reflect_feedback or ""
 
         metrics = episode.difficulty_metrics
         medium_correct = metrics.get("medium_correct", True)
         strong_correct = metrics.get("strong_correct", True)
+        strong_text_only_correct = metrics.get("strong_text_only_correct", True)
+        strong_no_image_correct = metrics.get("strong_no_image_correct", True)
+        final_no_text_shortcut = not (strong_text_only_correct or strong_no_image_correct)
 
         if medium_correct:
             print("题目太简单：Medium Solver 做对了，直接废弃。")
@@ -56,7 +61,7 @@ def main() -> None:
             episode,
             solver_final_pred=metrics.get("strong_pred"),
             solver_final_raw=metrics.get("strong_raw"),
-            reflect_feedback="adversarial_filter_passed",
+            reflect_feedback=episode.reflect_feedback,
             stop_reason="success_hard_question",
         )
 
@@ -71,20 +76,23 @@ def main() -> None:
             )
             if review_passed is True:
                 review_decision = "correct"
-                target_path = genqa_simple_path if strong_correct else genqa_hard_path
-                print(f"[Review] 结果: correct -> {target_path}")
-                save_genqa_item(
-                    target_path,
-                    {
-                        "source": "final",
-                        "question": episode.stage_final.question,
-                        "answer": episode.stage_final.answer,
-                        "reasoning": episode.stage_final.reasoning,
-                        "difficulty_metrics": episode.difficulty_metrics,
-                        "review_decision": review_decision,
-                        "review_raw": review_raw,
-                    },
-                )
+                if final_no_text_shortcut:
+                    target_path = genqa_simple_path if strong_correct else genqa_hard_path
+                    print(f"[Review] 结果: correct -> {target_path}")
+                    save_genqa_item(
+                        target_path,
+                        {
+                            "source": "final",
+                            "question": episode.stage_final.question,
+                            "answer": episode.stage_final.answer,
+                            "reasoning": episode.stage_final.reasoning,
+                            "difficulty_metrics": episode.difficulty_metrics,
+                            "review_decision": review_decision,
+                            "review_raw": review_raw,
+                        },
+                    )
+                else:
+                    print("[Review] 结果: text-only/no-image 可解，跳过入库")
             elif review_passed is False:
                 review_decision = "incorrect"
                 print("[Review] 结果: incorrect")

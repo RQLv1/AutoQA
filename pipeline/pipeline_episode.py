@@ -1,9 +1,9 @@
 from pathlib import Path
 
 from pipeline.pipeline_solvers import evaluate_difficulty
-from prompts import build_final_compress_prompt, build_final_harden_prompt
+from prompts import build_analysis_prompt, build_final_compress_prompt, build_final_harden_prompt
 from steps import derive_stage_results, generate_steps
-from utils.api_client import call_vision_model
+from utils.api_client import call_text_model, call_vision_model
 from utils.config import HARDEN_MODE, MAX_HARDEN_ATTEMPTS, MODEL_SUM
 from utils.parsing import extract_tag_optional
 from utils.schema import EpisodeResult, StageResult
@@ -66,11 +66,32 @@ def run_episode(
             f"strong_correct={difficulty_metrics.get('strong_correct')}",
             f"score={difficulty_metrics.get('difficulty_score')}",
         )
+        print(
+            "[Final] Harden Solver:",
+            f"medium_raw={difficulty_metrics.get('medium_raw')}",
+            f"strong_raw={difficulty_metrics.get('strong_raw')}",
+            f"strong_text_only_raw={difficulty_metrics.get('strong_text_only_raw')}",
+            f"strong_no_image_raw={difficulty_metrics.get('strong_no_image_raw')}",
+        )
         if not (
             difficulty_metrics.get("medium_correct", False)
             and difficulty_metrics.get("strong_correct", False)
         ) and stage_final.reasoning:
             print(f"推理过程: <reasoning>{stage_final.reasoning}</reasoning>")
+
+    feedback_prompt = build_analysis_prompt(
+        stage_final.question,
+        stage_final.answer,
+        str(difficulty_metrics.get("medium_raw") or ""),
+    )
+    reflect_feedback = call_text_model(
+        feedback_prompt,
+        MODEL_SUM,
+        max_tokens=800,
+        temperature=0,
+    ).strip()
+    if reflect_feedback:
+        print("[Final] 反馈:", reflect_feedback)
 
     return EpisodeResult(
         stage_1=stage_1,
@@ -80,4 +101,5 @@ def run_episode(
         steps=steps,
         difficulty_metrics=difficulty_metrics,
         judge_flags={},
+        reflect_feedback=reflect_feedback,
     )

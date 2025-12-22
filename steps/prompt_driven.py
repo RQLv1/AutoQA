@@ -9,7 +9,12 @@ from prompts import (
 )
 from pipeline.pipeline_facts import format_fact_hint, load_fact_candidates
 from pipeline.pipeline_review import review_question
-from pipeline.pipeline_solvers import grade_answer, solve_mcq
+from pipeline.pipeline_solvers import (
+    grade_answer,
+    solve_mcq,
+    solve_mcq_no_image,
+    solve_mcq_text_only,
+)
 from steps.operate_calculation_agent import run_operate_calculation_agent
 from steps.operate_distinction_agent import run_operate_distinction_agent
 from steps.quality import is_low_quality_entity_matching
@@ -155,20 +160,59 @@ def generate_steps_prompt_driven(
                 image_path,
             )
             if review_passed is True:
-                target_path = Path(GENQA_SIMPLE_PATH) if strong_correct else Path(GENQA_HARD_PATH)
-                print(f"[Review] Step {k} 结果: correct -> {target_path}")
-                save_genqa_item(
-                    target_path,
-                    {
-                        "source": "step",
-                        "step_k": k,
-                        "question": step.question,
-                        "answer": step.answer_letter,
-                        "reasoning": step.reasoning,
-                        "review_decision": "correct",
-                        "review_raw": review_raw,
-                    },
+                strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
+                    step.question, MODEL_SOLVE_STRONG
                 )
+                strong_no_image_raw, strong_no_image_letter = solve_mcq_no_image(
+                    step.question, MODEL_SOLVE_STRONG
+                )
+                strong_text_only_correct = grade_answer(
+                    step.answer_letter or "", strong_text_only_letter
+                )
+                strong_no_image_correct = grade_answer(
+                    step.answer_letter or "", strong_no_image_letter
+                )
+                step_metrics = {
+                    "medium_correct": medium_correct,
+                    "strong_correct": strong_correct,
+                    "strong_text_only_correct": strong_text_only_correct,
+                    "strong_no_image_correct": strong_no_image_correct,
+                    "difficulty_score": 1.0
+                    if (strong_correct and not medium_correct)
+                    else 0.5
+                    if strong_correct
+                    else 0.0,
+                    "cross_modal_used": step.cross_modal_bridge,
+                    "num_hops": step.k,
+                    "medium_pred": medium_letter,
+                    "strong_pred": strong_letter,
+                    "strong_text_only_pred": strong_text_only_letter,
+                    "strong_no_image_pred": strong_no_image_letter,
+                    "medium_raw": medium_raw,
+                    "strong_raw": strong_raw,
+                    "strong_text_only_raw": strong_text_only_raw,
+                    "strong_no_image_raw": strong_no_image_raw,
+                }
+                if strong_text_only_correct or strong_no_image_correct:
+                    print(f"[Review] Step {k} 结果: text-only/no-image 可解，跳过入库")
+                else:
+                    target_path = (
+                        Path(GENQA_SIMPLE_PATH) if strong_correct else Path(GENQA_HARD_PATH)
+                    )
+                    print(f"[Review] Step {k} 结果: correct -> {target_path}")
+                    save_genqa_item(
+                        target_path,
+                        {
+                            "source": "step",
+                            "step_k": k,
+                            "question": step.question,
+                            "answer": step.answer_letter,
+                            "reasoning": step.reasoning,
+                            "difficulty_metrics": step_metrics,
+                            "review_decision": "correct",
+                            "review_raw": review_raw,
+                        },
+                    )
             elif review_passed is False:
                 print(f"[Review] Step {k} 结果: incorrect")
             else:

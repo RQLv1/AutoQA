@@ -15,6 +15,8 @@ def save_round_questions(
     reflect_feedback: str | None = None,
     stop_reason: str | None = None,
 ) -> None:
+    if reflect_feedback is None:
+        reflect_feedback = episode.reflect_feedback
     log_path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "round": round_idx,

@@ -1,10 +1,16 @@
 from pathlib import Path
+import random
 
 from graph.pipeline_graph import build_entity_pool, build_knowledge_edges_cached, edge_to_evidence_payload
 from graph.pipeline_path_sampling import sample_path
 from prompts import build_graph_1hop_step_prompt, build_revise_prompt, build_stage1_step_prompt
 from pipeline.pipeline_review import review_question
-from pipeline.pipeline_solvers import grade_answer, solve_mcq
+from pipeline.pipeline_solvers import (
+    grade_answer,
+    solve_mcq,
+    solve_mcq_no_image,
+    solve_mcq_text_only,
+)
 from steps.operate_calculation_agent import run_operate_calculation_agent
 from steps.operate_distinction_agent import run_operate_distinction_agent
 from steps.quality import is_low_quality_entity_matching
@@ -61,20 +67,59 @@ def generate_steps_graph_mode(
                 image_path,
             )
             if review_passed is True:
-                target_path = Path(GENQA_SIMPLE_PATH) if strong_correct else Path(GENQA_HARD_PATH)
-                print(f"[Review] Step 0 结果: correct -> {target_path}")
-                save_genqa_item(
-                    target_path,
-                    {
-                        "source": "step",
-                        "step_k": 0,
-                        "question": step0.question,
-                        "answer": step0.answer_letter,
-                        "reasoning": step0.reasoning,
-                        "review_decision": "correct",
-                        "review_raw": review_raw,
-                    },
+                strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
+                    step0.question, MODEL_SOLVE_STRONG
                 )
+                strong_no_image_raw, strong_no_image_letter = solve_mcq_no_image(
+                    step0.question, MODEL_SOLVE_STRONG
+                )
+                strong_text_only_correct = grade_answer(
+                    step0.answer_letter or "", strong_text_only_letter
+                )
+                strong_no_image_correct = grade_answer(
+                    step0.answer_letter or "", strong_no_image_letter
+                )
+                step_metrics = {
+                    "medium_correct": medium_correct,
+                    "strong_correct": strong_correct,
+                    "strong_text_only_correct": strong_text_only_correct,
+                    "strong_no_image_correct": strong_no_image_correct,
+                    "difficulty_score": 1.0
+                    if (strong_correct and not medium_correct)
+                    else 0.5
+                    if strong_correct
+                    else 0.0,
+                    "cross_modal_used": step0.cross_modal_bridge,
+                    "num_hops": step0.k,
+                    "medium_pred": medium_letter,
+                    "strong_pred": strong_letter,
+                    "strong_text_only_pred": strong_text_only_letter,
+                    "strong_no_image_pred": strong_no_image_letter,
+                    "medium_raw": medium_raw,
+                    "strong_raw": strong_raw,
+                    "strong_text_only_raw": strong_text_only_raw,
+                    "strong_no_image_raw": strong_no_image_raw,
+                }
+                if strong_text_only_correct or strong_no_image_correct:
+                    print("[Review] Step 0 结果: text-only/no-image 可解，跳过入库")
+                else:
+                    target_path = (
+                        Path(GENQA_SIMPLE_PATH) if strong_correct else Path(GENQA_HARD_PATH)
+                    )
+                    print(f"[Review] Step 0 结果: correct -> {target_path}")
+                    save_genqa_item(
+                        target_path,
+                        {
+                            "source": "step",
+                            "step_k": 0,
+                            "question": step0.question,
+                            "answer": step0.answer_letter,
+                            "reasoning": step0.reasoning,
+                            "difficulty_metrics": step_metrics,
+                            "review_decision": "correct",
+                            "review_raw": review_raw,
+                        },
+                    )
             elif review_passed is False:
                 print("[Review] Step 0 结果: incorrect")
             else:
@@ -91,9 +136,23 @@ def generate_steps_graph_mode(
 
     for k, edge in enumerate(reversed(path), start=1):
         distractors = [e for e in entity_pool if e != edge.head]
+        branch_candidates = [
+            e for e in edges if e.head == edge.head and e.tail != edge.tail
+        ]
+        branch_hint = ""
+        if branch_candidates:
+            branch_edge = random.choice(branch_candidates)
+            branch_hint = (
+                "\n[Branch/Contrast Knowledge]: "
+                f"{branch_edge.head} --[{branch_edge.relation}]--> {branch_edge.tail} "
+                f"(Use this to increase difficulty, e.g., create a distractor based on "
+                f"'{branch_edge.tail}' or form a comparison question 'Unlike {branch_edge.tail}, "
+                f"{edge.head}...')"
+            )
         operate_fact_hint = (
             f"evidence_snippet={edge.evidence or ''}\n"
             f"knowledge_link: head={edge.head} ; relation={edge.relation} ; tail={edge.tail}"
+            f"{branch_hint}"
         )
         operate_distinction = run_operate_distinction_agent(
             context=context,
@@ -175,20 +234,59 @@ def generate_steps_graph_mode(
                 image_path,
             )
             if review_passed is True:
-                target_path = Path(GENQA_SIMPLE_PATH) if strong_correct else Path(GENQA_HARD_PATH)
-                print(f"[Review] Step {k} 结果: correct -> {target_path}")
-                save_genqa_item(
-                    target_path,
-                    {
-                        "source": "step",
-                        "step_k": k,
-                        "question": step.question,
-                        "answer": step.answer_letter,
-                        "reasoning": step.reasoning,
-                        "review_decision": "correct",
-                        "review_raw": review_raw,
-                    },
+                strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
+                    step.question, MODEL_SOLVE_STRONG
                 )
+                strong_no_image_raw, strong_no_image_letter = solve_mcq_no_image(
+                    step.question, MODEL_SOLVE_STRONG
+                )
+                strong_text_only_correct = grade_answer(
+                    step.answer_letter or "", strong_text_only_letter
+                )
+                strong_no_image_correct = grade_answer(
+                    step.answer_letter or "", strong_no_image_letter
+                )
+                step_metrics = {
+                    "medium_correct": medium_correct,
+                    "strong_correct": strong_correct,
+                    "strong_text_only_correct": strong_text_only_correct,
+                    "strong_no_image_correct": strong_no_image_correct,
+                    "difficulty_score": 1.0
+                    if (strong_correct and not medium_correct)
+                    else 0.5
+                    if strong_correct
+                    else 0.0,
+                    "cross_modal_used": step.cross_modal_bridge,
+                    "num_hops": step.k,
+                    "medium_pred": medium_letter,
+                    "strong_pred": strong_letter,
+                    "strong_text_only_pred": strong_text_only_letter,
+                    "strong_no_image_pred": strong_no_image_letter,
+                    "medium_raw": medium_raw,
+                    "strong_raw": strong_raw,
+                    "strong_text_only_raw": strong_text_only_raw,
+                    "strong_no_image_raw": strong_no_image_raw,
+                }
+                if strong_text_only_correct or strong_no_image_correct:
+                    print(f"[Review] Step {k} 结果: text-only/no-image 可解，跳过入库")
+                else:
+                    target_path = (
+                        Path(GENQA_SIMPLE_PATH) if strong_correct else Path(GENQA_HARD_PATH)
+                    )
+                    print(f"[Review] Step {k} 结果: correct -> {target_path}")
+                    save_genqa_item(
+                        target_path,
+                        {
+                            "source": "step",
+                            "step_k": k,
+                            "question": step.question,
+                            "answer": step.answer_letter,
+                            "reasoning": step.reasoning,
+                            "difficulty_metrics": step_metrics,
+                            "review_decision": "correct",
+                            "review_raw": review_raw,
+                        },
+                    )
             elif review_passed is False:
                 print(f"[Review] Step {k} 结果: incorrect")
             else:

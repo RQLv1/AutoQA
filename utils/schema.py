@@ -40,3 +40,4 @@ class EpisodeResult:
     steps: list[StepResult]
     difficulty_metrics: dict[str, Any]
     judge_flags: dict[str, bool] | None = None
+    reflect_feedback: str | None = None
