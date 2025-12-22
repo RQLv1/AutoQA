@@ -62,10 +62,10 @@ def _find_option_letter(text: str) -> str | None:
     if not text:
         return None
     normalized = _normalize_option_text(text)
-    match = re.search(r"[A-D]", normalized, flags=re.IGNORECASE)
+    match = re.search(r"(?<![A-Za-z0-9])([A-D])(?![A-Za-z0-9])", normalized, flags=re.IGNORECASE)
     if not match:
         return None
-    return match.group(0).upper()
+    return match.group(1).upper()
 
 
 def parse_option_letter(text: str) -> str:
@@ -95,7 +95,7 @@ def parse_option_letter_optional(text: str) -> str | None:
         matches = re.findall(pattern, normalized, flags=re.IGNORECASE)
         if matches:
             return matches[-1].upper()
-    letters = re.findall(r"[A-D]", normalized, flags=re.IGNORECASE)
+    letters = re.findall(r"(?<![A-Za-z0-9])([A-D])(?![A-Za-z0-9])", normalized, flags=re.IGNORECASE)
     if letters:
         return letters[-1].upper()
     return None
@@ -137,10 +137,10 @@ def parse_review_decision(text: str | None) -> bool | None:
         return True
     if normalized in {"incorrect", "false", "no", "n", "否", "错误"}:
         return False
-    if "correct" in normalized or "正确" in normalized:
-        return True
     if "incorrect" in normalized or "错误" in normalized:
         return False
+    if "correct" in normalized or "正确" in normalized:
+        return True
     return None
 
 
