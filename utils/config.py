@@ -41,7 +41,7 @@ DEFAULT_TEMPERATURE = float(os.getenv("DEFAULT_TEMPERATURE", "0"))
 # API 配置 (API Configuration)
 # =============================================================================
 API_BASE_URL = "https://idealab.alibaba-inc.com/api/openai/v1" # "https://idealab.alibaba-inc.com/api/openai/v1"
-API_KEY = os.getenv("API_KEY", "e086b5a947c3c2651165617b22318df5")
+API_KEY = os.getenv("API_KEY")
 API_MAX_RETRIES = int(os.getenv("API_MAX_RETRIES", "5"))  # 接口调用最大重试次数
 API_RETRY_SLEEP_SECONDS = int(os.getenv("API_RETRY_SLEEP_SECONDS", "5"))  # 重试间隔时间(秒)
 API_RECONNECT_RETRIES = int(os.getenv("API_RECONNECT_RETRIES", "5"))  # 连接失败重试次数
