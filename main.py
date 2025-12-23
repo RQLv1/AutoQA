@@ -86,6 +86,7 @@ def main() -> None:
             )
             if review_passed is True:
                 review_decision = "correct"
+<<<<<<< HEAD
                 if final_no_text_shortcut:
                     target_path = genqa_simple_path if strong_correct else genqa_hard_path
                     print(f"[Review] 结果: correct -> {target_path}")
@@ -105,6 +106,22 @@ def main() -> None:
                     print(f"当前已收集难题: {hard_questions_found}/{target_hard_questions}")
                 else:
                     print("[Review] 结果: text-only/no-image 可解，跳过入库")
+=======
+                target_path = genqa_hard_path if strong_correct else genqa_simple_path
+                print(f"[Review] 结果: correct -> {target_path}")
+                save_genqa_item(
+                    target_path,
+                    {
+                        "source": "final",
+                        "question": episode.stage_final.question,
+                        "answer": episode.stage_final.answer,
+                        "reasoning": episode.stage_final.reasoning,
+                        "difficulty_metrics": episode.difficulty_metrics,
+                        "review_decision": review_decision,
+                        "review_raw": review_raw,
+                    },
+                )
+>>>>>>> 316d95e (fix: 修复目标路径选择逻辑错误)
             elif review_passed is False:
                 review_decision = "incorrect"
                 print("[Review] 结果: incorrect")
