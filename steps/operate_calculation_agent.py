@@ -2,7 +2,7 @@ from pathlib import Path
 
 from prompts import build_operate_calculation_prompt
 from utils.api_client import call_vision_model
-from utils.config import MODEL_OPERATE_CALCULATION
+from utils.config import DEFAULT_TEMPERATURE, MODEL_OPERATE_CALCULATION
 from utils.parsing import extract_tag_optional
 from utils.schema import OperateResult, StepResult
 
@@ -25,7 +25,12 @@ def run_operate_calculation_agent(
         force_cross_modal=force_cross_modal,
         forbidden_terms=forbidden_terms,
     )
-    raw = call_vision_model(prompt, image_path, MODEL_OPERATE_CALCULATION, max_tokens=1200, temperature=0)
+    raw = call_vision_model(
+        prompt,
+        image_path,
+        MODEL_OPERATE_CALCULATION,
+        temperature=DEFAULT_TEMPERATURE,
+    )
     draft = (extract_tag_optional(raw, "draft") or raw.strip()).strip()
     return OperateResult(operator_type="calculation", draft=draft, raw=raw)
 

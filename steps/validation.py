@@ -15,6 +15,6 @@ def validate_step(
         return True, "cross-modal required"
     if VERIFY_STRICT and step.answer_text and step.answer_text.lower() in step.question.lower():
         return True, "answer leakage in question"
-    if not strong_correct:
+    if strong_correct is False:
         return True, "strong solver failed"
     return False, ""

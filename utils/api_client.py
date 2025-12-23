@@ -9,6 +9,7 @@ from utils.config import (
     API_KEY,
     API_RECONNECT_RETRIES,
     API_RECONNECT_SLEEP_SECONDS,
+    DEFAULT_TEMPERATURE,
 )
 
 
@@ -83,8 +84,7 @@ def call_vision_model(
     image_path: Path,
     model: str,
     *,
-    max_tokens: int | None = None,
-    temperature: float = 0,
+    temperature: float = DEFAULT_TEMPERATURE,
 ) -> str:
     if not API_KEY:
         raise RuntimeError("缺少 API_KEY 配置，无法调用接口。")
@@ -92,8 +92,8 @@ def call_vision_model(
     base64_image = encode_image(image_path)
 
     kwargs: dict[str, object] = {}
-    if max_tokens is not None:
-        kwargs["max_tokens"] = max_tokens
+    # if max_tokens is not None:
+    #     kwargs["max_tokens"] = max_tokens
 
     last_error: Exception | None = None
     max_attempts = max(5, int(API_RECONNECT_RETRIES))
@@ -129,14 +129,14 @@ def call_text_model(
     model: str,
     *,
     max_tokens: int | None = None,
-    temperature: float = 0,
+    temperature: float = DEFAULT_TEMPERATURE,
 ) -> str:
     if not API_KEY:
         raise RuntimeError("缺少 API_KEY 配置，无法调用接口。")
 
     kwargs: dict[str, object] = {}
-    if max_tokens is not None:
-        kwargs["max_tokens"] = max_tokens
+    # if max_tokens is not None:
+    #     kwargs["max_tokens"] = max_tokens
 
     last_error: Exception | None = None
     max_attempts = max(5, int(API_RECONNECT_RETRIES))

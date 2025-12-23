@@ -1,12 +1,15 @@
 from pathlib import Path
 
 from pipeline.pipeline_solvers import evaluate_difficulty
-from prompts import build_analysis_prompt, build_final_compress_prompt, build_final_harden_prompt
+from prompts import build_analysis_prompt, build_final_compress_prompt
 from steps import derive_stage_results, generate_steps
 from utils.api_client import call_text_model, call_vision_model
-from utils.config import HARDEN_MODE, MAX_HARDEN_ATTEMPTS, MODEL_SUM
+from utils.config import (
+    DEFAULT_TEMPERATURE,
+    MODEL_SUM,
+)
 from utils.parsing import extract_tag_optional
-from utils.schema import EpisodeResult, StageResult
+from utils.schema import EpisodeResult, StageResult, StepResult
 
 
 def run_final(prompt: str, image_path: Path, model: str) -> StageResult:
@@ -22,16 +25,23 @@ def run_episode(
     image_path: Path,
     feedback: str = "",
     previous_final_question: str | None = None,
+    prior_steps: list[StepResult] | None = None,
 ) -> EpisodeResult:
     steps, cross_modal_used = generate_steps(context, image_path, feedback, previous_final_question)
     stage_1, stage_2, stage_3 = derive_stage_results(steps)
 
-    final_prompt = build_final_compress_prompt(context, steps, feedback)
+    compress_steps = steps if not prior_steps else [*prior_steps, *steps]
+    final_prompt = build_final_compress_prompt(context, compress_steps, feedback)
     stage_final = run_final(final_prompt, image_path, MODEL_SUM)
     print("[Final] Compress 完成")
     print(stage_final.question)
     print("标准答案:", stage_final.answer)
-    difficulty_metrics = evaluate_difficulty(stage_final, image_path, cross_modal_used, len(steps))
+    difficulty_metrics = evaluate_difficulty(
+        stage_final,
+        image_path,
+        cross_modal_used,
+        len(compress_steps),
+    )
     print(
         "[Final] Difficulty 评估:",
         f"medium_correct={difficulty_metrics.get('medium_correct')}",
@@ -43,42 +53,6 @@ def run_episode(
         and difficulty_metrics.get("strong_correct", False)
     ) and stage_final.reasoning:
         print(f"推理过程: <reasoning>{stage_final.reasoning}</reasoning>")
-    harden_attempts = 0
-    max_harden_attempts = max(0, MAX_HARDEN_ATTEMPTS)
-    while difficulty_metrics.get("medium_correct", False) and harden_attempts < max_harden_attempts:
-        harden_attempts += 1
-        harden_prompt = build_final_harden_prompt(
-            context,
-            stage_final.question,
-            stage_final.answer,
-            harden_attempts,
-            max_harden_attempts,
-            HARDEN_MODE,
-        )
-        stage_final = run_final(harden_prompt, image_path, MODEL_SUM)
-        print(f"[Final] Harden 完成: {harden_attempts}/{max_harden_attempts}")
-        print(stage_final.question)
-        print("标准答案:", stage_final.answer)
-        difficulty_metrics = evaluate_difficulty(stage_final, image_path, cross_modal_used, len(steps))
-        print(
-            "[Final] Harden 后 Difficulty:",
-            f"medium_correct={difficulty_metrics.get('medium_correct')}",
-            f"strong_correct={difficulty_metrics.get('strong_correct')}",
-            f"score={difficulty_metrics.get('difficulty_score')}",
-        )
-        print(
-            "[Final] Harden Solver:",
-            f"medium_raw={difficulty_metrics.get('medium_raw')}",
-            f"strong_raw={difficulty_metrics.get('strong_raw')}",
-            f"strong_text_only_raw={difficulty_metrics.get('strong_text_only_raw')}",
-            f"strong_no_image_raw={difficulty_metrics.get('strong_no_image_raw')}",
-        )
-        if not (
-            difficulty_metrics.get("medium_correct", False)
-            and difficulty_metrics.get("strong_correct", False)
-        ) and stage_final.reasoning:
-            print(f"推理过程: <reasoning>{stage_final.reasoning}</reasoning>")
-
     feedback_prompt = build_analysis_prompt(
         stage_final.question,
         stage_final.answer,
@@ -87,8 +61,7 @@ def run_episode(
     reflect_feedback = call_text_model(
         feedback_prompt,
         MODEL_SUM,
-        max_tokens=800,
-        temperature=0,
+        temperature=DEFAULT_TEMPERATURE,
     ).strip()
     if reflect_feedback:
         print("[Final] 反馈:", reflect_feedback)

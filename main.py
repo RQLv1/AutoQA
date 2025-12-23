@@ -3,6 +3,7 @@ from pathlib import Path
 from pipeline import review_question, run_episode, save_round_questions
 from utils.config import GENQA_HARD_PATH, GENQA_SIMPLE_PATH, MAX_ROUNDS, QUESTION_LOG_PATH
 from utils.genqa import save_genqa_item
+from utils.schema import StepResult
 
 
 def _pick_existing_path(candidates: list[Path]) -> Path:
@@ -25,6 +26,7 @@ def main() -> None:
     target_hard_questions = 5
     max_attempts = MAX_ROUNDS * 3
     feedback = ""
+    prior_steps: list[StepResult] = []
 
     print(f"=== 开始对抗式生成模式 (Target: {target_hard_questions} Hard Questions) ===")
 
@@ -32,7 +34,15 @@ def main() -> None:
         generated_count += 1
         print(f"\n>>> 尝试第 {generated_count} 次生成 ...")
 
-        episode = run_episode(context, image_path, feedback=feedback, previous_final_question=None)
+        episode = run_episode(
+            context,
+            image_path,
+            feedback=feedback,
+            previous_final_question=None,
+            prior_steps=prior_steps if prior_steps else None,
+        )
+        if episode.steps:
+            prior_steps.extend(episode.steps)
         feedback = episode.reflect_feedback or ""
 
         metrics = episode.difficulty_metrics

@@ -8,7 +8,7 @@ MODEL_STAGE_1 = os.getenv("MODEL_STAGE_1", "gpt-51-1113-global")  # 阶段1：�
 MODEL_STAGE_2 = os.getenv("MODEL_STAGE_2", MODEL_STAGE_1)  # 阶段2：通常用于深入推理
 MODEL_STAGE_3 = os.getenv("MODEL_STAGE_3", MODEL_STAGE_1)  # 阶段3：通常用于最终生成
 # 汇总和通用任务使用的模型
-MODEL_SUM = os.getenv("MODEL_SUM", os.getenv("MODEL_STAGE_SUM", "gpt-5-pro-1006-global"))
+MODEL_SUM = os.getenv("MODEL_SUM", os.getenv("MODEL_STAGE_SUM", "gemini-3-pro-preview"))
 
 # 操作代理使用的模型
 MODEL_OPERATE = os.getenv("MODEL_OPERATE", MODEL_STAGE_1)  # 默认操作模型
@@ -25,10 +25,23 @@ MODEL_REVIEW = os.getenv("MODEL_REVIEW", MODEL_SOLVE_STRONG)
 MODEL_JUDGE = os.getenv("MODEL_JUDGE", "gpt-51-1113-global")
 
 # =============================================================================
+# 生成参数配置 (Generation Parameters)
+# =============================================================================
+DEFAULT_TEMPERATURE = float(os.getenv("DEFAULT_TEMPERATURE", "0"))
+
+# Max Tokens Definitions
+# MAX_TOKENS_GRAPH_EXTRACTION = int(os.getenv("MAX_TOKENS_GRAPH_EXTRACTION", "16384"))
+# MAX_TOKENS_SOLVER_VISION = int(os.getenv("MAX_TOKENS_SOLVER_VISION", "16384"))
+# MAX_TOKENS_SOLVER_TEXT = int(os.getenv("MAX_TOKENS_SOLVER_TEXT", "16384"))
+# MAX_TOKENS_AGENT = int(os.getenv("MAX_TOKENS_AGENT", "16384"))
+# MAX_TOKENS_REVIEW = int(os.getenv("MAX_TOKENS_REVIEW", "16384"))
+# MAX_TOKENS_FEEDBACK = int(os.getenv("MAX_TOKENS_FEEDBACK", "16384"))
+
+# =============================================================================
 # API 配置 (API Configuration)
 # =============================================================================
-API_BASE_URL = "https://aiarena.alibaba-inc.com/api/openai/v1" # "https://idealab.alibaba-inc.com/api/openai/v1"
-API_KEY = os.getenv("API_KEY", "intern-c9e16118-3b3e-41ff-9650-7251de404042")
+API_BASE_URL = "https://idealab.alibaba-inc.com/api/openai/v1" # "https://idealab.alibaba-inc.com/api/openai/v1"
+API_KEY = os.getenv("API_KEY", "e086b5a947c3c2651165617b22318df5")
 API_MAX_RETRIES = int(os.getenv("API_MAX_RETRIES", "5"))  # 接口调用最大重试次数
 API_RETRY_SLEEP_SECONDS = int(os.getenv("API_RETRY_SLEEP_SECONDS", "5"))  # 重试间隔时间(秒)
 API_RECONNECT_RETRIES = int(os.getenv("API_RECONNECT_RETRIES", "5"))  # 连接失败重试次数
@@ -46,8 +59,6 @@ GENQA_HARD_PATH = os.getenv("GENQA_HARD_PATH", "genqa_hard.json")  # 难题保�
 
 MAX_STEPS_PER_ROUND = int(os.getenv("MAX_STEPS_PER_ROUND", "6"))  # 每轮生成的最大推理步数
 MIN_HOPS = int(os.getenv("MIN_HOPS", "5"))  # 最小推理跳数 (用于控制题目复杂度)
-MAX_HARDEN_ATTEMPTS = int(os.getenv("MAX_HARDEN_ATTEMPTS", "3"))  # 难度强化尝试次数
-HARDEN_MODE = os.getenv("HARDEN_MODE", "calc_first")  # 难度强化模式 (如: 优先计算)
 REQUIRE_CROSS_MODAL = os.getenv("REQUIRE_CROSS_MODAL", "true").lower() in {"1", "true", "yes"}  # 是否强制要求跨模态推理
 
 VERIFY_STRICT = os.getenv("VERIFY_STRICT", "false").lower() in {"1", "true", "yes"}  # 是否启用严格验证

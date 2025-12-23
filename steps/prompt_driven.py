@@ -109,9 +109,16 @@ def generate_steps_prompt_driven(
 
         step = run_step(prompt, image_path, model, k)
         medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
-        strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
         medium_correct = grade_answer(step.answer_letter or "", medium_letter)
-        strong_correct = grade_answer(step.answer_letter or "", strong_letter)
+        
+        strong_raw = None
+        strong_letter = None
+        strong_correct = None
+        
+        if not medium_correct:
+            strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
+            strong_correct = grade_answer(step.answer_letter or "", strong_letter)
+            
         needs_revision, reason = validate_step(step, force_cross_modal, strong_correct)
 
         if not needs_revision and k > 0 and is_low_quality_entity_matching(step.question):
@@ -138,9 +145,15 @@ def generate_steps_prompt_driven(
             )
             step = run_step(revise_prompt, image_path, model, k)
             medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
-            strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
             medium_correct = grade_answer(step.answer_letter or "", medium_letter)
-            strong_correct = grade_answer(step.answer_letter or "", strong_letter)
+            
+            strong_raw = None
+            strong_letter = None
+            strong_correct = None
+            
+            if not medium_correct:
+                strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
+                strong_correct = grade_answer(step.answer_letter or "", strong_letter)
 
         if force_cross_modal and "cross_modal_bridge" not in step.raw:
             step.cross_modal_bridge = True
@@ -149,7 +162,11 @@ def generate_steps_prompt_driven(
         print(step.question)
         print(f"标准答案: <answer>{step.answer_letter}</answer> | answer_text={step.answer_text}")
         print(f"中求解器: {medium_raw} | correct={medium_correct}")
-        print(f"强求解器: {strong_raw} | correct={strong_correct}")
+        if not medium_correct:
+            print(f"强求解器: {strong_raw} | correct={strong_correct}")
+        else:
+            print("中求解器答对，跳过强求解器。")
+            
         if not (medium_correct and strong_correct) and step.reasoning:
             print(f"推理过程: <reasoning>{step.reasoning}</reasoning>")
         if step.answer_letter and not medium_correct:

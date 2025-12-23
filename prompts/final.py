@@ -6,9 +6,9 @@ from utils.schema import StepResult
 def build_final_compress_prompt(context: str, steps: list[StepResult], feedback: str) -> str:
     extra = f"\n提升难度指引: {feedback.strip()}" if feedback else ""
     step_lines = []
-    for step in steps:
+    for idx, step in enumerate(steps, start=1):
         step_lines.append(
-            f"- Step {step.k}: Q={step.question} | answer_text={step.answer_text} | answer_letter={step.answer_letter} | evidence={step.evidence}"
+            f"- Step {idx}: Q={step.question} | answer_text={step.answer_text} | answer_letter={step.answer_letter} | evidence={step.evidence}"
         )
     step_block = "\n".join(step_lines)
     return dedent(
@@ -33,42 +33,6 @@ def build_final_compress_prompt(context: str, steps: list[StepResult], feedback:
 
         推理链:
         {step_block}
-
-        参考信息(仅供内部推理，不得在题干中提到):
-        {context.strip()}
-
-        只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
-        <answer>正确选项字母</answer>
-        <reasoning>简要推理过程(不超过4句)</reasoning>
-        """
-    ).strip()
-
-
-def build_final_harden_prompt(
-    context: str,
-    final_question: str,
-    final_answer: str,
-    attempt: int,
-    max_attempts: int,
-    mode: str = "calc_first",
-) -> str:
-    mode_hint = "以计算/量化推理为第一优先级" if mode == "calc_first" else "优先改写为更难的题型"
-    return dedent(
-        f"""
-        需要对最终题进行强制加难改写（第 {attempt}/{max_attempts} 次）。
-        原题: {final_question}
-        原答案: {final_answer}
-
-        加难要求:
-        - 必须重写为“视觉计算/量化推理”单选题，答案可由图像证据计算得到（计数/求和/差值/比例/阈值判断等）。
-        - {mode_hint}，不要做轻微改写，必须显著提高难度。
-        - 题干必须围绕图片中心视觉信息展开，参考信息仅作为内部推理依据。
-        - 题干中禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
-        - 去词汇化(避免文本捷径)：题干不要直接写出图中读数/颜色/形状等具体值，改用“图中…的读数/显示的状态/位于…的部件”等指代性或位置性描述。
-        - 选项 A-D 必须是数字或数值区间，且彼此接近，单位/小数位/数量级尽量一致。
-        - 干扰项必须基于“陷阱设计(Trap Design)”(仅内部推理，不要输出)：单位陷阱/视觉误读/条件误用，并将三条错误路径映射为错误选项。
-        - 禁止外部知识；不得把参考信息当成唯一证据来源。
 
         参考信息(仅供内部推理，不得在题干中提到):
         {context.strip()}

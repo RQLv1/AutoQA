@@ -75,7 +75,7 @@ AutoQA 是一个「图片为主 + 参考信息为辅」驱动的自动出题系�
 
 > 这样你无需新增 `agent.py` 文件：Agent 决策逻辑集中在 Episode/Step 编排中（`pipeline/pipeline_episode.py / steps/`），并由 `pipeline/` 统一导出。
 
-当前默认仅保留 step-level revise（`steps/` 内触发），Final revise 在默认流程中关闭；Final 通过 Episode 内的 harden loop 做强制重写。
+当前默认仅保留 step-level revise（`steps/` 内触发），Final revise 在默认流程中关闭。
 
 ---
 
@@ -87,20 +87,9 @@ AutoQA 是一个「图片为主 + 参考信息为辅」驱动的自动出题系�
 
 仅保留必要背景 + 终局问题
 
+压缩时会合并从第一个 Episode 的第一个 step 到当前 Episode 的最后一个 step 的所有 steps
+
 输出仍保持你现有格式：`<question>...</question><answer>...</answer><reasoning>...</reasoning>`（答案为 A/B/C/D）
-
----
-
-### 2.5) Adversarial Refinement Loop（不难不休：计算优先加难）
-
-Final 题目生成后，立即调用 `evaluate_difficulty` 做 Medium Attack：
-
-- 若 `medium_correct == true`：进入“加难模式”，强制模型将题目改写为**视觉计算题**（计数差值、总和、比例、范围判断等）。
-- 加难后再次评估；循环直到：
-  - Medium 失败（`medium_correct == false`）→ 题目通过 Episode 内难度门槛
-  - 或达到 `MAX_HARDEN_ATTEMPTS` → 保留当前版本（但 `main.py` 仍会做最终丢弃/入库判定）
-
-加难模式是**强制重写 + 再攻击**的闭环，且以**计算与量化推理**为第一优先级，数值必须来自图像可验证证据（计数/读数/标签）。
 
 ---
 
@@ -125,9 +114,9 @@ Final 题目生成后，立即调用 `evaluate_difficulty` 做 Medium Attack：
 
 ### 4) Adversarial Filter（主循环筛选）
 
-`main.py` 负责最终筛选逻辑（`run_episode()` 内已包含加难闭环）：
+`main.py` 负责最终筛选逻辑（`run_episode()` 内包含 compress + difficulty 评估）：
 
-- `medium_correct == true` → 说明 Episode 内已加难但仍偏简单，直接废弃并继续生成
+- `medium_correct == true` → 说明 Episode 内评估仍偏简单，直接废弃并继续生成
 - `medium_correct == false` → 保留并记录，`strong_correct` 仅用于标记“中难/极难”
 - 若 `medium_correct == false` → 触发 Review 智能体复核；复核为正确则写入 `GENQA_SIMPLE_PATH` 或 `GENQA_HARD_PATH`
 
@@ -141,7 +130,6 @@ Final 题目生成后，立即调用 `evaluate_difficulty` 做 Medium Attack：
 
 - 达到 `MIN_HOPS`（例如 ≥2）且出现至少一次 `cross_modal_bridge=true`
 - 或达到 `MAX_STEPS_PER_ROUND`
-- Episode 内加难轮数达到 `MAX_HARDEN_ATTEMPTS`（输出当前版本）
 
 ### Round 层面提前停止
 
@@ -208,11 +196,6 @@ python main.py
 * `MAX_STEPS_PER_ROUND`：每轮最大扩链步数（例如 6~10，默认可设为 6）
 * `MIN_HOPS`：最小推理跳数（例如 2）
 * `REQUIRE_CROSS_MODAL`：是否强制跨模态桥接（true/false，默认 true）
-
-### 加难闭环（Episode 内）
-
-* `MAX_HARDEN_ATTEMPTS`：Episode 内最大加难轮数（默认 3）
-* `HARDEN_MODE`：加难策略（默认 `calc_first`）
 
 ### Operate Agents（计算/对比草稿）
 
@@ -307,18 +290,11 @@ python main.py
 * 折叠中间结论，不要写“第一步/第二步”
 * 输出最终 MCQ：题干 + 4 选项 + `<answer>` 字母 + `<reasoning>`（题目生成阶段）
 * 题干必须围绕图片描述，不得出现“结合文献/依据文献/文档/上下文/context”等措辞
-
-### Hardening Prompt（计算优先加难模板）
-
-* 强制把“识别题”重写为“计算题/量化题”
-* 必须满足：
-  * 题目答案可由图像证据计算得到（计数、求和、差值、比例、阈值判断）
-  * 干扰项为数字或数值区间且彼此接近，降低蒙对概率
-  * 禁止外部知识；禁止把参考信息当成唯一证据来源（仍须以图像为核心证据）
+* 压缩时合并从第一个 Episode 的第一个 step 到当前 Episode 的最后一个 step 的所有 steps
 
 ### Revise（Step 级去捷径）
 
-仅用于 step-level revise（`steps/` 内触发），Final revise 默认关闭；Final 通过 harden loop 做强制重写加难。
+仅用于 step-level revise（`steps/` 内触发），Final revise 默认关闭。
 
 * 禁止“一句参考信息原话直接=答案”的线索
 * 禁止 Text-Only 可解（避免题干泄漏/纯文本捷径）
@@ -334,7 +310,7 @@ python main.py
 
 ## 对齐 change.md 的实现状态（简表）
 
-- 已实现：求解器只接收 `image + question`；Text-Only/No-Image 盲测；Stage/Final Prompt 强化（图像中心锚点 + 禁止引用措辞 + Hard Negatives）；Episode 内 calc-first harden loop + Medium/Strong 对抗筛选（Medium 过滤，Strong 验证）。
+- 已实现：求解器只接收 `image + question`；Text-Only/No-Image 盲测；Stage/Final Prompt 强化（图像中心锚点 + 禁止引用措辞 + Hard Negatives）；Episode 内 compress + Medium/Strong 对抗筛选（Medium 过滤，Strong 验证）。
 - 已实现：operate_distinction / operate_calculation 两个草稿智能体（每步生成后调用，并喂给下一步出题；计算优先）。
 - 待明确：Blindfold（Image-Only）用于“强制依赖参考信息”的判据（与“求解器不接收参考信息”的约束存在目标冲突）。
 

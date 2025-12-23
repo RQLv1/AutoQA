@@ -6,7 +6,10 @@ from pathlib import Path
 from typing import Any
 
 from utils.api_client import call_text_model
-from utils.config import MODEL_JUDGE
+from utils.config import (
+    DEFAULT_TEMPERATURE,
+    MODEL_JUDGE,
+)
 
 
 @dataclass(frozen=True)
@@ -131,7 +134,11 @@ def _chain_extraction_prompt(context: str) -> str:
 
 def extract_edges_from_context(context: str) -> list[KnowledgeEdge]:
     prompt = _chain_extraction_prompt(context)
-    raw = call_text_model(prompt, MODEL_JUDGE, max_tokens=16000, temperature=0)
+    raw = call_text_model(
+        prompt,
+        MODEL_JUDGE,
+        temperature=DEFAULT_TEMPERATURE,
+    )
     cleaned = raw.strip()
     if cleaned.startswith("```"):
         cleaned = cleaned.strip("`").strip()

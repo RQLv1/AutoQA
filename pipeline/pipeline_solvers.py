@@ -3,7 +3,11 @@ from typing import Any
 
 from prompts import build_solver_prompt, build_solver_prompt_text_only
 from utils.api_client import call_no_image_model, call_text_model, call_vision_model
-from utils.config import MODEL_SOLVE_MEDIUM, MODEL_SOLVE_STRONG
+from utils.config import (
+    DEFAULT_TEMPERATURE,
+    MODEL_SOLVE_MEDIUM,
+    MODEL_SOLVE_STRONG,
+)
 from utils.parsing import extract_tag_optional, parse_option_letter_optional
 from utils.schema import StageResult
 
@@ -18,7 +22,12 @@ def _normalize_solver_output(raw: str) -> tuple[str, str | None]:
 
 def solve_mcq(question: str, image_path: Path, model: str) -> tuple[str, str | None]:
     solver_prompt = build_solver_prompt(question)
-    solver_raw = call_vision_model(solver_prompt, image_path, model, max_tokens=16000, temperature=0)
+    solver_raw = call_vision_model(
+        solver_prompt,
+        image_path,
+        model,
+        temperature=DEFAULT_TEMPERATURE,
+    )
     normalized_raw, solver_letter = _normalize_solver_output(solver_raw)
     return normalized_raw, solver_letter
 
@@ -32,7 +41,11 @@ def solve_mcq_text_only(question: str, model: str) -> tuple[str, str | None]:
 
 def solve_mcq_no_image(question: str, model: str) -> tuple[str, str | None]:
     solver_prompt = build_solver_prompt(question)
-    solver_raw = call_no_image_model(solver_prompt, model, max_tokens=4096, temperature=0)
+    solver_raw = call_no_image_model(
+        solver_prompt,
+        model,
+        temperature=DEFAULT_TEMPERATURE,
+    )
     normalized_raw, solver_letter = _normalize_solver_output(solver_raw)
     return normalized_raw, solver_letter
 
@@ -51,17 +64,30 @@ def evaluate_difficulty(
     num_hops: int,
 ) -> dict[str, Any]:
     medium_raw, medium_letter = solve_mcq(final.question, image_path, MODEL_SOLVE_MEDIUM)
-    strong_raw, strong_letter = solve_mcq(final.question, image_path, MODEL_SOLVE_STRONG)
-    strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
-        final.question, MODEL_SOLVE_STRONG
-    )
-    strong_no_image_raw, strong_no_image_letter = solve_mcq_no_image(
-        final.question, MODEL_SOLVE_STRONG
-    )
     medium_correct = grade_answer(final.answer, medium_letter)
-    strong_correct = grade_answer(final.answer, strong_letter)
-    strong_text_only_correct = grade_answer(final.answer, strong_text_only_letter)
-    strong_no_image_correct = grade_answer(final.answer, strong_no_image_letter)
+
+    strong_raw = None
+    strong_letter = None
+    strong_text_only_raw = None
+    strong_text_only_letter = None
+    strong_no_image_raw = None
+    strong_no_image_letter = None
+    strong_correct = None
+    strong_text_only_correct = None
+    strong_no_image_correct = None
+
+    if not medium_correct:
+        strong_raw, strong_letter = solve_mcq(final.question, image_path, MODEL_SOLVE_STRONG)
+        strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
+            final.question, MODEL_SOLVE_STRONG
+        )
+        strong_no_image_raw, strong_no_image_letter = solve_mcq_no_image(
+            final.question, MODEL_SOLVE_STRONG
+        )
+        strong_correct = grade_answer(final.answer, strong_letter)
+        strong_text_only_correct = grade_answer(final.answer, strong_text_only_letter)
+        strong_no_image_correct = grade_answer(final.answer, strong_no_image_letter)
+    
     difficulty_score = 1.0 if (strong_correct and not medium_correct) else 0.5 if strong_correct else 0.0
     return {
         "medium_correct": medium_correct,
