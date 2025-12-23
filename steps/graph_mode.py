@@ -1,7 +1,12 @@
 from pathlib import Path
 import random
 
-from graph.pipeline_graph import build_entity_pool, build_knowledge_edges_cached, edge_to_evidence_payload
+from graph.pipeline_graph import (
+    KnowledgeEdge,
+    build_entity_pool,
+    build_knowledge_edges_cached,
+    edge_to_evidence_payload,
+)
 from graph.pipeline_path_sampling import sample_path
 from prompts import (
     build_extend_step_prompt,
@@ -31,8 +36,75 @@ from utils.config import (
     MODEL_SOLVE_MEDIUM,
     MODEL_SOLVE_STRONG,
 )
+from utils.details_logger import get_details_logger
 from utils.genqa import save_genqa_item
 from utils.schema import StepResult
+
+
+def _normalize_edges(
+    edges: list[KnowledgeEdge] | None, default_source_type: str
+) -> list[KnowledgeEdge]:
+    if not edges:
+        return []
+    normalized: list[KnowledgeEdge] = []
+    for edge in edges:
+        normalized.append(
+            KnowledgeEdge(
+                head=edge.head,
+                relation=edge.relation,
+                tail=edge.tail,
+                evidence=edge.evidence,
+                source_id=edge.source_id,
+                source_type=edge.source_type or default_source_type,
+            )
+        )
+    return normalized
+
+
+def _merge_edges_with_visual(
+    text_edges: list[KnowledgeEdge], visual_edges: list[KnowledgeEdge] | None
+) -> list[KnowledgeEdge]:
+    normalized_text = _normalize_edges(text_edges, "text")
+    normalized_visual = _normalize_edges(visual_edges, "image")
+    if not normalized_visual:
+        return normalized_text
+
+    max_source_id = max((edge.source_id or 0) for edge in normalized_text) if normalized_text else 0
+    offset = max_source_id + 1000
+    remapped_visual: list[KnowledgeEdge] = []
+    for idx, edge in enumerate(normalized_visual, start=1):
+        source_id = edge.source_id
+        if source_id is None:
+            source_id = offset + idx
+        else:
+            source_id = offset + source_id
+        remapped_visual.append(
+            KnowledgeEdge(
+                head=edge.head,
+                relation=edge.relation,
+                tail=edge.tail,
+                evidence=edge.evidence,
+                source_id=source_id,
+                source_type="image",
+            )
+        )
+    return [*normalized_text, *remapped_visual]
+
+
+def _sample_path_with_visual(
+    edges: list[KnowledgeEdge], length: int, require_visual: bool
+) -> list[KnowledgeEdge]:
+    if not require_visual:
+        return sample_path(edges, length)
+    for _ in range(6):
+        path = sample_path(edges, length)
+        if any(edge.source_type == "image" for edge in path):
+            return path
+    return sample_path(edges, length)
+
+
+def _edge_source_label(edge: KnowledgeEdge) -> str:
+    return "图片视觉分析" if edge.source_type == "image" else "参考信息"
 
 
 def generate_steps_graph_mode(
@@ -40,12 +112,15 @@ def generate_steps_graph_mode(
     image_path: Path,
     feedback: str,
     previous_final_question: str | None,
+    visual_summary: str | None,
+    visual_edges: list[KnowledgeEdge] | None,
 ) -> tuple[list[StepResult], bool]:
     steps: list[StepResult] = []
     cross_modal_used = True
 
     target_hops = min(MAX_STEPS_PER_ROUND - 1, max(MIN_HOPS, 2))
-    edges = build_knowledge_edges_cached(context)
+    text_edges = build_knowledge_edges_cached(context)
+    all_edges = _merge_edges_with_visual(text_edges, visual_edges)
 
     prompt = ""
     model = select_model_for_step(0)
@@ -62,9 +137,11 @@ def generate_steps_graph_mode(
             raw="",
         )
         fact_hint = "请基于图片与参考信息进行综合推断。"
-        if edges:
-            edge = random.choice(edges)
+        if all_edges:
+            edge = random.choice(all_edges)
+            source_label = _edge_source_label(edge)
             fact_hint = (
+                f"[来源: {source_label}]\n"
                 f"Knowledge Link: {edge.head} -> {edge.relation} -> {edge.tail}\n"
                 f"Evidence: {edge.evidence}"
             )
@@ -84,6 +161,18 @@ def generate_steps_graph_mode(
             feedback=feedback,
             force_cross_modal=True,
         )
+        get_details_logger().log_event(
+            "operate_drafts",
+            {
+                "step": 0,
+                "fact_hint": fact_hint,
+                "operate_distinction": operate_distinction.draft,
+                "operate_distinction_raw": operate_distinction.raw,
+                "operate_calculation": operate_calculation.draft,
+                "operate_calculation_raw": operate_calculation.raw,
+                "force_cross_modal": True,
+            },
+        )
         prompt = build_extend_step_prompt(
             context,
             dummy_prev,
@@ -92,11 +181,29 @@ def generate_steps_graph_mode(
             operate_calculation.draft,
             feedback,
             force_cross_modal=True,
+            visual_summary=visual_summary,
         )
     else:
-        prompt = build_stage1_step_prompt(context, feedback, previous_final_question)
+        prompt = build_stage1_step_prompt(
+            context,
+            feedback,
+            previous_final_question,
+            visual_summary,
+        )
 
     step0 = run_step(prompt, image_path, model, 0)
+    get_details_logger().log_event(
+        "step_result",
+        {
+            "step": 0,
+            "question": step0.question,
+            "answer_letter": step0.answer_letter,
+            "answer_text": step0.answer_text,
+            "reasoning": step0.reasoning,
+            "modal_use": step0.modal_use,
+            "cross_modal_bridge": step0.cross_modal_bridge,
+        },
+    )
     steps.append(step0)
     print("[Step 0] 完成 (Graph Mode anchor)")
     print(step0.question)
@@ -184,31 +291,59 @@ def generate_steps_graph_mode(
                 print("[Review] Step 0 结果: incorrect")
             else:
                 print("[Review] Step 0 结果: unknown")
-    if not edges or target_hops <= 0:
+    if not all_edges or target_hops <= 0:
         print("[Graph Mode] 知识点链为空或 hop=0，退化为仅 step_0。")
         return steps, cross_modal_used
 
-    entity_pool = build_entity_pool(edges)
-    path = sample_path(edges, target_hops)
+    entity_pool = build_entity_pool(all_edges)
+    require_visual = any(edge.source_type == "image" for edge in all_edges)
+    path = _sample_path_with_visual(all_edges, target_hops, require_visual)
     if not path:
         print("[Graph Mode] 知识链路径采样失败，退化为仅 step_0。")
         return steps, cross_modal_used
+    get_details_logger().log_event(
+        "graph_path",
+        {
+            "target_hops": target_hops,
+            "require_visual": require_visual,
+            "edges": [
+                {
+                    "head": edge.head,
+                    "relation": edge.relation,
+                    "tail": edge.tail,
+                    "evidence": edge.evidence,
+                    "source_id": edge.source_id,
+                    "source_type": edge.source_type,
+                }
+                for edge in path
+            ],
+        },
+    )
 
     current_step_index = 1
     for edge in path:
         target_side = "tail"
         distractors = [e for e in entity_pool if e != edge.tail]
         branch_candidates = [
-            e for e in edges if e.head == edge.head and e.tail != edge.tail
+            e for e in all_edges if e.head == edge.head and e.tail != edge.tail
         ]
         branch_hint = ""
         if branch_candidates:
             branch_edge = random.choice(branch_candidates)
+            branch_label = _edge_source_label(branch_edge)
             branch_hint = (
-                "\n[Branch/Contrast Knowledge]: "
-                f"{branch_edge.head} --[{branch_edge.relation}]--> {branch_edge.tail} "
+                "\n[Branch/Contrast Knowledge]"
+                f"[来源: {branch_label}]: "
+                f"{branch_edge.head} --[{branch_edge.relation}]--> {branch_edge.tail}"
             )
+        source_label = _edge_source_label(edge)
+        source_prefix = (
+            "根据对图片的视觉分析 (Visual Analysis)"
+            if edge.source_type == "image"
+            else "根据参考信息 (Reference)"
+        )
         operate_fact_hint = (
+            f"[来源: {source_label}]\n"
             f"evidence_snippet={edge.evidence or ''}\n"
             f"knowledge_link: head={edge.head} ; relation={edge.relation} ; tail={edge.tail}"
             f"{branch_hint}"
@@ -231,6 +366,18 @@ def generate_steps_graph_mode(
             force_cross_modal=False,
             forbidden_terms=[edge.tail],
         )
+        get_details_logger().log_event(
+            "operate_drafts",
+            {
+                "step": current_step_index,
+                "fact_hint": operate_fact_hint,
+                "operate_distinction": operate_distinction.draft,
+                "operate_distinction_raw": operate_distinction.raw,
+                "operate_calculation": operate_calculation.draft,
+                "operate_calculation_raw": operate_calculation.raw,
+                "force_cross_modal": False,
+            },
+        )
         prompt = build_graph_1hop_step_prompt(
             anchor_question=step0.question,
             previous_step=steps[-1],
@@ -244,11 +391,26 @@ def generate_steps_graph_mode(
             distractor_entities=distractors,
             feedback=feedback,
             force_cross_modal=False,
+            knowledge_source_label=source_label,
+            knowledge_source_prefix=source_prefix,
+            visual_summary=visual_summary,
         )
         model = select_model_for_step(current_step_index)
         step = run_step(prompt, image_path, model, current_step_index)
         if step.evidence is None:
             step.evidence = edge_to_evidence_payload(edge)
+        get_details_logger().log_event(
+            "step_result",
+            {
+                "step": current_step_index,
+                "question": step.question,
+                "answer_letter": step.answer_letter,
+                "answer_text": step.answer_text,
+                "reasoning": step.reasoning,
+                "modal_use": step.modal_use,
+                "cross_modal_bridge": step.cross_modal_bridge,
+            },
+        )
 
         print(f"[Step {current_step_index}] 正在进行视觉幻觉核查...")
         verify_prompt = build_visual_verification_prompt(step.question)
@@ -295,6 +457,7 @@ def generate_steps_graph_mode(
                 operate_distinction.draft,
                 operate_calculation.draft,
                 False,
+                visual_summary,
             )
             step = run_step(revise_prompt, image_path, model, current_step_index)
             medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
@@ -307,6 +470,19 @@ def generate_steps_graph_mode(
             if not medium_correct:
                 strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
                 strong_correct = grade_answer(step.answer_letter or "", strong_letter)
+            get_details_logger().log_event(
+                "step_result_revised",
+                {
+                    "step": current_step_index,
+                    "reason": reason,
+                    "question": step.question,
+                    "answer_letter": step.answer_letter,
+                    "answer_text": step.answer_text,
+                    "reasoning": step.reasoning,
+                    "modal_use": step.modal_use,
+                    "cross_modal_bridge": step.cross_modal_bridge,
+                },
+            )
 
         print(f"[Step {current_step_index}] 完成 (Graph Mode, model={model})")
         print(step.question)

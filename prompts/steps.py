@@ -18,12 +18,29 @@ def _format_feedback_block(feedback: str) -> str:
     """.strip()
 
 
-def build_stage1_step_prompt(context: str, feedback: str, previous_question: str | None) -> str:
+def _format_visual_summary_block(visual_summary: str | None) -> str:
+    if not visual_summary:
+        return ""
+    return f"""
+    [图片详细文本描述摘要 / Visual Summary]
+    {visual_summary.strip()}
+    (仅供辅助理解，题干仍需依赖图片视觉证据)
+    """.strip()
+
+
+def build_stage1_step_prompt(
+    context: str,
+    feedback: str,
+    previous_question: str | None,
+    visual_summary: str | None = None,
+) -> str:
     feedback_block = _format_feedback_block(feedback)
+    visual_block = _format_visual_summary_block(visual_summary)
     previous = f"\n上一轮最终问题: {previous_question.strip()}" if previous_question else ""
     return dedent(
         f"""
         {feedback_block}
+        {visual_block}
 
         你需要围绕图片“中心区域”的视觉锚点，生成一个多跳题的第1步子问题(单选题)。
         要求:
@@ -51,14 +68,17 @@ def build_stage2_step_prompt(
     operate_calculation_draft: str,
     feedback: str,
     force_cross_modal: bool,
+    visual_summary: str | None = None,
 ) -> str:
     feedback_block = _format_feedback_block(feedback)
+    visual_block = _format_visual_summary_block(visual_summary)
     cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
     operate_distinction_block = indent((operate_distinction_draft.strip() or "(empty)"), "          ")
     operate_calculation_block = indent((operate_calculation_draft.strip() or "(empty)"), "          ")
     return dedent(
         f"""
         {feedback_block}
+        {visual_block}
 
         这是上一步的子问题与答案:
         问题: {previous_step.question}
@@ -105,14 +125,17 @@ def build_stage3_step_prompt(
     operate_calculation_draft: str,
     feedback: str,
     force_cross_modal: bool,
+    visual_summary: str | None = None,
 ) -> str:
     feedback_block = _format_feedback_block(feedback)
+    visual_block = _format_visual_summary_block(visual_summary)
     cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
     operate_distinction_block = indent((operate_distinction_draft.strip() or "(empty)"), "          ")
     operate_calculation_block = indent((operate_calculation_draft.strip() or "(empty)"), "          ")
     return dedent(
         f"""
         {feedback_block}
+        {visual_block}
 
         这是上一步的子问题与答案:
         问题: {previous_step.question}
@@ -159,14 +182,17 @@ def build_extend_step_prompt(
     operate_calculation_draft: str,
     feedback: str,
     force_cross_modal: bool,
+    visual_summary: str | None = None,
 ) -> str:
     feedback_block = _format_feedback_block(feedback)
+    visual_block = _format_visual_summary_block(visual_summary)
     cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
     operate_distinction_block = indent((operate_distinction_draft.strip() or "(empty)"), "          ")
     operate_calculation_block = indent((operate_calculation_draft.strip() or "(empty)"), "          ")
     return dedent(
         f"""
         {feedback_block}
+        {visual_block}
 
         这是上一步的子问题与答案:
         问题: {previous_step.question}
@@ -211,12 +237,14 @@ def build_revise_prompt(
     operate_distinction_draft: str | None,
     operate_calculation_draft: str | None,
     force_cross_modal: bool,
+    visual_summary: str | None = None,
 ) -> str:
     # Revise prompt 通常不直接接收外部 feedback (而是接收内部 reason)，
     # 但如果 reason 本身来自 difficulty check，也可以格式化强调。
     cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
     operate_distinction_block = indent((operate_distinction_draft or "").strip() or "(empty)", "      ")
     operate_calculation_block = indent((operate_calculation_draft or "").strip() or "(empty)", "      ")
+    visual_block = _format_visual_summary_block(visual_summary)
     return dedent(
         f"""
         [CRITICAL REVISION INSTRUCTION / 必须执行的修正指令]
@@ -225,6 +253,7 @@ def build_revise_prompt(
         原问题: {step.question}
         原答案字母: {step.answer_letter}
         原答案短语: {step.answer_text}
+        {visual_block}
 
         修正要求:
         1. 彻底解决上述判定原因。如果原因是"Low Difficulty"或"Simple Logic"，必须大幅增加推理深度。
@@ -271,8 +300,12 @@ def build_graph_1hop_step_prompt(
     distractor_entities: list[str],
     feedback: str,
     force_cross_modal: bool,
+    knowledge_source_label: str | None = None,
+    knowledge_source_prefix: str | None = None,
+    visual_summary: str | None = None,
 ) -> str:
     feedback_block = _format_feedback_block(feedback)
+    visual_block = _format_visual_summary_block(visual_summary)
     cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
     distractors = ", ".join(distractor_entities[:12]) if distractor_entities else "(由你生成)"
     operate_distinction_block = indent((operate_distinction_draft.strip() or "(empty)"), "        ")
@@ -288,11 +321,14 @@ def build_graph_1hop_step_prompt(
         )
 
     target_concept = head if target_side == "head" else tail
+    source_prefix = knowledge_source_prefix or "根据参考信息 (Reference)"
     return dedent(
         f"""
         {feedback_block}
+        {visual_block}
 
         你需要基于“本地知识点链”生成一个 1-hop 子问题(单选题)。
+        提示前缀: {source_prefix}。
         {context_bridge}
 
         当前使用知识链: {head} --[{relation}]--> {tail}
@@ -315,6 +351,7 @@ def build_graph_1hop_step_prompt(
         {anchor_question.strip()}
 
         参考证据(仅供内部推理):
+        - 知识来源: {knowledge_source_label or "参考信息"}
         - evidence: {evidence_snippet.strip() or "(未提供)"}
         - operate_distinction draft:
 {operate_distinction_block}

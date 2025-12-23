@@ -2,6 +2,7 @@ from pathlib import Path
 
 from pipeline import review_question, run_episode, save_round_questions
 from utils.config import GENQA_HARD_PATH, GENQA_SIMPLE_PATH, MAX_ROUNDS, QUESTION_LOG_PATH
+from utils.details_logger import setup_details_logging
 from utils.genqa import save_genqa_item
 
 
@@ -13,6 +14,7 @@ def _pick_existing_path(candidates: list[Path]) -> Path:
 
 
 def main() -> None:
+    setup_details_logging()
     image_path = _pick_existing_path([Path("data/test.png"), Path("test.png")])
     context_path = _pick_existing_path([Path("data/context.txt"), Path("context.txt")])
     context = context_path.read_text(encoding="utf-8")

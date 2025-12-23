@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from pipeline.pipeline_solvers import evaluate_difficulty
+from pipeline.pipeline_vision_knowledge import build_visual_knowledge
 from prompts import build_analysis_prompt, build_final_compress_prompt
 from steps import derive_stage_results, generate_steps
 from utils.api_client import call_text_model, call_vision_model
@@ -8,6 +9,7 @@ from utils.config import (
     DEFAULT_TEMPERATURE,
     MODEL_SUM,
 )
+from utils.details_logger import get_details_logger
 from utils.parsing import extract_tag_optional
 from utils.schema import EpisodeResult, StageResult, StepResult
 
@@ -27,12 +29,28 @@ def run_episode(
     previous_final_question: str | None = None,
     prior_steps: list[StepResult] | None = None,
 ) -> EpisodeResult:
-    steps, cross_modal_used = generate_steps(context, image_path, feedback, previous_final_question)
+    visual_knowledge = build_visual_knowledge(image_path)
+    steps, cross_modal_used = generate_steps(
+        context,
+        image_path,
+        feedback,
+        previous_final_question,
+        visual_knowledge.summary,
+        visual_knowledge.edges,
+    )
     stage_1, stage_2, stage_3 = derive_stage_results(steps)
 
     compress_steps = steps if not prior_steps else [*prior_steps, *steps]
     final_prompt = build_final_compress_prompt(context, compress_steps, feedback)
     stage_final = run_final(final_prompt, image_path, MODEL_SUM)
+    get_details_logger().log_event(
+        "final_stage",
+        {
+            "question": stage_final.question,
+            "answer": stage_final.answer,
+            "reasoning": stage_final.reasoning,
+        },
+    )
     print("[Final] Compress 完成")
     print(stage_final.question)
     print("标准答案:", stage_final.answer)

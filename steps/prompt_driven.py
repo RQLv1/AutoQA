@@ -29,6 +29,7 @@ from utils.config import (
     MODEL_SOLVE_STRONG,
     REQUIRE_CROSS_MODAL,
 )
+from utils.details_logger import get_details_logger
 from utils.genqa import save_genqa_item
 from utils.schema import StepResult
 
@@ -38,6 +39,7 @@ def generate_steps_prompt_driven(
     image_path: Path,
     feedback: str,
     previous_final_question: str | None,
+    visual_summary: str | None,
 ) -> tuple[list[StepResult], bool]:
     fact_candidates = load_fact_candidates(context, max(MAX_STEPS_PER_ROUND, 3))
     steps: list[StepResult] = []
@@ -92,6 +94,18 @@ def generate_steps_prompt_driven(
             )
             operate_distinction_draft = operate_distinction.draft
             operate_calculation_draft = operate_calculation.draft
+            get_details_logger().log_event(
+                "operate_drafts",
+                {
+                    "step": k,
+                    "fact_hint": fact_hint,
+                    "operate_distinction": operate_distinction_draft,
+                    "operate_distinction_raw": operate_distinction.raw,
+                    "operate_calculation": operate_calculation_draft,
+                    "operate_calculation_raw": operate_calculation.raw,
+                    "force_cross_modal": force_cross_modal,
+                },
+            )
 
         if k == 0:
             if previous_final_question and effective_previous_step:
@@ -103,9 +117,15 @@ def generate_steps_prompt_driven(
                     operate_calculation_draft,
                     feedback,
                     force_cross_modal,
+                    visual_summary,
                 )
             else:
-                prompt = build_stage1_step_prompt(context, feedback, previous_final_question)
+                prompt = build_stage1_step_prompt(
+                    context,
+                    feedback,
+                    previous_final_question,
+                    visual_summary,
+                )
         elif k == 1:
             prompt = build_stage2_step_prompt(
                 context,
@@ -115,6 +135,7 @@ def generate_steps_prompt_driven(
                 operate_calculation_draft,
                 feedback,
                 force_cross_modal,
+                visual_summary,
             )
         elif k == 2:
             prompt = build_stage3_step_prompt(
@@ -125,6 +146,7 @@ def generate_steps_prompt_driven(
                 operate_calculation_draft,
                 feedback,
                 force_cross_modal,
+                visual_summary,
             )
         else:
             prompt = build_extend_step_prompt(
@@ -135,9 +157,22 @@ def generate_steps_prompt_driven(
                 operate_calculation_draft,
                 feedback,
                 force_cross_modal,
+                visual_summary,
             )
 
         step = run_step(prompt, image_path, model, k)
+        get_details_logger().log_event(
+            "step_result",
+            {
+                "step": k,
+                "question": step.question,
+                "answer_letter": step.answer_letter,
+                "answer_text": step.answer_text,
+                "reasoning": step.reasoning,
+                "modal_use": step.modal_use,
+                "cross_modal_bridge": step.cross_modal_bridge,
+            },
+        )
         medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
         medium_correct = grade_answer(step.answer_letter or "", medium_letter)
         
@@ -172,6 +207,7 @@ def generate_steps_prompt_driven(
                 operate_distinction_draft,
                 operate_calculation_draft,
                 force_cross_modal,
+                visual_summary,
             )
             step = run_step(revise_prompt, image_path, model, k)
             medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
@@ -184,6 +220,19 @@ def generate_steps_prompt_driven(
             if not medium_correct:
                 strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
                 strong_correct = grade_answer(step.answer_letter or "", strong_letter)
+            get_details_logger().log_event(
+                "step_result_revised",
+                {
+                    "step": k,
+                    "reason": reason,
+                    "question": step.question,
+                    "answer_letter": step.answer_letter,
+                    "answer_text": step.answer_text,
+                    "reasoning": step.reasoning,
+                    "modal_use": step.modal_use,
+                    "cross_modal_bridge": step.cross_modal_bridge,
+                },
+            )
 
         if force_cross_modal and "cross_modal_bridge" not in step.raw:
             step.cross_modal_bridge = True

@@ -7,6 +7,8 @@ import os
 MODEL_STAGE_1 = os.getenv("MODEL_STAGE_1", "gpt-51-1113-global")  # 阶段1：通常用于初始分析
 MODEL_STAGE_2 = os.getenv("MODEL_STAGE_2", MODEL_STAGE_1)  # 阶段2：通常用于深入推理
 MODEL_STAGE_3 = os.getenv("MODEL_STAGE_3", MODEL_STAGE_1)  # 阶段3：通常用于最终生成
+# 视觉理解与知识抽取使用的模型
+MODEL_VISION_KNOWLEDGE = os.getenv("MODEL_VISION_KNOWLEDGE", MODEL_STAGE_1)
 # 汇总和通用任务使用的模型
 MODEL_SUM = os.getenv("MODEL_SUM", os.getenv("MODEL_STAGE_SUM", "gemini-3-pro-preview"))
 
@@ -56,6 +58,7 @@ MAX_ROUNDS = int(os.getenv("MAX_ROUNDS", "10"))  # 最大生成轮次
 QUESTION_LOG_PATH = os.getenv("QUESTION_LOG_PATH", "question_log.jsonl")  # 过程日志文件路径
 GENQA_SIMPLE_PATH = os.getenv("GENQA_SIMPLE_PATH", "genqa_simple.json")  # 简单/中等题目保存路径
 GENQA_HARD_PATH = os.getenv("GENQA_HARD_PATH", "genqa_hard.json")  # 难题保存路径
+DETAILS_PATH = os.getenv("DETAILS_PATH", "details.json")  # 终端与草稿信息日志
 
 MAX_STEPS_PER_ROUND = int(os.getenv("MAX_STEPS_PER_ROUND", "6"))  # 每轮生成的最大推理步数
 MIN_HOPS = int(os.getenv("MIN_HOPS", "5"))  # 最小推理跳数 (用于控制题目复杂度)
