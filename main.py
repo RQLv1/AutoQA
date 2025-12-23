@@ -91,6 +91,8 @@ def main() -> None:
                             "review_raw": review_raw,
                         },
                     )
+                    hard_questions_found += 1
+                    print(f"当前已收集难题: {hard_questions_found}/{target_hard_questions}")
                 else:
                     print("[Review] 结果: text-only/no-image 可解，跳过入库")
             elif review_passed is False:
@@ -100,7 +102,6 @@ def main() -> None:
                 review_decision = "unknown"
                 print("[Review] 结果: unknown")
 
-        hard_questions_found += 1
         if generated_count >= max_attempts:
             print("达到最大尝试次数，停止。")
             break

@@ -1,42 +1,62 @@
 import os
 
-MODEL_STAGE_1 = os.getenv("MODEL_STAGE_1", "qwen-vl-max-latest")
-MODEL_STAGE_2 = os.getenv("MODEL_STAGE_2", "claude-sonnet-4-5-20250929")
-MODEL_STAGE_3 = os.getenv("MODEL_STAGE_3", "gpt-5.1-2025-11-13")
-MODEL_SUM = os.getenv("MODEL_SUM", os.getenv("MODEL_STAGE_SUM", "gpt-5.1-2025-11-13"))
-MODEL_OPERATE = os.getenv("MODEL_OPERATE", MODEL_STAGE_2)
-MODEL_OPERATE_DISTINCTION = os.getenv("MODEL_OPERATE_DISTINCTION", MODEL_OPERATE)
-MODEL_OPERATE_CALCULATION = os.getenv("MODEL_OPERATE_CALCULATION", MODEL_OPERATE)
+# =============================================================================
+# 模型配置 (Model Configuration)
+# =============================================================================
+# 生成阶段使用的模型
+MODEL_STAGE_1 = os.getenv("MODEL_STAGE_1", "gpt-51-1113-global")  # 阶段1：通常用于初始分析
+MODEL_STAGE_2 = os.getenv("MODEL_STAGE_2", MODEL_STAGE_1)  # 阶段2：通常用于深入推理
+MODEL_STAGE_3 = os.getenv("MODEL_STAGE_3", MODEL_STAGE_1)  # 阶段3：通常用于最终生成
+# 汇总和通用任务使用的模型
+MODEL_SUM = os.getenv("MODEL_SUM", os.getenv("MODEL_STAGE_SUM", "gpt-5-pro-1006-global"))
 
-MODEL_SOLVE_MEDIUM = os.getenv("MODEL_SOLVE_MEDIUM", "doubao-seed-1-6-251015")
-MODEL_SOLVE_STRONG = os.getenv("MODEL_SOLVE_STRONG", "claude-sonnet-4-5-20250929")
+# 操作代理使用的模型
+MODEL_OPERATE = os.getenv("MODEL_OPERATE", MODEL_STAGE_1)  # 默认操作模型
+MODEL_OPERATE_DISTINCTION = os.getenv("MODEL_OPERATE_DISTINCTION", MODEL_OPERATE)  # 区分/辨析任务
+MODEL_OPERATE_CALCULATION = os.getenv("MODEL_OPERATE_CALCULATION", MODEL_OPERATE)  # 计算任务
+
+# 求解器模型 (Solver Models) - 用于评估题目难度
+MODEL_SOLVE_MEDIUM = os.getenv("MODEL_SOLVE_MEDIUM", "gemini-3-flash-preview")  # 中等能力模型 (用于检测题目是否过简单)
+MODEL_SOLVE_STRONG = os.getenv("MODEL_SOLVE_STRONG", "claude_sonnet4_5")  # 强能力模型 (用于确保题目可解)
+# 评审模型 (Review Model) - 用于审核题目质量
 MODEL_REVIEW = os.getenv("MODEL_REVIEW", MODEL_SOLVE_STRONG)
 
-MODEL_JUDGE = os.getenv("MODEL_JUDGE", "gpt-5.1-2025-11-13")
+# 裁判模型 (Judge Model)
+MODEL_JUDGE = os.getenv("MODEL_JUDGE", "gpt-51-1113-global")
 
+# =============================================================================
+# API 配置 (API Configuration)
+# =============================================================================
 API_BASE_URL = "https://aiarena.alibaba-inc.com/api/openai/v1" # "https://idealab.alibaba-inc.com/api/openai/v1"
 API_KEY = os.getenv("API_KEY", "intern-c9e16118-3b3e-41ff-9650-7251de404042")
-API_MAX_RETRIES = int(os.getenv("API_MAX_RETRIES", "5"))
-API_RETRY_SLEEP_SECONDS = int(os.getenv("API_RETRY_SLEEP_SECONDS", "5"))
-API_RECONNECT_RETRIES = int(os.getenv("API_RECONNECT_RETRIES", "5"))
+API_MAX_RETRIES = int(os.getenv("API_MAX_RETRIES", "5"))  # 接口调用最大重试次数
+API_RETRY_SLEEP_SECONDS = int(os.getenv("API_RETRY_SLEEP_SECONDS", "5"))  # 重试间隔时间(秒)
+API_RECONNECT_RETRIES = int(os.getenv("API_RECONNECT_RETRIES", "5"))  # 连接失败重试次数
 API_RECONNECT_SLEEP_SECONDS = int(
     os.getenv("API_RECONNECT_SLEEP_SECONDS", "10")
-)
+)  # 连接失败重试间隔(秒)
 
-MAX_ROUNDS = int(os.getenv("MAX_ROUNDS", "10"))
-QUESTION_LOG_PATH = os.getenv("QUESTION_LOG_PATH", "question_log.jsonl")
-GENQA_SIMPLE_PATH = os.getenv("GENQA_SIMPLE_PATH", "genqa_simple.json")
-GENQA_HARD_PATH = os.getenv("GENQA_HARD_PATH", "genqa_hard.json")
-MAX_STEPS_PER_ROUND = int(os.getenv("MAX_STEPS_PER_ROUND", "6"))
-MIN_HOPS = int(os.getenv("MIN_HOPS", "5"))
-MAX_HARDEN_ATTEMPTS = int(os.getenv("MAX_HARDEN_ATTEMPTS", "3"))
-HARDEN_MODE = os.getenv("HARDEN_MODE", "calc_first")
-REQUIRE_CROSS_MODAL = os.getenv("REQUIRE_CROSS_MODAL", "true").lower() in {"1", "true", "yes"}
+# =============================================================================
+# 生成流程配置 (Generation Process Configuration)
+# =============================================================================
+MAX_ROUNDS = int(os.getenv("MAX_ROUNDS", "10"))  # 最大生成轮次
+QUESTION_LOG_PATH = os.getenv("QUESTION_LOG_PATH", "question_log.jsonl")  # 过程日志文件路径
+GENQA_SIMPLE_PATH = os.getenv("GENQA_SIMPLE_PATH", "genqa_simple.json")  # 简单/中等题目保存路径
+GENQA_HARD_PATH = os.getenv("GENQA_HARD_PATH", "genqa_hard.json")  # 难题保存路径
 
-VERIFY_STRICT = os.getenv("VERIFY_STRICT", "false").lower() in {"1", "true", "yes"}
+MAX_STEPS_PER_ROUND = int(os.getenv("MAX_STEPS_PER_ROUND", "6"))  # 每轮生成的最大推理步数
+MIN_HOPS = int(os.getenv("MIN_HOPS", "5"))  # 最小推理跳数 (用于控制题目复杂度)
+MAX_HARDEN_ATTEMPTS = int(os.getenv("MAX_HARDEN_ATTEMPTS", "3"))  # 难度强化尝试次数
+HARDEN_MODE = os.getenv("HARDEN_MODE", "calc_first")  # 难度强化模式 (如: 优先计算)
+REQUIRE_CROSS_MODAL = os.getenv("REQUIRE_CROSS_MODAL", "true").lower() in {"1", "true", "yes"}  # 是否强制要求跨模态推理
 
-ENABLE_GRAPH_MODE = os.getenv("ENABLE_GRAPH_MODE", "true").lower() in {"1", "true", "yes"}
-DOC_CHUNK_WORDS = int(os.getenv("DOC_CHUNK_WORDS", "160"))
-REQUIRE_DISTINCT_SOURCES = os.getenv("REQUIRE_DISTINCT_SOURCES", "false").lower() in {"1", "true", "yes"}
-PATH_SAMPLER = os.getenv("PATH_SAMPLER", "rbfs")
-MAX_SHORTCUT_EDGES = int(os.getenv("MAX_SHORTCUT_EDGES", "10"))
+VERIFY_STRICT = os.getenv("VERIFY_STRICT", "false").lower() in {"1", "true", "yes"}  # 是否启用严格验证
+
+# =============================================================================
+# 图模式配置 (Graph Mode Configuration)
+# =============================================================================
+ENABLE_GRAPH_MODE = os.getenv("ENABLE_GRAPH_MODE", "true").lower() in {"1", "true", "yes"}  # 是否启用图模式构建上下文
+DOC_CHUNK_WORDS = int(os.getenv("DOC_CHUNK_WORDS", "160"))  # 文档分块大小 (词数)
+REQUIRE_DISTINCT_SOURCES = os.getenv("REQUIRE_DISTINCT_SOURCES", "false").lower() in {"1", "true", "yes"}  # 是否要求信息来源不同
+PATH_SAMPLER = os.getenv("PATH_SAMPLER", "rbfs")  # 路径采样算法 (如: rbfs)
+MAX_SHORTCUT_EDGES = int(os.getenv("MAX_SHORTCUT_EDGES", "10"))  # 图中允许的最大快捷边数量
