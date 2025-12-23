@@ -1,21 +1,21 @@
 import os
 
-MODEL_STAGE_1 = os.getenv("MODEL_STAGE_1", "gpt-5-chat-0807-global")
-MODEL_STAGE_2 = os.getenv("MODEL_STAGE_2", "claude_sonnet4_5")
-MODEL_STAGE_3 = os.getenv("MODEL_STAGE_3", "gpt-51-1113-global")
-MODEL_SUM = os.getenv("MODEL_SUM", os.getenv("MODEL_STAGE_SUM", "o3-0416-global"))
+MODEL_STAGE_1 = os.getenv("MODEL_STAGE_1", "qwen-vl-max-latest")
+MODEL_STAGE_2 = os.getenv("MODEL_STAGE_2", "claude-sonnet-4-5-20250929")
+MODEL_STAGE_3 = os.getenv("MODEL_STAGE_3", "gpt-5.1-2025-11-13")
+MODEL_SUM = os.getenv("MODEL_SUM", os.getenv("MODEL_STAGE_SUM", "gpt-5.1-2025-11-13"))
 MODEL_OPERATE = os.getenv("MODEL_OPERATE", MODEL_STAGE_2)
 MODEL_OPERATE_DISTINCTION = os.getenv("MODEL_OPERATE_DISTINCTION", MODEL_OPERATE)
 MODEL_OPERATE_CALCULATION = os.getenv("MODEL_OPERATE_CALCULATION", MODEL_OPERATE)
 
-MODEL_SOLVE_MEDIUM = os.getenv("MODEL_SOLVE_MEDIUM", "gpt-5-mini-0807-global")
-MODEL_SOLVE_STRONG = os.getenv("MODEL_SOLVE_STRONG", "claude_sonnet4_5")
+MODEL_SOLVE_MEDIUM = os.getenv("MODEL_SOLVE_MEDIUM", "doubao-seed-1-6-251015")
+MODEL_SOLVE_STRONG = os.getenv("MODEL_SOLVE_STRONG", "claude-sonnet-4-5-20250929")
 MODEL_REVIEW = os.getenv("MODEL_REVIEW", MODEL_SOLVE_STRONG)
 
-MODEL_JUDGE = os.getenv("MODEL_JUDGE", "gpt-51-1113-global")
+MODEL_JUDGE = os.getenv("MODEL_JUDGE", "gpt-5.1-2025-11-13")
 
-API_BASE_URL = "https://idealab.alibaba-inc.com/api/openai/v1"
-API_KEY = os.getenv("API_KEY")
+API_BASE_URL = "https://aiarena.alibaba-inc.com/api/openai/v1" # "https://idealab.alibaba-inc.com/api/openai/v1"
+API_KEY = os.getenv("API_KEY", "intern-c9e16118-3b3e-41ff-9650-7251de404042")
 API_MAX_RETRIES = int(os.getenv("API_MAX_RETRIES", "5"))
 API_RETRY_SLEEP_SECONDS = int(os.getenv("API_RETRY_SLEEP_SECONDS", "5"))
 API_RECONNECT_RETRIES = int(os.getenv("API_RECONNECT_RETRIES", "5"))

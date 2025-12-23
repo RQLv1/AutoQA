@@ -31,6 +31,53 @@ def _sleep_before_retry(attempt: int, error: Exception) -> None:
     time.sleep(seconds)
 
 
+def _format_response_for_error(resp: object) -> str:
+    if hasattr(resp, "model_dump"):
+        try:
+            return str(resp.model_dump())
+        except Exception:
+            pass
+    if isinstance(resp, dict):
+        return str(resp)
+    return repr(resp)
+
+
+def _extract_response_text(resp: object) -> str:
+    choices = getattr(resp, "choices", None)
+    if choices is None and isinstance(resp, dict):
+        choices = resp.get("choices")
+    if not choices:
+        raise RuntimeError(f"响应缺少 choices: {_format_response_for_error(resp)}")
+
+    choice0 = choices[0]
+    message = getattr(choice0, "message", None)
+    if message is None and isinstance(choice0, dict):
+        message = choice0.get("message")
+    if message is None:
+        raise RuntimeError(f"响应缺少 message: {_format_response_for_error(resp)}")
+
+    content = getattr(message, "content", None)
+    if content is None and isinstance(message, dict):
+        content = message.get("content")
+
+    if isinstance(content, list):
+        parts: list[str] = []
+        for part in content:
+            if isinstance(part, dict):
+                if part.get("type") == "text":
+                    parts.append(str(part.get("text", "")))
+            elif isinstance(part, str):
+                parts.append(part)
+        content = "".join(parts).strip()
+
+    if content is None:
+        raise RuntimeError(f"响应缺少 content: {_format_response_for_error(resp)}")
+
+    if not isinstance(content, str):
+        content = str(content)
+    return content
+
+
 def call_vision_model(
     prompt: str,
     image_path: Path,
@@ -70,7 +117,7 @@ def call_vision_model(
                 ],
                 **kwargs,
             )
-            return resp.choices[0].message.content or ""
+            return _extract_response_text(resp)
         except Exception as e:
             last_error = e
             _sleep_before_retry(attempt, e)
@@ -102,7 +149,7 @@ def call_text_model(
                 messages=[{"role": "user", "content": prompt}],
                 **kwargs,
             )
-            return resp.choices[0].message.content or ""
+            return _extract_response_text(resp)
         except Exception as e:
             last_error = e
             _sleep_before_retry(attempt, e)
