@@ -48,17 +48,36 @@ def generate_steps_prompt_driven(
         fact = None
         if k > 0 and fact_candidates:
             fact = fact_candidates[(k - 1) % len(fact_candidates)]
+        elif k == 0 and previous_final_question and fact_candidates:
+            fact = fact_candidates[0]
         fact_hint = format_fact_hint(fact)
-        force_cross_modal = REQUIRE_CROSS_MODAL and not cross_modal_used and k >= 1
+        force_cross_modal = REQUIRE_CROSS_MODAL and not cross_modal_used and (
+            k >= 1 or previous_final_question is not None
+        )
         model = select_model_for_step(k)
 
         operate_distinction_draft = ""
         operate_calculation_draft = ""
+        effective_previous_step = None
         if k > 0 and steps:
+            effective_previous_step = steps[-1]
+        elif k == 0 and previous_final_question:
+            effective_previous_step = StepResult(
+                k=-1,
+                question=previous_final_question,
+                answer_text="(inherited from previous round)",
+                answer_letter=None,
+                evidence=None,
+                modal_use="unknown",
+                cross_modal_bridge=True,
+                raw="",
+            )
+
+        if effective_previous_step:
             operate_distinction = run_operate_distinction_agent(
                 context=context,
                 image_path=image_path,
-                previous_step=steps[-1],
+                previous_step=effective_previous_step,
                 fact_hint=fact_hint,
                 feedback=feedback,
                 force_cross_modal=force_cross_modal,
@@ -66,7 +85,7 @@ def generate_steps_prompt_driven(
             operate_calculation = run_operate_calculation_agent(
                 context=context,
                 image_path=image_path,
-                previous_step=steps[-1],
+                previous_step=effective_previous_step,
                 fact_hint=fact_hint,
                 feedback=feedback,
                 force_cross_modal=force_cross_modal,
@@ -75,7 +94,18 @@ def generate_steps_prompt_driven(
             operate_calculation_draft = operate_calculation.draft
 
         if k == 0:
-            prompt = build_stage1_step_prompt(context, feedback, previous_final_question)
+            if previous_final_question and effective_previous_step:
+                prompt = build_extend_step_prompt(
+                    context,
+                    effective_previous_step,
+                    fact_hint,
+                    operate_distinction_draft,
+                    operate_calculation_draft,
+                    feedback,
+                    force_cross_modal,
+                )
+            else:
+                prompt = build_stage1_step_prompt(context, feedback, previous_final_question)
         elif k == 1:
             prompt = build_stage2_step_prompt(
                 context,

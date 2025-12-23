@@ -3,7 +3,12 @@ import random
 
 from graph.pipeline_graph import build_entity_pool, build_knowledge_edges_cached, edge_to_evidence_payload
 from graph.pipeline_path_sampling import sample_path
-from prompts import build_graph_1hop_step_prompt, build_revise_prompt, build_stage1_step_prompt
+from prompts import (
+    build_extend_step_prompt,
+    build_graph_1hop_step_prompt,
+    build_revise_prompt,
+    build_stage1_step_prompt,
+)
 from prompts.review import build_visual_verification_prompt
 from pipeline.pipeline_review import review_question
 from pipeline.pipeline_solvers import (
@@ -42,12 +47,56 @@ def generate_steps_graph_mode(
     target_hops = min(MAX_STEPS_PER_ROUND - 1, max(MIN_HOPS, 2))
     edges = build_knowledge_edges_cached(context)
 
-    step0 = run_step(
-        build_stage1_step_prompt(context, feedback, previous_final_question),
-        image_path,
-        select_model_for_step(0),
-        0,
-    )
+    prompt = ""
+    model = select_model_for_step(0)
+
+    if previous_final_question:
+        dummy_prev = StepResult(
+            k=-1,
+            question=previous_final_question,
+            answer_text="(inherited from previous round)",
+            answer_letter=None,
+            evidence=None,
+            modal_use="unknown",
+            cross_modal_bridge=True,
+            raw="",
+        )
+        fact_hint = "请基于图片与参考信息进行综合推断。"
+        if edges:
+            edge = random.choice(edges)
+            fact_hint = (
+                f"Knowledge Link: {edge.head} -> {edge.relation} -> {edge.tail}\n"
+                f"Evidence: {edge.evidence}"
+            )
+        operate_distinction = run_operate_distinction_agent(
+            context=context,
+            image_path=image_path,
+            previous_step=dummy_prev,
+            fact_hint=fact_hint,
+            feedback=feedback,
+            force_cross_modal=True,
+        )
+        operate_calculation = run_operate_calculation_agent(
+            context=context,
+            image_path=image_path,
+            previous_step=dummy_prev,
+            fact_hint=fact_hint,
+            feedback=feedback,
+            force_cross_modal=True,
+        )
+        prompt = build_extend_step_prompt(
+            context,
+            dummy_prev,
+            fact_hint,
+            operate_distinction.draft,
+            operate_calculation.draft,
+            feedback,
+            force_cross_modal=True,
+        )
+    else:
+        prompt = build_stage1_step_prompt(context, feedback, previous_final_question)
+
+    step0 = run_step(prompt, image_path, model, 0)
     steps.append(step0)
     print("[Step 0] 完成 (Graph Mode anchor)")
     print(step0.question)

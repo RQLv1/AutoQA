@@ -1,358 +1,714 @@
+我们需要修改生成逻辑：当存在 `previous_final_question` 时，第 0 步应被视为“第 N+1 步”，**强制激活计算 Agent** 并使用扩展提示词（`Extend Prompt`）来生成题目。
 
-为了强制模型“吸取教训”，我们需要在 Prompt 策略上做 **“负反馈前置 (Negative Feedback Preamble)”** 处理。
+以下是具体的修改方案：
 
-以下是针对 `prompts/steps.py` 的修改方案，核心改动是将 feedback 从“末尾补充”提升为“ **置顶的最高优先级指令** ”。
+### 修改 1: `rqlv1/autoqa/AutoQA-rqlv/steps/prompt_driven.py`
 
-### 修改方案
-
-请修改 `rqlv1/autoqa/AutoQA-rqlv/prompts/steps.py`。
-
- **主要改动点** ：
-
-1. **Feedback 置顶** ：将反馈信息格式化为 `[CRITICAL REVISION INSTRUCTION]` 块，放在 Prompt 的最开头。
-2. **显式约束** ：在 Prompt 中明确要求“如果反馈包含 X，则必须禁止 Y”。
-3. **应用范围** ：同时修改 `build_graph_1hop_step_prompt`（图模式核心）以及 `build_stage2_step_prompt` 等函数。
+我们需要在 `k=0` 且存在上一轮问题时，构造一个虚拟的 `previous_step`，从而触发 Agent 并使用更高级的提示词。
 
 **Python**
 
 ```
 {
     "type": "file_change",
-    "fileName": "rqlv1/autoqa/AutoQA-rqlv/prompts/steps.py",
-    "content": """from textwrap import dedent, indent
+    "fileName": "rqlv1/autoqa/AutoQA-rqlv/steps/prompt_driven.py",
+    "content": """from pathlib import Path
 
+from prompts import (
+    build_extend_step_prompt,
+    build_revise_prompt,
+    build_stage1_step_prompt,
+    build_stage2_step_prompt,
+    build_stage3_step_prompt,
+)
+from pipeline.pipeline_facts import format_fact_hint, load_fact_candidates
+from pipeline.pipeline_review import review_question
+from pipeline.pipeline_solvers import (
+    grade_answer,
+    solve_mcq,
+    solve_mcq_no_image,
+    solve_mcq_text_only,
+)
+from steps.operate_calculation_agent import run_operate_calculation_agent
+from steps.operate_distinction_agent import run_operate_distinction_agent
+from steps.quality import is_low_quality_entity_matching
+from steps.runner import run_step, select_model_for_step
+from steps.validation import validate_step
+from utils.config import (
+    GENQA_HARD_PATH,
+    GENQA_SIMPLE_PATH,
+    MAX_STEPS_PER_ROUND,
+    MIN_HOPS,
+    MODEL_SOLVE_MEDIUM,
+    MODEL_SOLVE_STRONG,
+    REQUIRE_CROSS_MODAL,
+)
+from utils.genqa import save_genqa_item
 from utils.schema import StepResult
 
 
-def _format_feedback_block(feedback: str) -> str:
-    if not feedback:
-        return ""
-    return f\"\"\"
-    [CRITICAL REVISION INSTRUCTION / 必须执行的修正指令]
-    上一轮生成的题目因质量不达标被拒绝。
-    拒绝原因(Feedback): {feedback.strip()}
+def generate_steps_prompt_driven(
+    context: str,
+    image_path: Path,
+    feedback: str,
+    previous_final_question: str | None,
+) -> tuple[list[StepResult], bool]:
+    fact_candidates = load_fact_candidates(context, max(MAX_STEPS_PER_ROUND, 3))
+    steps: list[StepResult] = []
+    cross_modal_used = False
+    min_steps = min(MAX_STEPS_PER_ROUND, max(MIN_HOPS, 3))
+
+    for k in range(MAX_STEPS_PER_ROUND):
+        fact = None
+        if k > 0 and fact_candidates:
+            fact = fact_candidates[(k - 1) % len(fact_candidates)]
+        # 如果 k=0 但有 previous_final_question，也尝试分配一个 fact
+        elif k == 0 and previous_final_question and fact_candidates:
+            fact = fact_candidates[0]
+          
+        fact_hint = format_fact_hint(fact)
+        # 如果继承了上一轮问题，第一步就应该强制跨模态
+        force_cross_modal = REQUIRE_CROSS_MODAL and not cross_modal_used and (k >= 1 or previous_final_question is not None)
+        model = select_model_for_step(k)
+
+        operate_distinction_draft = ""
+        operate_calculation_draft = ""
+      
+        # [修改点 1] 确定有效的 previous_step
+        effective_previous_step = None
+        if k > 0 and steps:
+            effective_previous_step = steps[-1]
+        elif k == 0 and previous_final_question:
+            # 构造虚拟 step 以激活 Agent
+            effective_previous_step = StepResult(
+                k=-1,
+                question=previous_final_question,
+                answer_text="(inherited from previous round)",
+                answer_letter=None,
+                evidence=None,
+                modal_use="unknown",
+                cross_modal_bridge=True,
+                raw=""
+            )
+
+        # [修改点 2] 只要有 effective_previous_step 就运行 Agent
+        if effective_previous_step:
+            operate_distinction = run_operate_distinction_agent(
+                context=context,
+                image_path=image_path,
+                previous_step=effective_previous_step,
+                fact_hint=fact_hint,
+                feedback=feedback,
+                force_cross_modal=force_cross_modal,
+            )
+            operate_calculation = run_operate_calculation_agent(
+                context=context,
+                image_path=image_path,
+                previous_step=effective_previous_step,
+                fact_hint=fact_hint,
+                feedback=feedback,
+                force_cross_modal=force_cross_modal,
+            )
+            operate_distinction_draft = operate_distinction.draft
+            operate_calculation_draft = operate_calculation.draft
+
+        if k == 0:
+            # [修改点 3] 如果有上一轮问题，使用 Extend Prompt 而不是 Stage 1
+            if previous_final_question and effective_previous_step:
+                prompt = build_extend_step_prompt(
+                    context,
+                    effective_previous_step,
+                    fact_hint,
+                    operate_distinction_draft,
+                    operate_calculation_draft,
+                    feedback,
+                    force_cross_modal,
+                )
+            else:
+                prompt = build_stage1_step_prompt(context, feedback, previous_final_question)
+        elif k == 1:
+            prompt = build_stage2_step_prompt(
+                context,
+                steps[-1],
+                fact_hint,
+                operate_distinction_draft,
+                operate_calculation_draft,
+                feedback,
+                force_cross_modal,
+            )
+        elif k == 2:
+            prompt = build_stage3_step_prompt(
+                context,
+                steps[-1],
+                fact_hint,
+                operate_distinction_draft,
+                operate_calculation_draft,
+                feedback,
+                force_cross_modal,
+            )
+        else:
+            prompt = build_extend_step_prompt(
+                context,
+                steps[-1],
+                fact_hint,
+                operate_distinction_draft,
+                operate_calculation_draft,
+                feedback,
+                force_cross_modal,
+            )
+
+        step = run_step(prompt, image_path, model, k)
+        medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
+        medium_correct = grade_answer(step.answer_letter or "", medium_letter)
+      
+        strong_raw = None
+        strong_letter = None
+        strong_correct = None
+      
+        if not medium_correct:
+            strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
+            strong_correct = grade_answer(step.answer_letter or "", strong_letter)
+          
+        needs_revision, reason = validate_step(step, force_cross_modal, strong_correct)
+
+        if not needs_revision and k > 0 and is_low_quality_entity_matching(step.question):
+            needs_revision, reason = True, "LOW_QUALITY (entity matching / missing operator)"
+
+        if (
+            not needs_revision
+            and k > 0
+            and step.modal_use in {"text", "image"}
+            and steps[-1].modal_use == step.modal_use
+        ):
+            needs_revision, reason = True, f"modal_use consecutive pure({step.modal_use})"
+
+        if needs_revision:
+            print(f"[Step {k}] 触发 revise: {reason}")
+            revise_prompt = build_revise_prompt(
+                context,
+                step,
+                reason,
+                fact_hint,
+                operate_distinction_draft,
+                operate_calculation_draft,
+                force_cross_modal,
+            )
+            step = run_step(revise_prompt, image_path, model, k)
+            medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
+            medium_correct = grade_answer(step.answer_letter or "", medium_letter)
+          
+            strong_raw = None
+            strong_letter = None
+            strong_correct = None
+          
+            if not medium_correct:
+                strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
+                strong_correct = grade_answer(step.answer_letter or "", strong_letter)
+
+        if force_cross_modal and "cross_modal_bridge" not in step.raw:
+            step.cross_modal_bridge = True
+
+        print(f"[Step {k}] 完成 (model={model})")
+        print(step.question)
+        print(f"标准答案: <answer>{step.answer_letter}</answer> | answer_text={step.answer_text}")
+        print(f"中求解器: {medium_raw} | correct={medium_correct}")
+        if not medium_correct:
+            print(f"强求解器: {strong_raw} | correct={strong_correct}")
+        else:
+            print("中求解器答对，跳过强求解器。")
+          
+        if not (medium_correct and strong_correct) and step.reasoning:
+            print(f"推理过程: <reasoning>{step.reasoning}</reasoning>")
+        if step.answer_letter and not medium_correct:
+            review_raw, review_passed = review_question(
+                step.question,
+                step.answer_letter,
+                step.reasoning,
+                image_path,
+            )
+            if review_passed is True:
+                strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
+                    step.question, MODEL_SOLVE_STRONG
+                )
+                strong_no_image_raw, strong_no_image_letter = solve_mcq_no_image(
+                    step.question, MODEL_SOLVE_STRONG
+                )
+                strong_text_only_correct = grade_answer(
+                    step.answer_letter or "", strong_text_only_letter
+                )
+                strong_no_image_correct = grade_answer(
+                    step.answer_letter or "", strong_no_image_letter
+                )
+                step_metrics = {
+                    "medium_correct": medium_correct,
+                    "strong_correct": strong_correct,
+                    "strong_text_only_correct": strong_text_only_correct,
+                    "strong_no_image_correct": strong_no_image_correct,
+                    "difficulty_score": 1.0
+                    if (strong_correct and not medium_correct)
+                    else 0.5
+                    if strong_correct
+                    else 0.0,
+                    "cross_modal_used": step.cross_modal_bridge,
+                    "num_hops": step.k,
+                    "medium_pred": medium_letter,
+                    "strong_pred": strong_letter,
+                    "strong_text_only_pred": strong_text_only_letter,
+                    "strong_no_image_pred": strong_no_image_letter,
+                    "medium_raw": medium_raw,
+                    "strong_raw": strong_raw,
+                    "strong_text_only_raw": strong_text_only_raw,
+                    "strong_no_image_raw": strong_no_image_raw,
+                }
+                if strong_text_only_correct or strong_no_image_correct:
+                    print(f"[Review] Step {k} 结果: text-only/no-image 可解，跳过入库")
+                else:
+                    target_path = (
+                        Path(GENQA_SIMPLE_PATH) if strong_correct else Path(GENQA_HARD_PATH)
+                    )
+                    print(f"[Review] Step {k} 结果: correct -> {target_path}")
+                    save_genqa_item(
+                        target_path,
+                        {
+                            "source": "step",
+                            "step_k": k,
+                            "question": step.question,
+                            "answer": step.answer_letter,
+                            "reasoning": step.reasoning,
+                            "difficulty_metrics": step_metrics,
+                            "review_decision": "correct",
+                            "review_raw": review_raw,
+                        },
+                    )
+            elif review_passed is False:
+                print(f"[Review] Step {k} 结果: incorrect")
+            else:
+                print(f"[Review] Step {k} 结果: unknown")
+
+        steps.append(step)
+        cross_modal_used = cross_modal_used or step.cross_modal_bridge
+
+        if k + 1 >= min_steps and (not REQUIRE_CROSS_MODAL or cross_modal_used):
+            break
+
+    return steps, cross_modal_used
+"""
+}
+```
+
+### 修改 2: `rqlv1/autoqa/AutoQA-rqlv/steps/graph_mode.py`
+
+同样地，如果启用了 Graph Mode，也需要在 Step 0 处引入计算逻辑。
+
+**Python**
+
+```
+{
+    "type": "file_change",
+    "fileName": "rqlv1/autoqa/AutoQA-rqlv/steps/graph_mode.py",
+    "content": """from pathlib import Path
+import random
+
+from graph.pipeline_graph import build_entity_pool, build_knowledge_edges_cached, edge_to_evidence_payload
+from graph.pipeline_path_sampling import sample_path
+# [修改点 1] 增加导入 build_extend_step_prompt
+from prompts import build_graph_1hop_step_prompt, build_revise_prompt, build_stage1_step_prompt, build_extend_step_prompt
+from prompts.review import build_visual_verification_prompt
+from pipeline.pipeline_review import review_question
+from pipeline.pipeline_solvers import (
+    grade_answer,
+    solve_mcq,
+    solve_mcq_no_image,
+    solve_mcq_text_only,
+)
+from utils.api_client import call_vision_model
+from steps.operate_calculation_agent import run_operate_calculation_agent
+from steps.operate_distinction_agent import run_operate_distinction_agent
+from steps.quality import is_low_quality_entity_matching
+from steps.runner import run_step, select_model_for_step
+from steps.validation import validate_step
+from utils.config import (
+    GENQA_HARD_PATH,
+    GENQA_SIMPLE_PATH,
+    MAX_STEPS_PER_ROUND,
+    MIN_HOPS,
+    MODEL_SOLVE_MEDIUM,
+    MODEL_SOLVE_STRONG,
+)
+from utils.genqa import save_genqa_item
+from utils.schema import StepResult
+
+
+def generate_steps_graph_mode(
+    context: str,
+    image_path: Path,
+    feedback: str,
+    previous_final_question: str | None,
+) -> tuple[list[StepResult], bool]:
+    steps: list[StepResult] = []
+    cross_modal_used = True
+
+    target_hops = min(MAX_STEPS_PER_ROUND - 1, max(MIN_HOPS, 2))
+    edges = build_knowledge_edges_cached(context)
+
+    # [修改点 2] Step 0 生成逻辑优化
+    # 如果存在 previous_final_question，构造虚拟 step 并尝试使用计算 Agent
+    prompt = ""
+    model = select_model_for_step(0)
   
-    修正要求:
-    1. 如果反馈指出"太简单"或"逻辑线性": 你必须引入干扰项、增加计算步骤(如先求参数再代入)、或移除题干中的直接判断阈值。
-    2. 如果反馈指出"直接给出了判据": 必须将直接的数值判据(如"大于X则为Y")改为需要从图表趋势中分析，或改为定性描述。
-    3. 你生成的题目必须与上述"拒绝原因"形成鲜明对比(Do the opposite)。
-    \"\"\".strip()
-
-
-def build_stage1_step_prompt(context: str, feedback: str, previous_question: str | None) -> str:
-    feedback_block = _format_feedback_block(feedback)
-    previous = f"\\n上一轮最终问题: {previous_question.strip()}" if previous_question else ""
-    return dedent(
-        f\"\"\"
-        {feedback_block}
-    
-        你需要围绕图片“中心区域”的视觉锚点，生成一个多跳题的第1步子问题(单选题)。
-        要求:
-        - 题干包含 A-D 四个选项。
-        - 题干必须围绕图片中心视觉锚点，不得引导读者查阅文档/文献。
-        - 题干中禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
-        {previous}
-
-        参考信息(仅供内部推理，不得在题干中提到):
-        {context.strip()}
-
-        只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
-        <answer>A/B/C/D</answer>
-        <reasoning>简要推理过程(不超过4句)</reasoning>
-        \"\"\"
-    ).strip()
-
-
-def build_stage2_step_prompt(
-    context: str,
-    previous_step: StepResult,
-    fact_hint: str,
-    operate_distinction_draft: str,
-    operate_calculation_draft: str,
-    feedback: str,
-    force_cross_modal: bool,
-) -> str:
-    feedback_block = _format_feedback_block(feedback)
-    cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
-    operate_distinction_block = indent((operate_distinction_draft.strip() or "(empty)"), "          ")
-    operate_calculation_block = indent((operate_calculation_draft.strip() or "(empty)"), "          ")
-    return dedent(
-        f\"\"\"
-        {feedback_block}
-
-        这是上一步的子问题与答案:
-        问题: {previous_step.question}
-        答案字母: {previous_step.answer_letter}
-        答案短语: {previous_step.answer_text}
-
-        现在生成第2步子问题(单选题)，需在视觉锚点基础上引入新的关键信息形成推理。
-        - 新问题必须使用新的关键信息: {fact_hint}
-        - operate_distinction 智能体草稿(仅供内部推理，不得在题干中提到):
-          - draft:
-{operate_distinction_block}
-        - operate_calculation 智能体草稿(仅供内部推理，不得在题干中提到):
-          - draft:
-{operate_calculation_block}
-        - {cross_modal}
-        - 题干包含 A-D 选项，答案需可验证。
-        - 题干必须围绕图片中心视觉锚点，禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
-        - 去词汇化(避免文本捷径)：题干不要直接写出图中读数/颜色/形状等具体值，改用“图中…的读数/显示的状态/位于…的部件”等指代性或位置性描述，迫使读者看图。
-        - 禁止“纯实体匹配/纯定义检索”题（例如“X 是什么/哪个是 X/下列哪项描述正确”但不依赖图像细节）。
-        - 难度算子要求（不要在题干中写出算子名）：
-          - 风格偏向条件计算：优先采用 operate_calculation 草稿落地为“数值/区间/等级”可验证题。
-          - 针对反馈优化：若反馈提到"太简单"，请尝试"逆向推理"（已知结果求条件）或"多步合成"（A+B->C）。
-        - 条件计算题必须在两种逻辑模板中二选一：
-          1) 双源合成(Synthesis)：视觉读数 X + 参考信息参数 Y → 计算/判级。
-          2) 条件分支(Branching)：视觉观察选择分支规则 → 再计算/判级。
-        - 干扰项必须是参考信息中出现过的同类真实概念/实体/条件，但在当前图像语境下为错误（Hard Negatives）。
-
-        参考信息(仅供内部推理，不得在题干中提到):
-        {context.strip()}
-
-        只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
-        <answer>A/B/C/D</answer>
-        <reasoning>简要推理过程(不超过4句)</reasoning>
-        \"\"\"
-    ).strip()
-
-
-def build_stage3_step_prompt(
-    context: str,
-    previous_step: StepResult,
-    fact_hint: str,
-    operate_distinction_draft: str,
-    operate_calculation_draft: str,
-    feedback: str,
-    force_cross_modal: bool,
-) -> str:
-    feedback_block = _format_feedback_block(feedback)
-    cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
-    operate_distinction_block = indent((operate_distinction_draft.strip() or "(empty)"), "          ")
-    operate_calculation_block = indent((operate_calculation_draft.strip() or "(empty)"), "          ")
-    return dedent(
-        f\"\"\"
-        {feedback_block}
-
-        这是上一步的子问题与答案:
-        问题: {previous_step.question}
-        答案字母: {previous_step.answer_letter}
-        答案短语: {previous_step.answer_text}
-
-        现在生成第3步子问题(单选题)，继续引入新的关键信息形成更深推理。
-        - 新问题必须使用新的关键信息: {fact_hint}
-        - operate_distinction 智能体草稿(仅供内部推理，不得在题干中提到):
-          - draft:
-{operate_distinction_block}
-        - operate_calculation 智能体草稿(仅供内部推理，不得在题干中提到):
-          - draft:
-{operate_calculation_block}
-        - {cross_modal}
-        - 题干包含 A-D 选项，答案需可验证。
-        - 题干必须围绕图片中心视觉锚点，禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
-        - 去词汇化(避免文本捷径)：题干不要直接写出图中读数/颜色/形状等具体值，改用“图中…的读数/显示的状态/位于…的部件”等指代性或位置性描述，迫使读者看图。
-        - 禁止“纯实体匹配/纯定义检索”题（例如“X 是什么/哪个是 X/下列哪项描述正确”但不依赖图像细节）。
-        - 难度算子要求（不要在题干中写出算子名）：
-          - 风格偏向条件计算：优先采用 operate_calculation 草稿落地为“数值/区间/等级”可验证题。
-          - 针对反馈优化：若反馈提到"太简单"，请尝试"逆向推理"（已知结果求条件）或"多步合成"（A+B->C）。
-        - 条件计算题必须在两种逻辑模板中二选一：
-          1) 双源合成(Synthesis)：视觉读数 X + 参考信息参数 Y → 计算/判级。
-          2) 条件分支(Branching)：视觉观察选择分支规则 → 再计算/判级。
-        - 干扰项必须是参考信息中出现过的同类真实概念/实体/条件，但在当前图像语境下为错误（Hard Negatives）。
-
-        参考信息(仅供内部推理，不得在题干中提到):
-        {context.strip()}
-
-        只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
-        <answer>A/B/C/D</answer>
-        <reasoning>简要推理过程(不超过4句)</reasoning>
-        \"\"\"
-    ).strip()
-
-
-def build_extend_step_prompt(
-    context: str,
-    previous_step: StepResult,
-    fact_hint: str,
-    operate_distinction_draft: str,
-    operate_calculation_draft: str,
-    feedback: str,
-    force_cross_modal: bool,
-) -> str:
-    feedback_block = _format_feedback_block(feedback)
-    cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
-    operate_distinction_block = indent((operate_distinction_draft.strip() or "(empty)"), "          ")
-    operate_calculation_block = indent((operate_calculation_draft.strip() or "(empty)"), "          ")
-    return dedent(
-        f\"\"\"
-        {feedback_block}
-
-        这是上一步的子问题与答案:
-        问题: {previous_step.question}
-        答案字母: {previous_step.answer_letter}
-        答案短语: {previous_step.answer_text}
-
-        请继续扩链生成新的子问题(单选题)，要求:
-        - 使用新的关键信息或新的视觉关系: {fact_hint}
-        - operate_distinction 智能体草稿(仅供内部推理，不得在题干中提到):
-          - draft:
-{operate_distinction_block}
-        - operate_calculation 智能体草稿(仅供内部推理，不得在题干中提到):
-          - draft:
-{operate_calculation_block}
-        - {cross_modal}
-        - 题干包含 A-D 选项，答案需可验证。
-        - 题干必须围绕图片中心视觉锚点，禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
-        - 禁止“纯实体匹配/纯定义检索”题；必须以 operate_distinction / operate_calculation 或异常检测为核心。
-        - 风格偏向条件计算：优先输出“数值/区间/等级”型选项（与图中参数/关系 + 参考信息阈值/公式绑定）。
-        - 去词汇化(避免文本捷径)：题干不要直接写出图中读数/颜色/形状等具体值，改用“图中…的读数/显示的状态/位于…的部件”等指代性或位置性描述，迫使读者看图。
-        - 条件计算题必须在两种逻辑模板中二选一：
-          1) 双源合成(Synthesis)：视觉读数 X + 参考信息参数 Y → 计算/判级。
-          2) 条件分支(Branching)：视觉观察选择分支规则 → 再计算/判级。
-        - 干扰项必须是参考信息中出现过的同类真实概念/实体/条件，但在当前图像语境下为错误（Hard Negatives）。
-
-        参考信息(仅供内部推理，不得在题干中提到):
-        {context.strip()}
-
-        只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
-        <answer>A/B/C/D</answer>
-        <reasoning>简要推理过程(不超过4句)</reasoning>
-        \"\"\"
-    ).strip()
-
-
-def build_revise_prompt(
-    context: str,
-    step: StepResult,
-    reason: str,
-    fact_hint: str,
-    operate_distinction_draft: str | None,
-    operate_calculation_draft: str | None,
-    force_cross_modal: bool,
-) -> str:
-    # Revise prompt 通常不直接接收外部 feedback (而是接收内部 reason)，
-    # 但如果 reason 本身来自 difficulty check，也可以格式化强调。
-    cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
-    operate_distinction_block = indent((operate_distinction_draft or "").strip() or "(empty)", "      ")
-    operate_calculation_block = indent((operate_calculation_draft or "").strip() or "(empty)", "      ")
-    return dedent(
-        f\"\"\"
-        [CRITICAL REVISION INSTRUCTION / 必须执行的修正指令]
-        必须修订以下子问题，因为原问题被判定为: {reason}
-    
-        原问题: {step.question}
-        原答案字母: {step.answer_letter}
-        原答案短语: {step.answer_text}
-    
-        修正要求:
-        1. 彻底解决上述判定原因。如果原因是"Low Difficulty"或"Simple Logic"，必须大幅增加推理深度。
-        2. 不要只是微调措辞，请重构题目的逻辑路径。
-    
-        其他要求:
-        - {cross_modal}
-        - 使用新的关键信息或明确证据: {fact_hint}
-        - operate_distinction 草稿(仅供内部推理，不得在题干中提到):
-          - draft:
-{operate_distinction_block}
-        - operate_calculation 草稿(仅供内部推理，不得在题干中提到):
-          - draft:
-{operate_calculation_block}
-        - 题干包含 A-D 选项，答案唯一且可验证。
-        - 题干必须围绕图片中心视觉锚点，禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
-        - 禁止“纯实体匹配/纯定义检索”题；必须以对比/计算/异常检测中的至少一种为核心。
-        - 风格偏向条件计算：优先输出“数值/区间/等级”型选项（与图中参数/关系 + 参考信息阈值/公式绑定）。
-        - 去词汇化(避免文本捷径)：把题干中对视觉特征的直接描述（颜色/形状/状态/直接读数）改为指代或位置描述（如“图中仪表盘读数”“图中装置当前显示的颜色”）。
-        - 干扰项必须是参考信息中出现过的同类真实概念/实体/条件，但在当前图像语境下为错误（Hard Negatives）。
-
-        参考信息(仅供内部推理，不得在题干中提到):
-        {context.strip()}
-
-        只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
-        <answer>A/B/C/D</answer>
-        <reasoning>简要推理过程(不超过4句)</reasoning>
-        \"\"\"
-    ).strip()
-
-
-def build_graph_1hop_step_prompt(
-    *,
-    anchor_question: str,
-    previous_step: StepResult | None,
-    evidence_snippet: str,
-    head: str,
-    relation: str,
-    tail: str,
-    target_side: str = "head",
-    operate_distinction_draft: str,
-    operate_calculation_draft: str,
-    distractor_entities: list[str],
-    feedback: str,
-    force_cross_modal: bool,
-) -> str:
-    # 1. 格式化置顶的 Feedback 块
-    feedback_block = _format_feedback_block(feedback)
-  
-    cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
-    distractors = ", ".join(distractor_entities[:12]) if distractor_entities else "(由你生成)"
-    operate_distinction_block = indent((operate_distinction_draft.strip() or "(empty)"), "        ")
-    operate_calculation_block = indent((operate_calculation_draft.strip() or "(empty)"), "        ")
-
-    # 构造逻辑连贯性上下文
-    context_bridge = ""
-    if previous_step and previous_step.answer_text:
-        context_bridge = (
-            f"\\n[逻辑连贯性要求]:\\n"
-            f"前置推理结论: {previous_step.answer_text}\\n"
-            f"请基于上述前置结论，结合当前图片与新知识点进行更深层提问。\\n"
-            f"例如：'既然(前置结论)成立，那么观察图中...可推断...?'"
+    if previous_final_question:
+        # 构造虚拟 step
+        dummy_prev = StepResult(
+            k=-1,
+            question=previous_final_question,
+            answer_text="(inherited from previous round)",
+            answer_letter=None,
+            evidence=None,
+            modal_use="unknown",
+            cross_modal_bridge=True,
+            raw=""
         )
+    
+        # 尝试选取一个 edge 作为 hint (模拟 fact_hint)
+        fact_hint = "请基于图片与参考信息进行综合推断。"
+        if edges:
+            edge = random.choice(edges)
+            fact_hint = f"Knowledge Link: {edge.head} -> {edge.relation} -> {edge.tail}\\nEvidence: {edge.evidence}"
 
-    target_concept = head if target_side == "head" else tail
+        # 运行 Agent
+        operate_distinction = run_operate_distinction_agent(
+            context=context,
+            image_path=image_path,
+            previous_step=dummy_prev,
+            fact_hint=fact_hint,
+            feedback=feedback,
+            force_cross_modal=True,
+        )
+        operate_calculation = run_operate_calculation_agent(
+            context=context,
+            image_path=image_path,
+            previous_step=dummy_prev,
+            fact_hint=fact_hint,
+            feedback=feedback,
+            force_cross_modal=True,
+        )
+    
+        # 使用 Extend Prompt 从而包含计算草稿
+        prompt = build_extend_step_prompt(
+            context,
+            dummy_prev,
+            fact_hint,
+            operate_distinction.draft,
+            operate_calculation.draft,
+            feedback,
+            force_cross_modal=True
+        )
+    else:
+        # 原始逻辑
+        prompt = build_stage1_step_prompt(context, feedback, previous_final_question)
+
+    step0 = run_step(
+        prompt,
+        image_path,
+        model,
+        0,
+    )
+    steps.append(step0)
+    print("[Step 0] 完成 (Graph Mode anchor)")
+    print(step0.question)
+    print(f"标准答案: <answer>{step0.answer_letter}</answer> | answer_text={step0.answer_text}")
   
-    return dedent(
-        f\"\"\"
-        {feedback_block}
+    # ... (后续代码保持不变) ...
+    if step0.answer_letter:
+        medium_raw, medium_letter = solve_mcq(step0.question, image_path, MODEL_SOLVE_MEDIUM)
+        medium_correct = grade_answer(step0.answer_letter or "", medium_letter)
+        print(f"中求解器: {medium_raw} | correct={medium_correct}")
     
-        你需要基于“本地知识点链”生成一个 1-hop 子问题(单选题)。
-        {context_bridge}
+        strong_raw = None
+        strong_letter = None
+        strong_correct = None
     
-        当前使用知识链: {head} --[{relation}]--> {tail}
-        正确答案必须对应实体: {target_concept}
+        if not medium_correct:
+            strong_raw, strong_letter = solve_mcq(step0.question, image_path, MODEL_SOLVE_STRONG)
+            strong_correct = grade_answer(step0.answer_letter or "", strong_letter)
+            print(f"强求解器: {strong_raw} | correct={strong_correct}")
+        else:
+            print("中求解器答对，跳过强求解器。")
 
-        要求：
-        - 题干包含 A-D 四个选项。
-        - 题干中不要直接出现正确答案 {target_concept} (包括同义词)。
-        - {cross_modal}
-        - 题干中禁止出现“文献”“文档”“context”等字样。
-        - 必须围绕图片中心视觉锚点展开，避免纯文本问答。
-    
-        图片视觉锚点参考:
-        {anchor_question.strip()}
+        if not (medium_correct and strong_correct) and step0.reasoning:
+            print(f"推理过程: <reasoning>{step0.reasoning}</reasoning>")
+        if not medium_correct:
+            review_raw, review_passed = review_question(
+                step0.question,
+                step0.answer_letter,
+                step0.reasoning,
+                image_path,
+            )
+            if review_passed is True:
+                strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
+                    step0.question, MODEL_SOLVE_STRONG
+                )
+                strong_no_image_raw, strong_no_image_letter = solve_mcq_no_image(
+                    step0.question, MODEL_SOLVE_STRONG
+                )
+                strong_text_only_correct = grade_answer(
+                    step0.answer_letter or "", strong_text_only_letter
+                )
+                strong_no_image_correct = grade_answer(
+                    step0.answer_letter or "", strong_no_image_letter
+                )
+                step_metrics = {
+                    "medium_correct": medium_correct,
+                    "strong_correct": strong_correct,
+                    "strong_text_only_correct": strong_text_only_correct,
+                    "strong_no_image_correct": strong_no_image_correct,
+                    "difficulty_score": 1.0
+                    if (strong_correct and not medium_correct)
+                    else 0.5
+                    if strong_correct
+                    else 0.0,
+                    "cross_modal_used": step0.cross_modal_bridge,
+                    "num_hops": step0.k,
+                    "medium_pred": medium_letter,
+                    "strong_pred": strong_letter,
+                    "strong_text_only_pred": strong_text_only_letter,
+                    "strong_no_image_pred": strong_no_image_letter,
+                    "medium_raw": medium_raw,
+                    "strong_raw": strong_raw,
+                    "strong_text_only_raw": strong_text_only_raw,
+                    "strong_no_image_raw": strong_no_image_raw,
+                }
+                if strong_text_only_correct or strong_no_image_correct:
+                    print("[Review] Step 0 结果: text-only/no-image 可解，跳过入库")
+                else:
+                    target_path = (
+                        Path(GENQA_SIMPLE_PATH) if strong_correct else Path(GENQA_HARD_PATH)
+                    )
+                    print(f"[Review] Step 0 结果: correct -> {target_path}")
+                    save_genqa_item(
+                        target_path,
+                        {
+                            "source": "step",
+                            "step_k": 0,
+                            "question": step0.question,
+                            "answer": step0.answer_letter,
+                            "reasoning": step0.reasoning,
+                            "difficulty_metrics": step_metrics,
+                            "review_decision": "correct",
+                            "review_raw": review_raw,
+                        },
+                    )
+            elif review_passed is False:
+                print("[Review] Step 0 结果: incorrect")
+            else:
+                print("[Review] Step 0 结果: unknown")
+    if not edges or target_hops <= 0:
+        print("[Graph Mode] 知识点链为空或 hop=0，退化为仅 step_0。")
+        return steps, cross_modal_used
 
-        参考证据(仅供内部推理):
-        - evidence: {evidence_snippet.strip() or "(未提供)"}
-        - operate_distinction draft:
-{operate_distinction_block}
-        - operate_calculation draft:
-{operate_calculation_block}
-        - 可用干扰项候选: {distractors}
+    entity_pool = build_entity_pool(edges)
+    path = sample_path(edges, target_hops)
+    if not path:
+        print("[Graph Mode] 知识链路径采样失败，退化为仅 step_0。")
+        return steps, cross_modal_used
 
-        输出要求:
-        - 生成 4 个选项 A-D，其中正确选项对应 {target_side} ({target_concept})，其他为干扰项。
-        - 视觉防幻觉：只描述图中确实存在的视觉特征。不要编造图中不存在的曲线、图例或读数。
-        - 难度递进：利用 operate_calculation 将定性描述转化为半定量或逻辑推断题。
-        - 针对 Feedback 的特别执行：如果 Feedback 要求隐藏判据或增加前置计算，请务必在生成题干时移除题目中直接给出的判断标准（例如"当X>5时..."），改为"根据图表数据结合理论判据..."。
+    current_step_index = 1
+    for edge in path:
+        target_side = "tail"
+        distractors = [e for e in entity_pool if e != edge.tail]
+        branch_candidates = [
+            e for e in edges if e.head == edge.head and e.tail != edge.tail
+        ]
+        branch_hint = ""
+        if branch_candidates:
+            branch_edge = random.choice(branch_candidates)
+            branch_hint = (
+                "\\n[Branch/Contrast Knowledge]: "
+                f"{branch_edge.head} --[{branch_edge.relation}]--> {branch_edge.tail} "
+            )
+        operate_fact_hint = (
+            f"evidence_snippet={edge.evidence or ''}\\n"
+            f"knowledge_link: head={edge.head} ; relation={edge.relation} ; tail={edge.tail}"
+            f"{branch_hint}"
+        )
+        operate_distinction = run_operate_distinction_agent(
+            context=context,
+            image_path=image_path,
+            previous_step=steps[-1],
+            fact_hint=operate_fact_hint,
+            feedback=feedback,
+            force_cross_modal=False,
+            forbidden_terms=[edge.tail],
+        )
+        operate_calculation = run_operate_calculation_agent(
+            context=context,
+            image_path=image_path,
+            previous_step=steps[-1],
+            fact_hint=operate_fact_hint,
+            feedback=feedback,
+            force_cross_modal=False,
+            forbidden_terms=[edge.tail],
+        )
+        prompt = build_graph_1hop_step_prompt(
+            anchor_question=step0.question,
+            previous_step=steps[-1],
+            evidence_snippet=edge.evidence or "",
+            head=edge.head,
+            relation=edge.relation,
+            tail=edge.tail,
+            target_side=target_side,
+            operate_distinction_draft=operate_distinction.draft,
+            operate_calculation_draft=operate_calculation.draft,
+            distractor_entities=distractors,
+            feedback=feedback,
+            force_cross_modal=False,
+        )
+        model = select_model_for_step(current_step_index)
+        step = run_step(prompt, image_path, model, current_step_index)
+        if step.evidence is None:
+            step.evidence = edge_to_evidence_payload(edge)
 
-        只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
-        <answer>A/B/C/D</answer>
-        <reasoning>简要推理过程(不超过4句)</reasoning>
-        \"\"\"
-    ).strip()
+        print(f"[Step {current_step_index}] 正在进行视觉幻觉核查...")
+        verify_prompt = build_visual_verification_prompt(step.question)
+        try:
+            verify_raw = call_vision_model(verify_prompt, image_path, MODEL_SOLVE_STRONG)
+            if "<verified>no</verified>" in verify_raw:
+                print(
+                    f"[Step {current_step_index}] 视觉核查失败: 题目包含图片中不存在的视觉特征。"
+                )
+                print(f"Question: {step.question}")
+                print(f"Reason: {verify_raw}")
+                continue
+            print(f"[Step {current_step_index}] 视觉核查通过。")
+        except Exception as exc:
+            print(f"[Step {current_step_index}] 视觉核查调用出错: {exc}。默认放行。")
+
+        medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
+        medium_correct = grade_answer(step.answer_letter or "", medium_letter)
+
+        strong_raw = None
+        strong_letter = None
+        strong_correct = None
+
+        if not medium_correct:
+            strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
+            strong_correct = grade_answer(step.answer_letter or "", strong_letter)
+
+        needs_revision, reason = validate_step(step, False, strong_correct)
+        if not needs_revision and is_low_quality_entity_matching(step.question):
+            needs_revision, reason = True, "LOW_QUALITY (entity matching / missing operator)"
+        if (
+            not needs_revision
+            and step.modal_use in {"text", "image"}
+            and steps[-1].modal_use == step.modal_use
+        ):
+            needs_revision, reason = True, f"modal_use consecutive pure({step.modal_use})"
+        if needs_revision:
+            print(f"[Step {current_step_index}] 触发 revise: {reason}")
+            revise_prompt = build_revise_prompt(
+                context,
+                step,
+                reason,
+                f"knowledge_link=({edge.head},{edge.relation},{edge.tail})",
+                operate_distinction.draft,
+                operate_calculation.draft,
+                False,
+            )
+            step = run_step(revise_prompt, image_path, model, current_step_index)
+            medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
+            medium_correct = grade_answer(step.answer_letter or "", medium_letter)
+
+            strong_raw = None
+            strong_letter = None
+            strong_correct = None
+
+            if not medium_correct:
+                strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
+                strong_correct = grade_answer(step.answer_letter or "", strong_letter)
+
+        print(f"[Step {current_step_index}] 完成 (Graph Mode, model={model})")
+        print(step.question)
+        print(f"标准答案: <answer>{step.answer_letter}</answer> | answer_text={step.answer_text}")
+        print(f"中求解器: {medium_raw} | correct={medium_correct}")
+        if not medium_correct:
+            print(f"强求解器: {strong_raw} | correct={strong_correct}")
+        else:
+            print("中求解器答对，跳过强求解器。")
+
+        if not (medium_correct and strong_correct) and step.reasoning:
+            print(f"推理过程: <reasoning>{step.reasoning}</reasoning>")
+        if step.answer_letter and not medium_correct:
+            review_raw, review_passed = review_question(
+                step.question,
+                step.answer_letter,
+                step.reasoning,
+                image_path,
+            )
+            if review_passed is True:
+                strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
+                    step.question, MODEL_SOLVE_STRONG
+                )
+                strong_no_image_raw, strong_no_image_letter = solve_mcq_no_image(
+                    step.question, MODEL_SOLVE_STRONG
+                )
+                strong_text_only_correct = grade_answer(
+                    step.answer_letter or "", strong_text_only_letter
+                )
+                strong_no_image_correct = grade_answer(
+                    step.answer_letter or "", strong_no_image_letter
+                )
+                step_metrics = {
+                    "medium_correct": medium_correct,
+                    "strong_correct": strong_correct,
+                    "strong_text_only_correct": strong_text_only_correct,
+                    "strong_no_image_correct": strong_no_image_correct,
+                    "difficulty_score": 1.0
+                    if (strong_correct and not medium_correct)
+                    else 0.5
+                    if strong_correct
+                    else 0.0,
+                    "cross_modal_used": step.cross_modal_bridge,
+                    "num_hops": step.k,
+                    "medium_pred": medium_letter,
+                    "strong_pred": strong_letter,
+                    "strong_text_only_pred": strong_text_only_letter,
+                    "strong_no_image_pred": strong_no_image_letter,
+                    "medium_raw": medium_raw,
+                    "strong_raw": strong_raw,
+                    "strong_text_only_raw": strong_text_only_raw,
+                    "strong_no_image_raw": strong_no_image_raw,
+                }
+                if strong_text_only_correct or strong_no_image_correct:
+                    print(
+                        f"[Review] Step {current_step_index} 结果: text-only/no-image 可解，跳过入库"
+                    )
+                else:
+                    target_path = (
+                        Path(GENQA_SIMPLE_PATH) if strong_correct else Path(GENQA_HARD_PATH)
+                    )
+                    print(f"[Review] Step {current_step_index} 结果: correct -> {target_path}")
+                    save_genqa_item(
+                        target_path,
+                        {
+                            "source": "step",
+                            "step_k": current_step_index,
+                            "question": step.question,
+                            "answer": step.answer_letter,
+                            "reasoning": step.reasoning,
+                            "difficulty_metrics": step_metrics,
+                            "review_decision": "correct",
+                            "review_raw": review_raw,
+                        },
+                    )
+            elif review_passed is False:
+                print(f"[Review] Step {current_step_index} 结果: incorrect")
+            else:
+                print(f"[Review] Step {current_step_index} 结果: unknown")
+
+        steps.append(step)
+        current_step_index += 1
+
+    return steps, cross_modal_used
 """
 }
 ```
