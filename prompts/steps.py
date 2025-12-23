@@ -304,6 +304,12 @@ def build_graph_1hop_step_prompt(
         - {cross_modal}
         - 题干中禁止出现“文献”“文档”“context”等字样。
         - 必须围绕图片中心视觉锚点展开，避免纯文本问答。
+        - 本步必须是“条件计算题”，不能是概念解释/机制判断/实体匹配。
+        - 优先使用 operate_calculation draft 作为题干主线，operate_distinction 仅用于构造干扰项或对照条件。
+        - 选项必须为数值/区间/等级型答案，且可由“图中读数/关系 + 参考信息阈值/公式”计算或判级得到。
+        - 条件计算必须遵循两种模板之一：
+          1) 双源合成(Synthesis)：图中读数 X + 参考信息参数 Y → 计算/判级；
+          2) 条件分支(Branching)：先由图像选择分支规则 → 再计算/判级。
 
         图片视觉锚点参考:
         {anchor_question.strip()}
@@ -319,7 +325,7 @@ def build_graph_1hop_step_prompt(
         输出要求:
         - 生成 4 个选项 A-D，其中正确选项对应 {target_side} ({target_concept})，其他为干扰项。
         - 视觉防幻觉：只描述图中确实存在的视觉特征。不要编造图中不存在的曲线、图例或读数。
-        - 难度递进：利用 operate_calculation 将定性描述转化为半定量或逻辑推断题。
+        - 难度递进：必须利用 operate_calculation 将定性描述转化为半定量或逻辑推断题。
         - 针对 Feedback 的特别执行：如果 Feedback 要求隐藏判据或增加前置计算，请务必在生成题干时移除题目中直接给出的判断标准（例如"当X>5时..."），改为"根据图表数据结合理论判据..."。
 
         只输出以下格式:
