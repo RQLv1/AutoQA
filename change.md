@@ -1,4 +1,25 @@
-from textwrap import dedent, indent
+
+为了强制模型“吸取教训”，我们需要在 Prompt 策略上做 **“负反馈前置 (Negative Feedback Preamble)”** 处理。
+
+以下是针对 `prompts/steps.py` 的修改方案，核心改动是将 feedback 从“末尾补充”提升为“ **置顶的最高优先级指令** ”。
+
+### 修改方案
+
+请修改 `rqlv1/autoqa/AutoQA-rqlv/prompts/steps.py`。
+
+ **主要改动点** ：
+
+1. **Feedback 置顶** ：将反馈信息格式化为 `[CRITICAL REVISION INSTRUCTION]` 块，放在 Prompt 的最开头。
+2. **显式约束** ：在 Prompt 中明确要求“如果反馈包含 X，则必须禁止 Y”。
+3. **应用范围** ：同时修改 `build_graph_1hop_step_prompt`（图模式核心）以及 `build_stage2_step_prompt` 等函数。
+
+**Python**
+
+```
+{
+    "type": "file_change",
+    "fileName": "rqlv1/autoqa/AutoQA-rqlv/prompts/steps.py",
+    "content": """from textwrap import dedent, indent
 
 from utils.schema import StepResult
 
@@ -6,25 +27,25 @@ from utils.schema import StepResult
 def _format_feedback_block(feedback: str) -> str:
     if not feedback:
         return ""
-    return f"""
+    return f\"\"\"
     [CRITICAL REVISION INSTRUCTION / 必须执行的修正指令]
     上一轮生成的题目因质量不达标被拒绝。
     拒绝原因(Feedback): {feedback.strip()}
-
+  
     修正要求:
     1. 如果反馈指出"太简单"或"逻辑线性": 你必须引入干扰项、增加计算步骤(如先求参数再代入)、或移除题干中的直接判断阈值。
     2. 如果反馈指出"直接给出了判据": 必须将直接的数值判据(如"大于X则为Y")改为需要从图表趋势中分析，或改为定性描述。
     3. 你生成的题目必须与上述"拒绝原因"形成鲜明对比(Do the opposite)。
-    """.strip()
+    \"\"\".strip()
 
 
 def build_stage1_step_prompt(context: str, feedback: str, previous_question: str | None) -> str:
     feedback_block = _format_feedback_block(feedback)
-    previous = f"\n上一轮最终问题: {previous_question.strip()}" if previous_question else ""
+    previous = f"\\n上一轮最终问题: {previous_question.strip()}" if previous_question else ""
     return dedent(
-        f"""
+        f\"\"\"
         {feedback_block}
-
+    
         你需要围绕图片“中心区域”的视觉锚点，生成一个多跳题的第1步子问题(单选题)。
         要求:
         - 题干包含 A-D 四个选项。
@@ -39,7 +60,7 @@ def build_stage1_step_prompt(context: str, feedback: str, previous_question: str
         <question>题干，包含 A-D 选项</question>
         <answer>A/B/C/D</answer>
         <reasoning>简要推理过程(不超过4句)</reasoning>
-        """
+        \"\"\"
     ).strip()
 
 
@@ -57,7 +78,7 @@ def build_stage2_step_prompt(
     operate_distinction_block = indent((operate_distinction_draft.strip() or "(empty)"), "          ")
     operate_calculation_block = indent((operate_calculation_draft.strip() or "(empty)"), "          ")
     return dedent(
-        f"""
+        f\"\"\"
         {feedback_block}
 
         这是上一步的子问题与答案:
@@ -93,7 +114,7 @@ def build_stage2_step_prompt(
         <question>题干，包含 A-D 选项</question>
         <answer>A/B/C/D</answer>
         <reasoning>简要推理过程(不超过4句)</reasoning>
-        """
+        \"\"\"
     ).strip()
 
 
@@ -111,7 +132,7 @@ def build_stage3_step_prompt(
     operate_distinction_block = indent((operate_distinction_draft.strip() or "(empty)"), "          ")
     operate_calculation_block = indent((operate_calculation_draft.strip() or "(empty)"), "          ")
     return dedent(
-        f"""
+        f\"\"\"
         {feedback_block}
 
         这是上一步的子问题与答案:
@@ -147,7 +168,7 @@ def build_stage3_step_prompt(
         <question>题干，包含 A-D 选项</question>
         <answer>A/B/C/D</answer>
         <reasoning>简要推理过程(不超过4句)</reasoning>
-        """
+        \"\"\"
     ).strip()
 
 
@@ -165,7 +186,7 @@ def build_extend_step_prompt(
     operate_distinction_block = indent((operate_distinction_draft.strip() or "(empty)"), "          ")
     operate_calculation_block = indent((operate_calculation_draft.strip() or "(empty)"), "          ")
     return dedent(
-        f"""
+        f\"\"\"
         {feedback_block}
 
         这是上一步的子问题与答案:
@@ -199,7 +220,7 @@ def build_extend_step_prompt(
         <question>题干，包含 A-D 选项</question>
         <answer>A/B/C/D</answer>
         <reasoning>简要推理过程(不超过4句)</reasoning>
-        """
+        \"\"\"
     ).strip()
 
 
@@ -218,18 +239,18 @@ def build_revise_prompt(
     operate_distinction_block = indent((operate_distinction_draft or "").strip() or "(empty)", "      ")
     operate_calculation_block = indent((operate_calculation_draft or "").strip() or "(empty)", "      ")
     return dedent(
-        f"""
+        f\"\"\"
         [CRITICAL REVISION INSTRUCTION / 必须执行的修正指令]
         必须修订以下子问题，因为原问题被判定为: {reason}
-
+    
         原问题: {step.question}
         原答案字母: {step.answer_letter}
         原答案短语: {step.answer_text}
-
+    
         修正要求:
         1. 彻底解决上述判定原因。如果原因是"Low Difficulty"或"Simple Logic"，必须大幅增加推理深度。
         2. 不要只是微调措辞，请重构题目的逻辑路径。
-
+    
         其他要求:
         - {cross_modal}
         - 使用新的关键信息或明确证据: {fact_hint}
@@ -253,7 +274,7 @@ def build_revise_prompt(
         <question>题干，包含 A-D 选项</question>
         <answer>A/B/C/D</answer>
         <reasoning>简要推理过程(不超过4句)</reasoning>
-        """
+        \"\"\"
     ).strip()
 
 
@@ -272,29 +293,33 @@ def build_graph_1hop_step_prompt(
     feedback: str,
     force_cross_modal: bool,
 ) -> str:
+    # 1. 格式化置顶的 Feedback 块
     feedback_block = _format_feedback_block(feedback)
+  
     cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
     distractors = ", ".join(distractor_entities[:12]) if distractor_entities else "(由你生成)"
     operate_distinction_block = indent((operate_distinction_draft.strip() or "(empty)"), "        ")
     operate_calculation_block = indent((operate_calculation_draft.strip() or "(empty)"), "        ")
 
+    # 构造逻辑连贯性上下文
     context_bridge = ""
     if previous_step and previous_step.answer_text:
         context_bridge = (
-            "\n[逻辑连贯性要求]:\n"
-            f"前置推理结论: {previous_step.answer_text}\n"
-            "请基于上述前置结论，结合当前图片与新知识点进行更深层提问。\n"
-            "例如：'既然(前置结论)成立，那么观察图中...可推断...?'"
+            f"\\n[逻辑连贯性要求]:\\n"
+            f"前置推理结论: {previous_step.answer_text}\\n"
+            f"请基于上述前置结论，结合当前图片与新知识点进行更深层提问。\\n"
+            f"例如：'既然(前置结论)成立，那么观察图中...可推断...?'"
         )
 
     target_concept = head if target_side == "head" else tail
+  
     return dedent(
-        f"""
+        f\"\"\"
         {feedback_block}
-
+    
         你需要基于“本地知识点链”生成一个 1-hop 子问题(单选题)。
         {context_bridge}
-
+    
         当前使用知识链: {head} --[{relation}]--> {tail}
         正确答案必须对应实体: {target_concept}
 
@@ -304,7 +329,7 @@ def build_graph_1hop_step_prompt(
         - {cross_modal}
         - 题干中禁止出现“文献”“文档”“context”等字样。
         - 必须围绕图片中心视觉锚点展开，避免纯文本问答。
-
+    
         图片视觉锚点参考:
         {anchor_question.strip()}
 
@@ -326,5 +351,8 @@ def build_graph_1hop_step_prompt(
         <question>题干，包含 A-D 选项</question>
         <answer>A/B/C/D</answer>
         <reasoning>简要推理过程(不超过4句)</reasoning>
-        """
+        \"\"\"
     ).strip()
+"""
+}
+```

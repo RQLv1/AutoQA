@@ -4,6 +4,7 @@ import random
 from graph.pipeline_graph import build_entity_pool, build_knowledge_edges_cached, edge_to_evidence_payload
 from graph.pipeline_path_sampling import sample_path
 from prompts import build_graph_1hop_step_prompt, build_revise_prompt, build_stage1_step_prompt
+from prompts.review import build_visual_verification_prompt
 from pipeline.pipeline_review import review_question
 from pipeline.pipeline_solvers import (
     grade_answer,
@@ -11,6 +12,7 @@ from pipeline.pipeline_solvers import (
     solve_mcq_no_image,
     solve_mcq_text_only,
 )
+from utils.api_client import call_vision_model
 from steps.operate_calculation_agent import run_operate_calculation_agent
 from steps.operate_distinction_agent import run_operate_distinction_agent
 from steps.quality import is_low_quality_entity_matching
@@ -143,8 +145,10 @@ def generate_steps_graph_mode(
         print("[Graph Mode] 知识链路径采样失败，退化为仅 step_0。")
         return steps, cross_modal_used
 
-    for k, edge in enumerate(reversed(path), start=1):
-        distractors = [e for e in entity_pool if e != edge.head]
+    current_step_index = 1
+    for edge in path:
+        target_side = "tail"
+        distractors = [e for e in entity_pool if e != edge.tail]
         branch_candidates = [
             e for e in edges if e.head == edge.head and e.tail != edge.tail
         ]
@@ -154,9 +158,6 @@ def generate_steps_graph_mode(
             branch_hint = (
                 "\n[Branch/Contrast Knowledge]: "
                 f"{branch_edge.head} --[{branch_edge.relation}]--> {branch_edge.tail} "
-                f"(Use this to increase difficulty, e.g., create a distractor based on "
-                f"'{branch_edge.tail}' or form a comparison question 'Unlike {branch_edge.tail}, "
-                f"{edge.head}...')"
             )
         operate_fact_hint = (
             f"evidence_snippet={edge.evidence or ''}\n"
@@ -170,7 +171,7 @@ def generate_steps_graph_mode(
             fact_hint=operate_fact_hint,
             feedback=feedback,
             force_cross_modal=False,
-            forbidden_terms=[edge.head],
+            forbidden_terms=[edge.tail],
         )
         operate_calculation = run_operate_calculation_agent(
             context=context,
@@ -179,36 +180,53 @@ def generate_steps_graph_mode(
             fact_hint=operate_fact_hint,
             feedback=feedback,
             force_cross_modal=False,
-            forbidden_terms=[edge.head],
+            forbidden_terms=[edge.tail],
         )
         prompt = build_graph_1hop_step_prompt(
             anchor_question=step0.question,
+            previous_step=steps[-1],
             evidence_snippet=edge.evidence or "",
             head=edge.head,
             relation=edge.relation,
             tail=edge.tail,
+            target_side=target_side,
             operate_distinction_draft=operate_distinction.draft,
             operate_calculation_draft=operate_calculation.draft,
             distractor_entities=distractors,
             feedback=feedback,
             force_cross_modal=False,
         )
-        model = select_model_for_step(k)
-        step = run_step(prompt, image_path, model, k)
+        model = select_model_for_step(current_step_index)
+        step = run_step(prompt, image_path, model, current_step_index)
         if step.evidence is None:
             step.evidence = edge_to_evidence_payload(edge)
 
+        print(f"[Step {current_step_index}] 正在进行视觉幻觉核查...")
+        verify_prompt = build_visual_verification_prompt(step.question)
+        try:
+            verify_raw = call_vision_model(verify_prompt, image_path, MODEL_SOLVE_STRONG)
+            if "<verified>no</verified>" in verify_raw:
+                print(
+                    f"[Step {current_step_index}] 视觉核查失败: 题目包含图片中不存在的视觉特征。"
+                )
+                print(f"Question: {step.question}")
+                print(f"Reason: {verify_raw}")
+                continue
+            print(f"[Step {current_step_index}] 视觉核查通过。")
+        except Exception as exc:
+            print(f"[Step {current_step_index}] 视觉核查调用出错: {exc}。默认放行。")
+
         medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
         medium_correct = grade_answer(step.answer_letter or "", medium_letter)
-        
+
         strong_raw = None
         strong_letter = None
         strong_correct = None
-        
+
         if not medium_correct:
             strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
             strong_correct = grade_answer(step.answer_letter or "", strong_letter)
-        
+
         needs_revision, reason = validate_step(step, False, strong_correct)
         if not needs_revision and is_low_quality_entity_matching(step.question):
             needs_revision, reason = True, "LOW_QUALITY (entity matching / missing operator)"
@@ -219,7 +237,7 @@ def generate_steps_graph_mode(
         ):
             needs_revision, reason = True, f"modal_use consecutive pure({step.modal_use})"
         if needs_revision:
-            print(f"[Step {k}] 触发 revise: {reason}")
+            print(f"[Step {current_step_index}] 触发 revise: {reason}")
             revise_prompt = build_revise_prompt(
                 context,
                 step,
@@ -229,27 +247,27 @@ def generate_steps_graph_mode(
                 operate_calculation.draft,
                 False,
             )
-            step = run_step(revise_prompt, image_path, model, k)
+            step = run_step(revise_prompt, image_path, model, current_step_index)
             medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
             medium_correct = grade_answer(step.answer_letter or "", medium_letter)
-            
+
             strong_raw = None
             strong_letter = None
             strong_correct = None
-            
+
             if not medium_correct:
                 strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
                 strong_correct = grade_answer(step.answer_letter or "", strong_letter)
 
-        print(f"[Step {k}] 完成 (Graph Mode, model={model})")
+        print(f"[Step {current_step_index}] 完成 (Graph Mode, model={model})")
         print(step.question)
         print(f"标准答案: <answer>{step.answer_letter}</answer> | answer_text={step.answer_text}")
         print(f"中求解器: {medium_raw} | correct={medium_correct}")
         if not medium_correct:
-             print(f"强求解器: {strong_raw} | correct={strong_correct}")
+            print(f"强求解器: {strong_raw} | correct={strong_correct}")
         else:
-             print("中求解器答对，跳过强求解器。")
-             
+            print("中求解器答对，跳过强求解器。")
+
         if not (medium_correct and strong_correct) and step.reasoning:
             print(f"推理过程: <reasoning>{step.reasoning}</reasoning>")
         if step.answer_letter and not medium_correct:
@@ -294,17 +312,19 @@ def generate_steps_graph_mode(
                     "strong_no_image_raw": strong_no_image_raw,
                 }
                 if strong_text_only_correct or strong_no_image_correct:
-                    print(f"[Review] Step {k} 结果: text-only/no-image 可解，跳过入库")
+                    print(
+                        f"[Review] Step {current_step_index} 结果: text-only/no-image 可解，跳过入库"
+                    )
                 else:
                     target_path = (
                         Path(GENQA_SIMPLE_PATH) if strong_correct else Path(GENQA_HARD_PATH)
                     )
-                    print(f"[Review] Step {k} 结果: correct -> {target_path}")
+                    print(f"[Review] Step {current_step_index} 结果: correct -> {target_path}")
                     save_genqa_item(
                         target_path,
                         {
                             "source": "step",
-                            "step_k": k,
+                            "step_k": current_step_index,
                             "question": step.question,
                             "answer": step.answer_letter,
                             "reasoning": step.reasoning,
@@ -314,10 +334,11 @@ def generate_steps_graph_mode(
                         },
                     )
             elif review_passed is False:
-                print(f"[Review] Step {k} 结果: incorrect")
+                print(f"[Review] Step {current_step_index} 结果: incorrect")
             else:
-                print(f"[Review] Step {k} 结果: unknown")
+                print(f"[Review] Step {current_step_index} 结果: unknown")
 
         steps.append(step)
+        current_step_index += 1
 
     return steps, cross_modal_used

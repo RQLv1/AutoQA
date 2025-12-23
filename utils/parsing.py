@@ -131,16 +131,18 @@ def parse_review_decision(text: str | None) -> bool | None:
     if text is None:
         return None
     tagged = extract_tag_optional(text, "answer")
+    if tagged is None:
+        tagged = extract_tag_optional(text, "review")
     content = tagged if tagged is not None else text
     normalized = content.strip().lower()
     if normalized in {"correct", "true", "yes", "y", "是", "正确"}:
         return True
     if normalized in {"incorrect", "false", "no", "n", "否", "错误"}:
         return False
-    if "correct" in normalized or "正确" in normalized:
-        return True
     if "incorrect" in normalized or "错误" in normalized:
         return False
+    if "correct" in normalized or "正确" in normalized:
+        return True
     return None
 
 

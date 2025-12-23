@@ -12,7 +12,7 @@ def review_question(
     reasoning: str | None,
     image_path: Path,
 ) -> tuple[str, bool | None]:
-    prompt = build_review_prompt(question, answer, reasoning)
+    prompt = build_review_prompt(question, answer, reasoning or "")
     raw = call_vision_model(
         prompt,
         image_path,
