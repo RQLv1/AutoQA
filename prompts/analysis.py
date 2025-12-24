@@ -10,7 +10,7 @@ def build_analysis_prompt(question: str, answer: str, solver_answer: str) -> str
         求解模型作答: {solver_answer}
 
         输出格式:
-        - 简单原因: 1-2 句
+        - 简单原因: 几句话
         - 提升点: 用简洁中文列出多条可提升难度的建议
         - 不要重复题面原句。
         """

@@ -8,7 +8,7 @@ MODEL_STAGE_1 = os.getenv("MODEL_STAGE_1", "gpt-51-1113-global")  # 阶段1：�
 MODEL_STAGE_2 = os.getenv("MODEL_STAGE_2", MODEL_STAGE_1)  # 阶段2：通常用于深入推理
 MODEL_STAGE_3 = os.getenv("MODEL_STAGE_3", MODEL_STAGE_1)  # 阶段3：通常用于最终生成
 # 视觉理解与知识抽取使用的模型
-MODEL_VISION_KNOWLEDGE = os.getenv("MODEL_VISION_KNOWLEDGE", MODEL_STAGE_1)
+MODEL_VISION_KNOWLEDGE = os.getenv("MODEL_VISION_KNOWLEDGE", "gemini-3-pro-preview")
 # 汇总和通用任务使用的模型
 MODEL_SUM = os.getenv("MODEL_SUM", os.getenv("MODEL_STAGE_SUM", "gemini-3-pro-preview"))
 

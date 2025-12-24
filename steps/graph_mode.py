@@ -270,23 +270,24 @@ def generate_steps_graph_mode(
                 if strong_text_only_correct or strong_no_image_correct:
                     print("[Review] Step 0 结果: text-only/no-image 可解，跳过入库")
                 else:
-                    target_path = (
-                        Path(GENQA_SIMPLE_PATH) if strong_correct else Path(GENQA_HARD_PATH)
-                    )
-                    print(f"[Review] Step 0 结果: correct -> {target_path}")
-                    save_genqa_item(
-                        target_path,
-                        {
-                            "source": "step",
-                            "step_k": 0,
-                            "question": step0.question,
-                            "answer": step0.answer_letter,
-                            "reasoning": step0.reasoning,
-                            "difficulty_metrics": step_metrics,
-                            "review_decision": "correct",
-                            "review_raw": review_raw,
-                        },
-                    )
+                    if strong_correct:
+                        target_path = Path(GENQA_HARD_PATH)
+                        print(f"[Review] Step 0 结果: correct -> {target_path} (Hard: Medium=X, Strong=O)")
+                        save_genqa_item(
+                            target_path,
+                            {
+                                "source": "step",
+                                "step_k": 0,
+                                "question": step0.question,
+                                "answer": step0.answer_letter,
+                                "reasoning": step0.reasoning,
+                                "difficulty_metrics": step_metrics,
+                                "review_decision": "correct",
+                                "review_raw": review_raw,
+                            },
+                        )
+                    else:
+                        print(f"[Review] Step 0 结果: Strong Solver 也失败，视为无效/超难题，跳过入库")
             elif review_passed is False:
                 print("[Review] Step 0 结果: incorrect")
             else:
@@ -438,7 +439,7 @@ def generate_steps_graph_mode(
             strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
             strong_correct = grade_answer(step.answer_letter or "", strong_letter)
 
-        needs_revision, reason = validate_step(step, False, strong_correct)
+        needs_revision, reason = validate_step(step, False, strong_correct, medium_correct)
         if not needs_revision and is_low_quality_entity_matching(step.question):
             needs_revision, reason = True, "LOW_QUALITY (entity matching / missing operator)"
         if (
@@ -541,10 +542,14 @@ def generate_steps_graph_mode(
                         f"[Review] Step {current_step_index} 结果: text-only/no-image 可解，跳过入库"
                     )
                 else:
-                    target_path = (
-                        Path(GENQA_SIMPLE_PATH) if strong_correct else Path(GENQA_HARD_PATH)
-                    )
-                    print(f"[Review] Step {current_step_index} 结果: correct -> {target_path}")
+                    # 逻辑修改：Strong 错 -> Hard; Strong 对 -> Simple
+                    if not strong_correct:
+                        target_path = Path(GENQA_HARD_PATH)
+                        print(f"[Review] Step {current_step_index} 结果: correct -> {target_path} (Hard: Medium=X, Strong=X)")
+                    else:
+                        target_path = Path(GENQA_SIMPLE_PATH)
+                        print(f"[Review] Step {current_step_index} 结果: correct -> {target_path} (Simple: Medium=X, Strong=O)")
+
                     save_genqa_item(
                         target_path,
                         {

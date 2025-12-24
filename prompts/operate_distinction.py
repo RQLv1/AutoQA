@@ -22,13 +22,13 @@ def build_operate_distinction_prompt(
             forbidden_note = f"\n- 草稿中不得出现以下词/短语（避免答案泄露）: {forbidden}"
     return dedent(
         f"""
-        你是 operate_distinction 智能体。你的任务不是出题，而是为“下一步子问题”生成一个可执行的修改草稿(draft)，
+        你是区分智能体。你的任务不是出题，而是为“下一步子问题”生成一个可执行的修改草稿(draft)，
         让出题智能体据此生成一个更难、且必须依赖图片中心视觉证据的单选题。
 
         上一步子问题与答案(供你理解推理链):
-        - question: {previous_step.question}
-        - answer_letter: {previous_step.answer_letter}
-        - answer_text: {previous_step.answer_text}
+        - 问题: {previous_step.question}
+        - 答案: {previous_step.answer_letter}
+        - 答案解析: {previous_step.answer_text}
 
         下一步必须使用的新关键信息(供你设计草稿用，不要直接复制进题干):
         {fact_hint}

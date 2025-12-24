@@ -352,10 +352,10 @@ def build_graph_1hop_step_prompt(
 
         参考证据(仅供内部推理):
         - 知识来源: {knowledge_source_label or "参考信息"}
-        - evidence: {evidence_snippet.strip() or "(未提供)"}
-        - operate_distinction draft:
+        - 参考证据: {evidence_snippet.strip() or "(未提供)"}
+        - 区分草稿:
 {operate_distinction_block}
-        - operate_calculation draft:
+        - 计算草稿:
 {operate_calculation_block}
         - 可用干扰项候选: {distractors}
 

@@ -77,8 +77,17 @@ def main() -> None:
             if review_passed is True:
                 review_decision = "correct"
                 if final_no_text_shortcut:
-                    target_path = genqa_simple_path if strong_correct else genqa_hard_path
-                    print(f"[Review] 结果: correct -> {target_path}")
+                    # 逻辑修改：
+                    # Medium 错 (已在上方过滤)
+                    # Strong 错 -> 存入 Hard
+                    # Strong 对 -> 存入 Simple
+                    if not strong_correct:
+                        target_path = genqa_hard_path
+                        print(f"[Review] 结果: correct -> {target_path} (Hard: Medium=X, Strong=X)")
+                    else:
+                        target_path = genqa_simple_path
+                        print(f"[Review] 结果: correct -> {target_path} (Simple: Medium=X, Strong=O)")
+
                     save_genqa_item(
                         target_path,
                         {

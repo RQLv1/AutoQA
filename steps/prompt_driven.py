@@ -184,7 +184,7 @@ def generate_steps_prompt_driven(
             strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
             strong_correct = grade_answer(step.answer_letter or "", strong_letter)
             
-        needs_revision, reason = validate_step(step, force_cross_modal, strong_correct)
+        needs_revision, reason = validate_step(step, force_cross_modal, strong_correct, medium_correct)
 
         if not needs_revision and k > 0 and is_low_quality_entity_matching(step.question):
             needs_revision, reason = True, "LOW_QUALITY (entity matching / missing operator)"
@@ -292,10 +292,14 @@ def generate_steps_prompt_driven(
                 if strong_text_only_correct or strong_no_image_correct:
                     print(f"[Review] Step {k} 结果: text-only/no-image 可解，跳过入库")
                 else:
-                    target_path = (
-                        Path(GENQA_SIMPLE_PATH) if strong_correct else Path(GENQA_HARD_PATH)
-                    )
-                    print(f"[Review] Step {k} 结果: correct -> {target_path}")
+                    # 逻辑修改：Strong 错 -> Hard; Strong 对 -> Simple
+                    if not strong_correct:
+                        target_path = Path(GENQA_HARD_PATH)
+                        print(f"[Review] Step {k} 结果: correct -> {target_path} (Hard: Medium=X, Strong=X)")
+                    else:
+                        target_path = Path(GENQA_SIMPLE_PATH)
+                        print(f"[Review] Step {k} 结果: correct -> {target_path} (Simple: Medium=X, Strong=O)")
+
                     save_genqa_item(
                         target_path,
                         {
