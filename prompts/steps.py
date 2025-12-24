@@ -7,14 +7,14 @@ def _format_feedback_block(feedback: str) -> str:
     if not feedback:
         return ""
     return f"""
-    [CRITICAL REVISION INSTRUCTION / 必须执行的修正指令]
+    [必须执行的修正指令]
     上一轮生成的题目因质量不达标被拒绝。
     拒绝原因(Feedback): {feedback.strip()}
 
     修正要求:
     1. 如果反馈指出"太简单"或"逻辑线性": 你必须引入干扰项、增加计算步骤(如先求参数再代入)、或移除题干中的直接判断阈值。
     2. 如果反馈指出"直接给出了判据": 必须将直接的数值判据(如"大于X则为Y")改为需要从图表趋势中分析，或改为定性描述。
-    3. 你生成的题目必须与上述"拒绝原因"形成鲜明对比(Do the opposite)。
+    3. 你生成的题目必须与上述"拒绝原因"形成鲜明对比。
     """.strip()
 
 
@@ -102,8 +102,8 @@ def build_stage2_step_prompt(
           - 风格偏向条件计算：优先采用 operate_calculation 草稿落地为“数值/区间/等级”可验证题。
           - 针对反馈优化：若反馈提到"太简单"，请尝试"逆向推理"（已知结果求条件）或"多步合成"（A+B->C）。
         - 条件计算题必须在两种逻辑模板中二选一：
-          1) 双源合成(Synthesis)：视觉读数 X + 参考信息参数 Y → 计算/判级。
-          2) 条件分支(Branching)：视觉观察选择分支规则 → 再计算/判级。
+          1) 双源合成：视觉读数 X + 参考信息参数 Y → 计算/判级。
+          2) 条件分支：视觉观察选择分支规则 → 再计算/判级。
         - 干扰项必须是参考信息中出现过的同类真实概念/实体/条件，但在当前图像语境下为错误（Hard Negatives）。
 
         参考信息(仅供内部推理，不得在题干中提到):
@@ -112,7 +112,7 @@ def build_stage2_step_prompt(
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
         <answer>A/B/C/D</answer>
-        <reasoning>简要推理过程(不超过4句)</reasoning>
+        <reasoning>简要推理过程</reasoning>
         """
     ).strip()
 
@@ -159,8 +159,8 @@ def build_stage3_step_prompt(
           - 风格偏向条件计算：优先采用 operate_calculation 草稿落地为“数值/区间/等级”可验证题。
           - 针对反馈优化：若反馈提到"太简单"，请尝试"逆向推理"（已知结果求条件）或"多步合成"（A+B->C）。
         - 条件计算题必须在两种逻辑模板中二选一：
-          1) 双源合成(Synthesis)：视觉读数 X + 参考信息参数 Y → 计算/判级。
-          2) 条件分支(Branching)：视觉观察选择分支规则 → 再计算/判级。
+          1) 双源合成：视觉读数 X + 参考信息参数 Y → 计算/判级。
+          2) 条件分支：视觉观察选择分支规则 → 再计算/判级。
         - 干扰项必须是参考信息中出现过的同类真实概念/实体/条件，但在当前图像语境下为错误（Hard Negatives）。
 
         参考信息(仅供内部推理，不得在题干中提到):
@@ -169,7 +169,7 @@ def build_stage3_step_prompt(
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
         <answer>A/B/C/D</answer>
-        <reasoning>简要推理过程(不超过4句)</reasoning>
+        <reasoning>简要推理过程</reasoning>
         """
     ).strip()
 
@@ -214,8 +214,8 @@ def build_extend_step_prompt(
         - 风格偏向条件计算：优先输出“数值/区间/等级”型选项（与图中参数/关系 + 参考信息阈值/公式绑定）。
         - 去词汇化(避免文本捷径)：题干不要直接写出图中读数/颜色/形状等具体值，改用“图中…的读数/显示的状态/位于…的部件”等指代性或位置性描述，迫使读者看图。
         - 条件计算题必须在两种逻辑模板中二选一：
-          1) 双源合成(Synthesis)：视觉读数 X + 参考信息参数 Y → 计算/判级。
-          2) 条件分支(Branching)：视觉观察选择分支规则 → 再计算/判级。
+          1) 双源合成：视觉读数 X + 参考信息参数 Y → 计算/判级。
+          2) 条件分支：视觉观察选择分支规则 → 再计算/判级。
         - 干扰项必须是参考信息中出现过的同类真实概念/实体/条件，但在当前图像语境下为错误（Hard Negatives）。
 
         参考信息(仅供内部推理，不得在题干中提到):
@@ -224,7 +224,7 @@ def build_extend_step_prompt(
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
         <answer>A/B/C/D</answer>
-        <reasoning>简要推理过程(不超过4句)</reasoning>
+        <reasoning>简要推理过程</reasoning>
         """
     ).strip()
 
@@ -247,7 +247,7 @@ def build_revise_prompt(
     visual_block = _format_visual_summary_block(visual_summary)
     return dedent(
         f"""
-        [CRITICAL REVISION INSTRUCTION / 必须执行的修正指令]
+        [必须执行的修正指令]
         必须修订以下子问题，因为原问题被判定为: {reason}
 
         原问题: {step.question}
@@ -281,7 +281,7 @@ def build_revise_prompt(
         只输出以下格式:
         <question>题干，包含 A-D 选项</question>
         <answer>A/B/C/D</answer>
-        <reasoning>简要推理过程(不超过4句)</reasoning>
+        <reasoning>简要推理过程</reasoning>
         """
     ).strip()
 
@@ -344,8 +344,8 @@ def build_graph_1hop_step_prompt(
         - 优先使用 operate_calculation draft 作为题干主线，operate_distinction 仅用于构造干扰项或对照条件。
         - 选项必须为数值/区间/等级型答案，且可由“图中读数/关系 + 参考信息阈值/公式”计算或判级得到。
         - 条件计算必须遵循两种模板之一：
-          1) 双源合成(Synthesis)：图中读数 X + 参考信息参数 Y → 计算/判级；
-          2) 条件分支(Branching)：先由图像选择分支规则 → 再计算/判级。
+          1) 双源合成：图中读数 X + 参考信息参数 Y → 计算/判级；
+          2) 条件分支：先由图像选择分支规则 → 再计算/判级。
 
         图片视觉锚点参考:
         {anchor_question.strip()}

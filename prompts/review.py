@@ -8,21 +8,19 @@ def build_review_prompt(
 ) -> str:
     return dedent(
         f"""
-        You are a strict reviewer for a visual question answering dataset.
+        你是一名视觉问答数据集的严格审稿人。
 
-        Question: {question}
-        Proposed Answer: {answer}
-        Reasoning: {reasoning}
+        问题: {question}
+        候选答案: {answer}
+        推理: {reasoning}
 
-        Task:
-        1. Check if the question clearly refers to visual features in the image (e.g., "the red curve", "the inset", "structure A").
-        2. Check if the answer is logically derived from the visual evidence + common knowledge.
-        3. Check if the reasoning is sound and consistent.
+        任务:
+        1. 检查问题是否明确提及图像中的视觉特征。
+        2. 检查推理是否合理且一致。
 
-        Output only one of the following:
-        <review>correct</review> (If valid and high quality)
-        <review>incorrect</review> (If logic is flawed or answer is wrong)
-        <review>ambiguous</review> (If the image is unclear or question is confusing)
+        仅输出以下之一:
+        <review>correct</review> (如果有效且高质量)
+        <review>incorrect</review> (如果逻辑存在缺陷或答案错误)
         """
     ).strip()
 

@@ -55,7 +55,6 @@ API_RECONNECT_SLEEP_SECONDS = int(
 # 生成流程配置 (Generation Process Configuration)
 # =============================================================================
 MAX_ROUNDS = int(os.getenv("MAX_ROUNDS", "10"))  # 最大生成轮次
-QUESTION_LOG_PATH = os.getenv("QUESTION_LOG_PATH", "question_log.jsonl")  # 过程日志文件路径
 GENQA_SIMPLE_PATH = os.getenv("GENQA_SIMPLE_PATH", "genqa_simple.json")  # 简单/中等题目保存路径
 GENQA_HARD_PATH = os.getenv("GENQA_HARD_PATH", "genqa_hard.json")  # 难题保存路径
 DETAILS_PATH = os.getenv("DETAILS_PATH", "details.json")  # 终端与草稿信息日志

@@ -38,7 +38,8 @@ class DetailsLogger:
     def _save(self) -> None:
         self._path.parent.mkdir(parents=True, exist_ok=True)
         self._path.write_text(
-            json.dumps(self._data, ensure_ascii=True), encoding="utf-8"
+            json.dumps(self._data, ensure_ascii=False, indent=2),
+            encoding="utf-8",
         )
 
     def log_stdout_line(self, line: str) -> None:

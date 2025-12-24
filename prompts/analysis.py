@@ -11,7 +11,7 @@ def build_analysis_prompt(question: str, answer: str, solver_answer: str) -> str
 
         输出格式:
         - 简单原因: 1-2 句
-        - 提升点: 用简洁中文列出3条可提升难度的建议
+        - 提升点: 用简洁中文列出多条可提升难度的建议
         - 不要重复题面原句。
         """
     ).strip()

@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from pipeline import review_question, run_episode, save_round_questions
-from utils.config import GENQA_HARD_PATH, GENQA_SIMPLE_PATH, MAX_ROUNDS, QUESTION_LOG_PATH
+from pipeline import review_question, run_episode
+from utils.config import GENQA_HARD_PATH, GENQA_SIMPLE_PATH, MAX_ROUNDS
 from utils.details_logger import setup_details_logging
 from utils.genqa import save_genqa_item
 
@@ -19,7 +19,6 @@ def main() -> None:
     context_path = _pick_existing_path([Path("data/context.txt"), Path("context.txt")])
     context = context_path.read_text(encoding="utf-8")
 
-    log_path = Path(QUESTION_LOG_PATH)
     genqa_simple_path = Path(GENQA_SIMPLE_PATH)
     genqa_hard_path = Path(GENQA_HARD_PATH)
     generated_count = 0
@@ -65,16 +64,6 @@ def main() -> None:
             print("Strong Solver 失败：可能是超难题或错题。")
         else:
             print("Strong Solver 成功：中等难度题。")
-
-        save_round_questions(
-            log_path,
-            hard_questions_found + 1,
-            episode,
-            solver_final_pred=metrics.get("strong_pred"),
-            solver_final_raw=metrics.get("strong_raw"),
-            reflect_feedback=episode.reflect_feedback,
-            stop_reason="success_hard_question",
-        )
 
         review_raw = None
         review_decision = None
