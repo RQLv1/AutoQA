@@ -124,6 +124,9 @@ def generate_steps_graph_mode(
 
     prompt = ""
     model = select_model_for_step(0)
+    operate_distinction = None
+    operate_calculation = None
+    fact_hint_for_revision = "请基于图片进行综合推断。"
 
     if previous_final_question:
         dummy_prev = StepResult(
@@ -161,6 +164,7 @@ def generate_steps_graph_mode(
             feedback=feedback,
             force_cross_modal=True,
         )
+        fact_hint_for_revision = fact_hint
         get_details_logger().log_event(
             "operate_drafts",
             {
@@ -204,7 +208,6 @@ def generate_steps_graph_mode(
             "cross_modal_bridge": step0.cross_modal_bridge,
         },
     )
-    steps.append(step0)
     print("[Step 0] 完成 (Graph Mode anchor)")
     print(step0.question)
     print(f"标准答案: <answer>{step0.answer_letter}</answer> | answer_text={step0.answer_text}")
@@ -216,13 +219,71 @@ def generate_steps_graph_mode(
         strong_raw = None
         strong_letter = None
         strong_correct = None
+        strong_text_only_raw = None
+        strong_text_only_letter = None
+        strong_text_only_correct = None
         
         if not medium_correct:
+            strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
+                step0.question, MODEL_SOLVE_STRONG
+            )
+            strong_text_only_correct = grade_answer(
+                step0.answer_letter or "", strong_text_only_letter
+            )
             strong_raw, strong_letter = solve_mcq(step0.question, image_path, MODEL_SOLVE_STRONG)
             strong_correct = grade_answer(step0.answer_letter or "", strong_letter)
             print(f"强求解器: {strong_raw} | correct={strong_correct}")
         else:
             print("中求解器答对，跳过强求解器。")
+
+        needs_revision, reason = validate_step(
+            step0, False, strong_correct, medium_correct, strong_text_only_correct
+        )
+        if needs_revision:
+            print(f"[Step 0] 触发 revise: {reason}")
+            revise_prompt = build_revise_prompt(
+                context,
+                step0,
+                reason,
+                fact_hint_for_revision,
+                operate_distinction.draft if operate_distinction else "",
+                operate_calculation.draft if operate_calculation else "",
+                False,
+                visual_summary,
+            )
+            step0 = run_step(revise_prompt, image_path, model, 0)
+            medium_raw, medium_letter = solve_mcq(step0.question, image_path, MODEL_SOLVE_MEDIUM)
+            medium_correct = grade_answer(step0.answer_letter or "", medium_letter)
+
+            strong_raw = None
+            strong_letter = None
+            strong_correct = None
+            strong_text_only_raw = None
+            strong_text_only_letter = None
+            strong_text_only_correct = None
+
+            if not medium_correct:
+                strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
+                    step0.question, MODEL_SOLVE_STRONG
+                )
+                strong_text_only_correct = grade_answer(
+                    step0.answer_letter or "", strong_text_only_letter
+                )
+                strong_raw, strong_letter = solve_mcq(step0.question, image_path, MODEL_SOLVE_STRONG)
+                strong_correct = grade_answer(step0.answer_letter or "", strong_letter)
+            get_details_logger().log_event(
+                "step_result_revised",
+                {
+                    "step": 0,
+                    "reason": reason,
+                    "question": step0.question,
+                    "answer_letter": step0.answer_letter,
+                    "answer_text": step0.answer_text,
+                    "reasoning": step0.reasoning,
+                    "modal_use": step0.modal_use,
+                    "cross_modal_bridge": step0.cross_modal_bridge,
+                },
+            )
 
         if not (medium_correct and strong_correct) and step0.reasoning:
             print(f"推理过程: <reasoning>{step0.reasoning}</reasoning>")
@@ -292,6 +353,8 @@ def generate_steps_graph_mode(
                 print("[Review] Step 0 结果: incorrect")
             else:
                 print("[Review] Step 0 结果: unknown")
+    steps.append(step0)
+
     if not all_edges or target_hops <= 0:
         print("[Graph Mode] 知识点链为空或 hop=0，退化为仅 step_0。")
         return steps, cross_modal_used
@@ -434,12 +497,23 @@ def generate_steps_graph_mode(
         strong_raw = None
         strong_letter = None
         strong_correct = None
+        strong_text_only_raw = None
+        strong_text_only_letter = None
+        strong_text_only_correct = None
 
         if not medium_correct:
+            strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
+                step.question, MODEL_SOLVE_STRONG
+            )
+            strong_text_only_correct = grade_answer(
+                step.answer_letter or "", strong_text_only_letter
+            )
             strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
             strong_correct = grade_answer(step.answer_letter or "", strong_letter)
 
-        needs_revision, reason = validate_step(step, False, strong_correct, medium_correct)
+        needs_revision, reason = validate_step(
+            step, False, strong_correct, medium_correct, strong_text_only_correct
+        )
         if not needs_revision and is_low_quality_entity_matching(step.question):
             needs_revision, reason = True, "LOW_QUALITY (entity matching / missing operator)"
         if (
@@ -467,8 +541,17 @@ def generate_steps_graph_mode(
             strong_raw = None
             strong_letter = None
             strong_correct = None
+            strong_text_only_raw = None
+            strong_text_only_letter = None
+            strong_text_only_correct = None
 
             if not medium_correct:
+                strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
+                    step.question, MODEL_SOLVE_STRONG
+                )
+                strong_text_only_correct = grade_answer(
+                    step.answer_letter or "", strong_text_only_letter
+                )
                 strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
                 strong_correct = grade_answer(step.answer_letter or "", strong_letter)
             get_details_logger().log_event(

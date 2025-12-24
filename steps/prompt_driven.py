@@ -179,12 +179,27 @@ def generate_steps_prompt_driven(
         strong_raw = None
         strong_letter = None
         strong_correct = None
+        strong_text_only_raw = None
+        strong_text_only_letter = None
+        strong_text_only_correct = None
         
         if not medium_correct:
+            strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
+                step.question, MODEL_SOLVE_STRONG
+            )
+            strong_text_only_correct = grade_answer(
+                step.answer_letter or "", strong_text_only_letter
+            )
             strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
             strong_correct = grade_answer(step.answer_letter or "", strong_letter)
             
-        needs_revision, reason = validate_step(step, force_cross_modal, strong_correct, medium_correct)
+        needs_revision, reason = validate_step(
+            step,
+            force_cross_modal,
+            strong_correct,
+            medium_correct,
+            strong_text_only_correct,
+        )
 
         if not needs_revision and k > 0 and is_low_quality_entity_matching(step.question):
             needs_revision, reason = True, "LOW_QUALITY (entity matching / missing operator)"
@@ -216,8 +231,17 @@ def generate_steps_prompt_driven(
             strong_raw = None
             strong_letter = None
             strong_correct = None
+            strong_text_only_raw = None
+            strong_text_only_letter = None
+            strong_text_only_correct = None
             
             if not medium_correct:
+                strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
+                    step.question, MODEL_SOLVE_STRONG
+                )
+                strong_text_only_correct = grade_answer(
+                    step.answer_letter or "", strong_text_only_letter
+                )
                 strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
                 strong_correct = grade_answer(step.answer_letter or "", strong_letter)
             get_details_logger().log_event(

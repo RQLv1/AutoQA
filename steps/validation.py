@@ -1,10 +1,77 @@
+import re
+
 from utils.config import VERIFY_STRICT
 from utils.schema import StepResult
 
 
 def validate_step(
-    step: StepResult, force_cross_modal: bool, strong_correct: bool | None, medium_correct: bool | None
+    step: StepResult,
+    force_cross_modal: bool,
+    strong_correct: bool | None,
+    medium_correct: bool | None,
+    text_only_correct: bool | None,
 ) -> tuple[bool, str]:
+    option_matches = list(
+        re.finditer(r"([A-D])[\\.|\\)|、|:：]\\s*([^\\n]{0,80})", step.question)
+    )
+    option_letters = {match.group(1) for match in option_matches}
+    if not {"A", "B", "C", "D"}.issubset(option_letters):
+        return True, "missing options"
+
+    visual_anchors = [
+        "图中",
+        "图示",
+        "图片",
+        "图像",
+        "图表",
+        "曲线",
+        "刻度",
+        "指针",
+        "箭头",
+        "标注",
+        "标记",
+        "左上",
+        "右上",
+        "左下",
+        "右下",
+        "左侧",
+        "右侧",
+        "上方",
+        "下方",
+        "中心",
+        "区域",
+        "仪表",
+        "面板",
+        "屏幕",
+        "读数",
+        "坐标轴",
+        "表格",
+    ]
+    if not any(anchor in step.question for anchor in visual_anchors):
+        return True, "missing visual anchor"
+
+    if step.k >= 1:
+        first_option = option_matches[0].start() if option_matches else len(step.question)
+        stem = step.question[:first_option]
+        condition_hits = len(
+            re.findall(
+                r"(若|如果|当|则|按|根据|阈值|公式|计算|换算|分级|判定|规则|标准|区间|≥|≤|>|<|=)",
+                stem,
+            )
+        )
+        numeric_hits = len(re.findall(r"\\d+(?:\\.\\d+)?", stem))
+        if condition_hits + numeric_hits < 1:
+            return True, "missing neutral conditions"
+        numeric_like_options = 0
+        for match in option_matches:
+            segment = match.group(2)
+            if re.search(r"\\d", segment) or re.search(
+                r"(一级|二级|三级|四级|甲|乙|丙|丁|高|中|低)", segment
+            ):
+                numeric_like_options += 1
+        if numeric_like_options < 3:
+            return True, "options not numeric/graded"
+
     if not step.question:
         return True, "missing question"
     if step.answer_letter is None:
@@ -15,6 +82,9 @@ def validate_step(
         return True, "cross-modal required"
     if VERIFY_STRICT and step.answer_text and step.answer_text.lower() in step.question.lower():
         return True, "answer leakage in question"
+
+    if text_only_correct is True:
+        return True, "text-only shortcut"
     
     # 新增：如果在生成过程中 Medium 模型就做对了，说明题目太简单，直接强制 Revise
     if medium_correct is True:

@@ -1,5 +1,5 @@
-from pathlib import Path
 import re
+from pathlib import Path
 
 from pipeline.pipeline_solvers import evaluate_difficulty
 from pipeline.pipeline_vision_knowledge import build_visual_knowledge
