@@ -2,7 +2,6 @@ from textwrap import dedent
 
 from utils.schema import StepResult
 
-
 def build_operate_distinction_prompt(
     *,
     context: str,

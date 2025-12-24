@@ -18,7 +18,7 @@ MODEL_OPERATE_DISTINCTION = os.getenv("MODEL_OPERATE_DISTINCTION", MODEL_OPERATE
 MODEL_OPERATE_CALCULATION = os.getenv("MODEL_OPERATE_CALCULATION", MODEL_OPERATE)  # 计算任务
 
 # 求解器模型 (Solver Models) - 用于评估题目难度
-MODEL_SOLVE_MEDIUM = os.getenv("MODEL_SOLVE_MEDIUM", "gemini-3-flash-preview")  # 中等能力模型 (用于检测题目是否过简单)
+MODEL_SOLVE_MEDIUM = os.getenv("MODEL_SOLVE_MEDIUM", "gpt-5-mini-0807-global")  # 中等能力模型 (用于检测题目是否过简单)
 MODEL_SOLVE_STRONG = os.getenv("MODEL_SOLVE_STRONG", "claude_sonnet4_5")  # 强能力模型 (用于确保题目可解)
 # 评审模型 (Review Model) - 用于审核题目质量
 MODEL_REVIEW = os.getenv("MODEL_REVIEW", MODEL_SOLVE_STRONG)

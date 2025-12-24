@@ -1,6 +1,10 @@
 from prompts.analysis import build_analysis_prompt
 from prompts.facts import build_fact_extraction_prompt
-from prompts.final import build_final_compress_prompt, build_final_revise_prompt
+from prompts.final import (
+    build_final_compress_prompt,
+    build_final_harden_prompt,
+    build_final_revise_prompt,
+)
 from prompts.operate_calculation import build_operate_calculation_prompt
 from prompts.operate_distinction import build_operate_distinction_prompt
 from prompts.review import build_review_prompt, build_visual_verification_prompt
@@ -18,6 +22,7 @@ __all__ = [
     "build_analysis_prompt",
     "build_fact_extraction_prompt",
     "build_final_compress_prompt",
+    "build_final_harden_prompt",
     "build_final_revise_prompt",
     "build_operate_calculation_prompt",
     "build_operate_distinction_prompt",

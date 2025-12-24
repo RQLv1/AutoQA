@@ -46,6 +46,20 @@ def main() -> None:
         feedback = episode.reflect_feedback or ""
 
         metrics = episode.difficulty_metrics
+        if metrics.get("structure_passed") is False:
+            print("Final 结构检查未通过，直接废弃。")
+            if generated_count >= max_attempts:
+                print("达到最大尝试次数，停止。")
+                break
+            continue
+
+        if metrics.get("text_only_veto"):
+            print("发现文本捷径：Text-only 可解，直接废弃。")
+            if generated_count >= max_attempts:
+                print("达到最大尝试次数，停止。")
+                break
+            continue
+
         medium_correct = metrics.get("medium_correct", True)
         strong_correct = metrics.get("strong_correct", True)
         strong_text_only_correct = metrics.get("strong_text_only_correct", True)

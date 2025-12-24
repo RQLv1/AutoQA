@@ -150,7 +150,7 @@ AutoQA 是一个「图片为主 + 参考信息为辅」驱动的自动出题系�
 - `pipeline/pipeline_facts.py`：参考信息 fact candidates 抽取与提示格式化
 - `pipeline/pipeline_judge.py`：启发式对抗检查（选项完整性/长度偏置等，默认流程未启用）
 - `pipeline/pipeline_solvers.py`：求解器调用、答案判定、难度指标评估
-- `pipeline/pipeline_logging.py`：日志落盘（JSONL + 人类可读 JSON）
+- `pipeline/pipeline_logging.py`：日志写入接口（`question_log.*` 写入当前已禁用）
 - `graph/pipeline_graph.py`：Graph Mode：全文知识点链总结、Local KG 构建（可选）
 - `graph/pipeline_path_sampling.py`：Graph Mode：路径采样（可选）
 - `utils/parsing.py`：`<question>/<answer>/<reasoning>` 标签提取、选项字母解析（可扩展 evidence 标签）
@@ -178,9 +178,9 @@ python main.py
 * `MODEL_STAGE_1 / MODEL_STAGE_2 / MODEL_STAGE_3`
 * `MODEL_SUM（或 MODEL_STAGE_SUM）`
 * `MAX_ROUNDS`
-* `QUESTION_LOG_PATH`
 * `GENQA_SIMPLE_PATH`
 * `GENQA_HARD_PATH`
+* `DETAILS_PATH`（默认 `details.json`）
 * `API_MAX_RETRIES`：API 最大重试次数（默认 5）
 * `API_RETRY_SLEEP_SECONDS`：API 报错后等待秒数再重试（默认 5）
 
@@ -228,46 +228,14 @@ python main.py
 
 ---
 
-## 输出与日志（JSONL + JSON）
+## 输出与日志
 
 默认写以下文件：
 
-- `QUESTION_LOG_PATH`（默认 `question_log.jsonl`）：一行一个 Episode，便于流式追加与脚本处理（中文不再转义）。
-- 同名 `.json`（例如 `question_log.json`）：层级化 + 缩进格式，便于人工阅读（数组形式累计保存）。
 - `GENQA_SIMPLE_PATH`（默认 `genqa_simple.json`）：Medium 失败 & Strong 成功，经 Review 判定题目正确才会加入（包含 step/final）。
 - `GENQA_HARD_PATH`（默认 `genqa_hard.json`）：Medium 失败 & Strong 失败，经 Review 判定题目正确才会加入（包含 step/final）。
-
-### 日志结构（每行一个 Episode）
-
-* `round`
-* `stage_1` / `stage_2` / `stage_3` / `stage_final`：保留阶段字段（兼容阶段式回看，含 reasoning）
-* `steps`: `StepResult[]`（新增，记录 step_0..K）
-* `final_question` / `final_answer` / `final_reasoning`：最终题题面、答案与推理过程（与 `stage_final` 冗余，便于直取）
-* `difficulty_metrics`：
-  * `medium_correct`, `strong_correct`
-  * `strong_text_only_correct`（不看图仅看题干是否也能做对，用于检测纯文本捷径）
-  * `strong_no_image_correct`（不传图片仅题干是否也能做对，用于额外检测文本捷径）
-  * `difficulty_score`, `cross_modal_used`, `num_hops`
-* `solver_final_pred`（Strong Solver 的选项字母，A/B/C/D）
-* `solver_final_raw`（Strong Solver 原始输出，用于排查解析问题）
-* `reflect_feedback`（筛选备注，如 `adversarial_filter_passed`）
-* `stop_reason`
-* `judge_flags`（预留：Episode 级汇总 flags）
-
-### `StepResult`（新增/扩展 schema 建议）
-
-* `k`
-* `question`
-* `answer_text`（短实体/短短语）
-* `answer_letter`（A/B/C/D；若该 step 是 MCQ）
-* `evidence`：
-  * `doc_spans`: [start,end] 或 段落/行号
-  * `image_regions`: bbox/区域描述（若可用）
-* `modal_use`: image/text/both
-* `cross_modal_bridge`: bool
-* `judge_flags`: `leakage/ambiguity/unsupported/distractors_weak` 等（可选）
-* `raw`
-* `reasoning`
+- `DETAILS_PATH`（默认 `details.json`）：记录 stdout 与事件，UTF-8 多行 JSON，便于阅读与定位。
+- `question_log.jsonl/.json` 写入当前已禁用（如需恢复可在 `pipeline/pipeline_logging.py` 中恢复 `save_round_questions`）。
 
 ---
 

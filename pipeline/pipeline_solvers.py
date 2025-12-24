@@ -66,34 +66,39 @@ def evaluate_difficulty(
     medium_raw, medium_letter = solve_mcq(final.question, image_path, MODEL_SOLVE_MEDIUM)
     medium_correct = grade_answer(final.answer, medium_letter)
 
+    strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
+        final.question, MODEL_SOLVE_STRONG
+    )
+    strong_text_only_correct = grade_answer(final.answer, strong_text_only_letter)
+
     strong_raw = None
     strong_letter = None
-    strong_text_only_raw = None
-    strong_text_only_letter = None
     strong_no_image_raw = None
     strong_no_image_letter = None
     strong_correct = None
-    strong_text_only_correct = None
     strong_no_image_correct = None
 
     if not medium_correct:
         strong_raw, strong_letter = solve_mcq(final.question, image_path, MODEL_SOLVE_STRONG)
-        strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
-            final.question, MODEL_SOLVE_STRONG
-        )
         strong_no_image_raw, strong_no_image_letter = solve_mcq_no_image(
             final.question, MODEL_SOLVE_STRONG
         )
         strong_correct = grade_answer(final.answer, strong_letter)
-        strong_text_only_correct = grade_answer(final.answer, strong_text_only_letter)
         strong_no_image_correct = grade_answer(final.answer, strong_no_image_letter)
     
-    difficulty_score = 1.0 if (strong_correct and not medium_correct) else 0.5 if strong_correct else 0.0
+    difficulty_score = (
+        1.0
+        if (strong_correct and not medium_correct and not strong_text_only_correct)
+        else 0.5
+        if strong_correct
+        else 0.0
+    )
     return {
         "medium_correct": medium_correct,
         "strong_correct": strong_correct,
         "strong_text_only_correct": strong_text_only_correct,
         "strong_no_image_correct": strong_no_image_correct,
+        "text_only_veto": strong_text_only_correct,
         "difficulty_score": difficulty_score,
         "cross_modal_used": cross_modal_used,
         "num_hops": num_hops,

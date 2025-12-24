@@ -23,7 +23,7 @@ def fallback_fact_candidates(context: str, max_facts: int) -> list[dict[str, str
     lines = [line.strip() for line in context.splitlines() if line.strip()]
     facts = []
     for idx, line in enumerate(lines[:max_facts], start=1):
-        facts.append({"fact": line, "source": f"L{idx}"})
+        facts.append({"fact": line, "source": f"L{idx}", "kind": "other"})
     return facts
 
 
@@ -43,8 +43,15 @@ def load_fact_candidates(context: str, max_facts: int) -> list[dict[str, str]]:
                 continue
             fact = str(item.get("fact", "")).strip()
             source = str(item.get("source", "")).strip()
+            kind = str(item.get("kind", "")).strip()
             if fact:
-                results.append({"fact": fact, "source": source or "L?"})
+                results.append(
+                    {
+                        "fact": fact,
+                        "source": source or "L?",
+                        "kind": kind or "other",
+                    }
+                )
         return results if results else fallback_fact_candidates(context, max_facts)
     except Exception:
         return fallback_fact_candidates(context, max_facts)
@@ -53,4 +60,7 @@ def load_fact_candidates(context: str, max_facts: int) -> list[dict[str, str]]:
 def format_fact_hint(fact: dict[str, str] | None) -> str:
     if not fact:
         return "暂无可用事实(请从文档中自行抽取并标注行号)"
-    return f"{fact.get('fact', '').strip()} (source: {fact.get('source', 'L?')})"
+    fact_text = fact.get("fact", "").strip()
+    source = fact.get("source", "L?")
+    kind = fact.get("kind", "other")
+    return f"{fact_text} (source: {source}, kind: {kind})"
