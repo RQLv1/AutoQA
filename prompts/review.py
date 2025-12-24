@@ -15,8 +15,7 @@ def build_review_prompt(
         推理: {reasoning}
 
         任务:
-        1. 检查问题是否明确提及图像中的视觉特征。
-        2. 检查推理是否合理且一致。
+        1. 检查推理是否合理且一致。
 
         仅输出以下之一:
         <review>correct</review> (如果有效且高质量)

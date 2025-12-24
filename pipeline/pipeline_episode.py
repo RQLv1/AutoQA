@@ -1,4 +1,3 @@
-import re
 from pathlib import Path
 
 from pipeline.pipeline_final_refine import refine_final_question
@@ -7,97 +6,16 @@ from pipeline.pipeline_solvers import evaluate_difficulty
 from pipeline.pipeline_vision_knowledge import build_visual_knowledge
 from prompts import build_analysis_prompt, build_final_compress_prompt, build_final_harden_prompt
 from steps import derive_stage_results, generate_steps
+from steps.obfuscate_agent import obfuscate_question
 from utils.api_client import call_text_model, call_vision_model
 from utils.config import (
     DEFAULT_TEMPERATURE,
     MODEL_SUM,
-    REQUIRE_CROSS_MODAL,
 )
 from utils.details_logger import get_details_logger
 from utils.parsing import extract_tag_optional
 from utils.schema import EpisodeResult, StageResult, StepResult
 from utils.terminal import print_final_input, print_final_summary
-
-
-_OPTION_SEGMENT_RE = re.compile(r"([A-D])[\\.|\\)|、|:：]\\s*([^\\n]{0,80})")
-_CONDITION_RE = re.compile(r"(若|如果|当|则|按|根据|阈值|公式|计算|换算|分级|判定|规则|标准|区间|≥|≤|>|<|=)")
-_FORBIDDEN_STEM_RE = re.compile(r"(【|】|已知条件|判据|任务说明|提示|步骤|解题思路|\\(1\\)|\\(2\\)|\\(3\\))")
-_GUIDE_PHRASE_RE = re.compile(r"(保留两位小数|代入公式|依次求出|依次计算|请按步骤|先.{0,6}再)")
-_RULE_KEYWORDS = ("规则", "阈值", "定义", "分级", "判定", "条件", "公式")
-_VISUAL_ANCHORS = [
-    "图中",
-    "图示",
-    "图片",
-    "图像",
-    "图表",
-    "曲线",
-    "刻度",
-    "指针",
-    "箭头",
-    "标注",
-    "标记",
-    "左上",
-    "右上",
-    "左下",
-    "右下",
-    "左侧",
-    "右侧",
-    "上方",
-    "下方",
-    "中心",
-    "区域",
-    "仪表",
-    "面板",
-    "屏幕",
-    "读数",
-    "坐标轴",
-    "表格",
-]
-
-
-def _check_final_structure(
-    question: str, *, cross_modal_used: bool, num_hops: int
-) -> tuple[bool, list[str], dict[str, int | bool]]:
-    reasons: list[str] = []
-    matches = list(_OPTION_SEGMENT_RE.finditer(question))
-
-    first_option = matches[0].start() if matches else len(question)
-    stem = question[:first_option]
-    condition_hits = len(_CONDITION_RE.findall(stem))
-    numeric_hits = len(re.findall(r"\\d+(?:\\.\\d+)?", stem))
-    condition_total = condition_hits + numeric_hits
-    equation_count = stem.count("=")
-    if equation_count > 2:
-        reasons.append("too many equations")
-    if _FORBIDDEN_STEM_RE.search(stem):
-        reasons.append("forbidden prompt cues")
-    if _GUIDE_PHRASE_RE.search(stem):
-        reasons.append("guided phrasing detected")
-    sentences = [s.strip() for s in re.split(r"[。！？!?]", stem) if s.strip()]
-    rule_sentences = sum(
-        1 for sentence in sentences if any(keyword in sentence for keyword in _RULE_KEYWORDS)
-    )
-    if rule_sentences > 2:
-        reasons.append("too many rule sentences")
-    if "等级" in stem and "按文中等级阈值划分" not in stem:
-        reasons.append("grade threshold detail in stem")
-
-    if not any(anchor in question for anchor in _VISUAL_ANCHORS):
-        reasons.append("missing visual anchor cues")
-
-    if REQUIRE_CROSS_MODAL and not cross_modal_used:
-        reasons.append("cross-modal not used")
-
-    if num_hops < 2:
-        reasons.append("insufficient hops")
-
-    stats = {
-        "conditions": condition_total,
-        "equations": equation_count,
-        "rule_sentences": rule_sentences,
-        "has_visual_anchor": any(anchor in question for anchor in _VISUAL_ANCHORS),
-    }
-    return not reasons, reasons, stats
 
 
 def run_final(prompt: str, image_path: Path, model: str) -> StageResult:
@@ -129,6 +47,7 @@ def run_episode(
     compress_steps = steps if not prior_steps else [*prior_steps, *steps]
     final_prompt = build_final_compress_prompt(context, compress_steps, feedback)
     stage_final = run_final(final_prompt, image_path, MODEL_SUM)
+    stage_final.question = obfuscate_question(stage_final.question)
     get_details_logger().log_event(
         "final_stage",
         {
@@ -141,8 +60,6 @@ def run_episode(
     refine_attempts = 0
     max_refine_attempts = 2
     difficulty_metrics: dict[str, object] = {}
-    structure_reasons: list[str] = []
-    structure_stats: dict[str, int | bool] = {}
     reflect_feedback = ""
     review_raw = None
     review_passed = None
@@ -156,81 +73,12 @@ def run_episode(
     )
 
     while True:
-        structure_ok, structure_reasons, structure_stats = _check_final_structure(
-            stage_final.question,
-            cross_modal_used=cross_modal_used,
-            num_hops=len(compress_steps),
-        )
-        if not structure_ok:
-            if refine_attempts >= max_refine_attempts:
-                difficulty_metrics = {
-                    "structure_passed": False,
-                    "structure_reasons": structure_reasons,
-                    "structure_stats": structure_stats,
-                }
-                reflect_feedback = f"结构检查未通过: {', '.join(structure_reasons)}"
-                break
-            refine_attempts += 1
-            style_reasons = {
-                "too many equations",
-                "forbidden prompt cues",
-                "guided phrasing detected",
-                "too many rule sentences",
-                "grade threshold detail in stem",
-            }
-            if any(reason in style_reasons for reason in structure_reasons):
-                rewrite_hint = (
-                    "保持同一考点与答案不变，把题干压缩为一个自然段，"
-                    "仅保留必要的读图对象、两个基准值、以及一条简短规则（最多2句），"
-                    "删除所有步骤与判据表。"
-                )
-                stage_final, refine_feedback = refine_final_question(
-                    context=context,
-                    steps=compress_steps,
-                    image_path=image_path,
-                    final=stage_final,
-                    reason="style_violation",
-                    review_raw=rewrite_hint,
-                )
-                get_details_logger().log_event(
-                    "final_stage_refined",
-                    {
-                        "question": stage_final.question,
-                        "answer": stage_final.answer,
-                        "reasoning": stage_final.reasoning,
-                        "reason": "style_violation",
-                        "feedback": refine_feedback,
-                    },
-                )
-            else:
-                harden_prompt = build_final_harden_prompt(
-                    context,
-                    compress_steps,
-                    stage_final.question,
-                    stage_final.answer,
-                    "structure_check_failed: " + ", ".join(structure_reasons),
-                )
-                stage_final = run_final(harden_prompt, image_path, MODEL_SUM)
-                get_details_logger().log_event(
-                    "final_stage_hardened",
-                    {
-                        "question": stage_final.question,
-                        "answer": stage_final.answer,
-                        "reasoning": stage_final.reasoning,
-                        "reason": "structure_check_failed",
-                    },
-                )
-            continue
-
         difficulty_metrics = evaluate_difficulty(
             stage_final,
             image_path,
             cross_modal_used,
             len(compress_steps),
         )
-        difficulty_metrics["structure_passed"] = True
-        difficulty_metrics["structure_reasons"] = structure_reasons
-        difficulty_metrics["structure_stats"] = structure_stats
 
         if difficulty_metrics.get("text_only_veto"):
             if refine_attempts >= max_refine_attempts:
@@ -244,6 +92,7 @@ def run_episode(
                 "text-only solved",
             )
             stage_final = run_final(harden_prompt, image_path, MODEL_SUM)
+            stage_final.question = obfuscate_question(stage_final.question)
             get_details_logger().log_event(
                 "final_stage_hardened",
                 {
@@ -266,6 +115,7 @@ def run_episode(
                 final=stage_final,
                 reason="medium_solved",
             )
+            stage_final.question = obfuscate_question(stage_final.question)
             get_details_logger().log_event(
                 "final_stage_refined",
                 {
@@ -296,6 +146,7 @@ def run_episode(
                 reason="review_failed",
                 review_raw=review_raw,
             )
+            stage_final.question = obfuscate_question(stage_final.question)
             get_details_logger().log_event(
                 "final_stage_refined",
                 {
@@ -314,35 +165,29 @@ def run_episode(
     print(stage_final.question)
     print("标准答案:", stage_final.answer)
 
-    if difficulty_metrics.get("structure_passed") is False:
-        print("[Final] 结构检查未通过:", ", ".join(structure_reasons))
-    else:
-        print(
-            "[Final] Difficulty 评估:",
-            f"medium_correct={difficulty_metrics.get('medium_correct')}",
-            f"strong_correct={difficulty_metrics.get('strong_correct')}",
-            f"score={difficulty_metrics.get('difficulty_score')}",
-        )
-        if not (
-            difficulty_metrics.get("medium_correct", False)
-            and difficulty_metrics.get("strong_correct", False)
-        ) and stage_final.reasoning:
-            print(f"推理过程: <reasoning>{stage_final.reasoning}</reasoning>")
+    print(
+        "[Final] Difficulty 评估:",
+        f"medium_correct={difficulty_metrics.get('medium_correct')}",
+        f"strong_correct={difficulty_metrics.get('strong_correct')}",
+        f"score={difficulty_metrics.get('difficulty_score')}",
+    )
+    if not (
+        difficulty_metrics.get("medium_correct", False)
+        and difficulty_metrics.get("strong_correct", False)
+    ) and stage_final.reasoning:
+        print(f"推理过程: <reasoning>{stage_final.reasoning}</reasoning>")
 
-    if difficulty_metrics.get("structure_passed") is not False:
-        feedback_prompt = build_analysis_prompt(
-            stage_final.question,
-            stage_final.answer,
-            str(difficulty_metrics.get("medium_raw") or ""),
-        )
-        reflect_feedback = call_text_model(
-            feedback_prompt,
-            MODEL_SUM,
-            temperature=DEFAULT_TEMPERATURE,
-        ).strip()
-        if reflect_feedback:
-            print("[Final] 反馈:", reflect_feedback)
-    elif reflect_feedback:
+    feedback_prompt = build_analysis_prompt(
+        stage_final.question,
+        stage_final.answer,
+        str(difficulty_metrics.get("medium_raw") or ""),
+    )
+    reflect_feedback = call_text_model(
+        feedback_prompt,
+        MODEL_SUM,
+        temperature=DEFAULT_TEMPERATURE,
+    ).strip()
+    if reflect_feedback:
         print("[Final] 反馈:", reflect_feedback)
 
     print_final_summary(
@@ -351,7 +196,6 @@ def run_episode(
         review_passed=review_passed,
         refine_attempts=refine_attempts,
         max_refine_attempts=max_refine_attempts,
-        structure_reasons=structure_reasons,
     )
 
     return EpisodeResult(

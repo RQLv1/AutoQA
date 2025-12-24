@@ -8,6 +8,7 @@ from prompts.final import (
 )
 from prompts.operate_calculation import build_operate_calculation_prompt
 from prompts.operate_distinction import build_operate_distinction_prompt
+from prompts.obfuscate import build_obfuscate_prompt
 from prompts.review import (
     build_review_feedback_prompt,
     build_review_prompt,
@@ -36,6 +37,7 @@ __all__ = [
     "build_final_targeted_revise_prompt",
     "build_operate_calculation_prompt",
     "build_operate_distinction_prompt",
+    "build_obfuscate_prompt",
     "build_review_feedback_prompt",
     "build_review_prompt",
     "build_visual_verification_prompt",

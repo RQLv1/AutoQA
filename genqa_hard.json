@@ -1,0 +1,28 @@
+[
+  {
+    "source": "step",
+    "step_k": 1,
+    "question": "根据参考信息 (Reference)，图 1d 和 1e 中可从黄色标注读出 Rb‑TiO₂/TB‑CS 纳米颗粒 (200) 晶面与 (101) 晶面的晶格间距分别为 1.95 Å 和 3.59 Å，而对应未掺杂 TiO₂ 的标称晶格间距为 1.90 Å 与 3.51 Å。若用 \\(\\varepsilon = (d_{\\text{Rb}} - d_{\\text{Ti}})/d_{\\text{Ti}}\\) 分别计算这两个晶面的相对变化率，并以两者中较大的 \\(\\varepsilon\\) 作为该颗粒在界面附近的结构变形强度指标，再按“变形越大，氧空位形成能等级越高”的单调关系划分成 Level 1–4 四档，则图示 Rb‑TiO₂/TB‑CS 颗粒应对应哪一等级？  \nA. Level 1  \nB. Level 2  \nC. Level 3  \nD. Level 4",
+    "answer": "D",
+    "reasoning": "(200) 面应变约为 (1.95−1.90)/1.90 ≈ 2.6%，(101) 面应变约为 (3.59−3.51)/3.51 ≈ 2.3%，取最大约 2.6%。该应变属于题设中“结构变形较大、对应最高氧空位形成能等级”的区间，因此选 Level 4。由此可知 Rb 掺杂样品在界面处产生了最强的结构变形，对应显著的晶格畸变与拉伸效应。",
+    "difficulty_metrics": {
+      "medium_correct": false,
+      "strong_correct": false,
+      "strong_text_only_correct": false,
+      "strong_no_image_correct": false,
+      "difficulty_score": 0.0,
+      "cross_modal_used": false,
+      "num_hops": 1,
+      "medium_pred": "B",
+      "strong_pred": "B",
+      "strong_text_only_pred": "B",
+      "strong_no_image_pred": "B",
+      "medium_raw": "<answer>B</answer>",
+      "strong_raw": "<answer>B</answer>",
+      "strong_text_only_raw": "<answer>B</answer>",
+      "strong_no_image_raw": "<answer>B</answer>"
+    },
+    "review_decision": "correct",
+    "review_raw": "<review>correct</review>"
+  }
+]

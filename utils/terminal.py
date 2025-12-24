@@ -86,20 +86,11 @@ def print_final_summary(
     review_passed: bool | None,
     refine_attempts: int,
     max_refine_attempts: int,
-    structure_reasons: list[str],
 ) -> None:
-    structure_passed = metrics.get("structure_passed")
-    if structure_passed is False and structure_reasons:
-        structure_note = "fail (" + "; ".join(structure_reasons) + ")"
-    elif structure_passed is True:
-        structure_note = "pass"
-    else:
-        structure_note = "n/a"
     print("[Final] Summary")
     print(
-        "  structure="
-        f"{structure_note}"
-        f" | medium={_fmt_bool(metrics.get('medium_correct'))}"
+        "  medium="
+        f"{_fmt_bool(metrics.get('medium_correct'))}"
         f" | strong={_fmt_bool(metrics.get('strong_correct'))}"
         f" | text_only={_fmt_bool(metrics.get('text_only_veto'))}"
         f" | review={_fmt_bool(review_passed)}"

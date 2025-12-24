@@ -25,6 +25,7 @@ from pipeline.pipeline_solvers import (
 from utils.api_client import call_vision_model
 from steps.operate_calculation_agent import run_operate_calculation_agent
 from steps.operate_distinction_agent import run_operate_distinction_agent
+from steps.obfuscate_agent import obfuscate_step_question
 from steps.quality import is_low_quality_entity_matching
 from steps.runner import run_step, select_model_for_step
 from steps.validation import validate_step
@@ -206,6 +207,9 @@ def generate_steps_graph_mode(
         has_operate_dist=bool(operate_distinction.draft.strip()) if operate_distinction else False,
     )
     step0 = run_step(prompt, image_path, model, 0)
+    step0 = obfuscate_step_question(step0)
+    print("[Step 0] 更新后题目:")
+    print(step0.question)
     get_details_logger().log_event(
         "step_result",
         {
@@ -259,6 +263,9 @@ def generate_steps_graph_mode(
                 visual_summary,
             )
             step0 = run_step(revise_prompt, image_path, model, 0)
+            step0 = obfuscate_step_question(step0)
+            print("[Step 0] 更新后题目:")
+            print(step0.question)
             medium_raw, medium_letter = solve_mcq(step0.question, image_path, MODEL_SOLVE_MEDIUM)
             medium_correct = grade_answer(step0.answer_letter or "", medium_letter)
 
@@ -490,6 +497,9 @@ def generate_steps_graph_mode(
             has_operate_dist=bool(operate_distinction.draft.strip()),
         )
         step = run_step(prompt, image_path, model, current_step_index)
+        step = obfuscate_step_question(step)
+        print(f"[Step {current_step_index}] 更新后题目:")
+        print(step.question)
         if step.evidence is None:
             step.evidence = edge_to_evidence_payload(edge)
         get_details_logger().log_event(
@@ -549,6 +559,9 @@ def generate_steps_graph_mode(
                 extra_requirements=extra_requirements,
             )
             step = run_step(revise_prompt, image_path, model, current_step_index)
+            step = obfuscate_step_question(step)
+            print(f"[Step {current_step_index}] 更新后题目:")
+            print(step.question)
             if step.evidence is None:
                 step.evidence = edge_to_evidence_payload(edge)
             get_details_logger().log_event(
@@ -613,6 +626,9 @@ def generate_steps_graph_mode(
                 visual_summary,
             )
             step = run_step(revise_prompt, image_path, model, current_step_index)
+            step = obfuscate_step_question(step)
+            print(f"[Step {current_step_index}] 更新后题目:")
+            print(step.question)
             medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
             medium_correct = grade_answer(step.answer_letter or "", medium_letter)
 

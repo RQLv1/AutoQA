@@ -17,6 +17,7 @@ from pipeline.pipeline_solvers import (
 )
 from steps.operate_calculation_agent import run_operate_calculation_agent
 from steps.operate_distinction_agent import run_operate_distinction_agent
+from steps.obfuscate_agent import obfuscate_step_question
 from steps.quality import is_low_quality_entity_matching
 from steps.runner import run_step, select_model_for_step
 from steps.validation import validate_step
@@ -171,6 +172,9 @@ def generate_steps_prompt_driven(
             has_operate_dist=bool(operate_distinction_draft.strip()),
         )
         step = run_step(prompt, image_path, model, k)
+        step = obfuscate_step_question(step)
+        print(f"[Step {k}] 更新后题目:")
+        print(step.question)
         get_details_logger().log_event(
             "step_result",
             {
@@ -236,6 +240,9 @@ def generate_steps_prompt_driven(
                 visual_summary,
             )
             step = run_step(revise_prompt, image_path, model, k)
+            step = obfuscate_step_question(step)
+            print(f"[Step {k}] 更新后题目:")
+            print(step.question)
             medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
             medium_correct = grade_answer(step.answer_letter or "", medium_letter)
             
