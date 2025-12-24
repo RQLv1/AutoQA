@@ -1,72 +1,153 @@
+根据你的分析， **中求解器（Medium Solver）之所以能答对，是因为题目通过“先...再...”的句式泄露了推理路径（CoT Shortcut）** 。为了迫使模型自主推理（从而区分出只有强模型才能做对的题目），我们需要在生成 Prompt 中明确 **禁止“说明书式”的题干** 。
 
-### 核心设计思路：构建“视觉-文献”统一知识图谱
+以下是针对 `prompts/steps.py` 和 `prompts/final.py` 的修改方案。核心改动是增加了 **[Anti-Instructional / 禁止解题说明书]** 的约束，强制题干只给出“目标”和“条件”，隐藏“过程”。
 
-目前的系统仅从 `context.txt`（文献）中抽取知识构建图谱。修改的核心在于：**在进入推理循环前，先用大模型把图片“翻译”成详细的结构化描述，并将其视为一份“视觉文档”，利用现有的图谱构建能力从中抽取“视觉知识点”，最后与文献知识点合并。** 这样，图模式（Graph Mode）在采样路径时，就会自然地在“文献知识”和“视觉特征”之间跳转。
+### 修改方案 1: `prompts/steps.py`
 
----
+我们需要在所有生成多步/图谱题的 Prompt 中（Stage 2, Stage 3, Extend, Graph 1-hop），加入禁止泄露步骤的指令。
 
-### 详细实施步骤
+**Python**
 
-#### 第一步：新增“视觉理解与知识转化”模块
+```
+# rqlv1/autoqa/AutoQA-rqlv/prompts/steps.py
 
-需要在 `pipeline/` 目录下创建一个新的模块文件（例如命名为 `pipeline_vision_knowledge.py`），负责以下两个核心功能：
+# ... (保持 imports 和辅助函数不变)
 
-1. **生成深度视觉描述** ：
+def build_stage2_step_prompt(
+    context: str,
+    previous_step: StepResult,
+    fact_hint: str,
+    operate_distinction_draft: str,
+    operate_calculation_draft: str,
+    feedback: str,
+    force_cross_modal: bool,
+    visual_summary: str | None = None,
+) -> str:
+    # ... (保持开头不变)
+    return dedent(
+        f"""
+        {feedback_block}
+        {visual_block}
 
-* 定义一个函数，调用视觉模型（如 `MODEL_STAGE_1` 或更强的 `MODEL_SOLVE_STRONG`）。
-* 使用专门的提示词（Prompt），要求模型不仅仅是生成标题，而是详细描述图片中的**实体对象、空间关系、文字读数、图表趋势、颜色状态**等细节。
-* **关键点** ：提示词应要求模型输出客观陈述，便于后续提取“实体-关系-实体”的知识链。
+        这是上一步的子问题与答案:
+        问题: {previous_step.question}
+        答案字母: {previous_step.answer_letter}
+        答案短语: {previous_step.answer_text}
 
-1. **提取视觉知识链（Edges）** ：
+        现在生成第2步子问题(单选题)，需在视觉锚点基础上引入新的关键信息形成推理。
+        - 新问题必须使用新的关键信息: {fact_hint}
+        - operate_distinction 智能体草稿(仅供内部推理，不得在题干中提到):
+          - draft:
+{operate_distinction_block}
+        - operate_calculation 智能体草稿(仅供内部推理，不得在题干中提到):
+          - draft:
+{operate_calculation_block}
+        - {cross_modal}
+        - 题干包含 A-D 选项，答案需可验证。
+        - 题干必须围绕图片中心视觉锚点，禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
+        - 去词汇化(避免文本捷径)：题干不要直接写出图中读数/颜色/形状等具体值，改用“图中…的读数/显示的状态/位于…的部件”等指代性或位置性描述，迫使读者看图。
+      
+        [关键修改点 1]
+        - 禁止“解题说明书”式引导(Anti-Instructional)：严禁在题干中写出“先计算...再对比...最后得出...”这样的步骤指导。
+          - 错误示例：“请先计算X，再将X代入公式Y，最后判断等级。”
+          - 正确示例：“根据图中特征与公式Y，该区域的最终等级为？”（迫使模型自己去找计算X的必要性）。
+      
+        - 禁止“纯实体匹配/纯定义检索”题。
+        - 难度算子要求... (保持不变)
+        - 条件计算题必须... (保持不变)
+        - 干扰项必须... (保持不变)
 
-* 复用 `graph/pipeline_graph.py` 中现有的 **知识链抽取逻辑** （即 `extract_edges_from_context` 函数）。
-* 将上一步生成的“深度视觉描述”作为输入文本，通过文本模型抽取出结构化的知识边（Knowledge Edges）。
-* **打标区分** ：在生成的 Edge 对象中增加一个标记（如 `source_type="image"`），以便后续区分这条知识是来自文献还是图片。
+        参考信息(仅供内部推理，不得在题干中提到):
+        {context.strip()}
 
-#### 第二步：修改 Episode 编排逻辑
+        只输出以下格式:
+        <question>题干，包含 A-D 选项</question>
+        <answer>A/B/C/D</answer>
+        <reasoning>简要推理过程(不超过4句)</reasoning>
+        """
+    ).strip()
 
-需要修改 `pipeline/pipeline_episode.py` 中的 `run_episode` 函数，使其成为知识融合的入口：
+# 对于 build_stage3_step_prompt 和 build_extend_step_prompt，做同样的修改：
+# 在 "去词汇化" 和 "禁止纯实体匹配" 之间插入 "禁止解题说明书式引导"。
 
-1. **前置执行视觉理解** ：
+def build_stage3_step_prompt(...):
+    # ... (代码结构同上，插入 Anti-Instructional 约束)
+    return dedent(f"""
+        ...
+        - 去词汇化(避免文本捷径)：...
+        - 禁止“解题说明书”式引导(Anti-Instructional)：严禁在题干中写出“先计算...再对比...最后得出...”这样的步骤指导。题干只能给出必要的背景知识（如公式、阈值）和最终问题，强迫模型自主构建解题路径。
+        - 禁止“纯实体匹配/纯定义检索”题...
+        ...
+    """).strip()
 
-* 在调用 `generate_steps` 之前，先调用第一步中新增的模块，获取**视觉描述文本**和 **视觉知识边列表** 。
-* 建议将这一步结果缓存，避免重复调用视觉模型。
+def build_extend_step_prompt(...):
+    # ... (代码结构同上，插入 Anti-Instructional 约束)
+    return dedent(f"""
+        ...
+        - 去词汇化(避免文本捷径)：...
+        - 禁止“解题说明书”式引导(Anti-Instructional)：严禁在题干中写出“先计算...再对比...最后得出...”这样的步骤指导。题干只能给出必要的背景知识（如公式、阈值）和最终问题，强迫模型自主构建解题路径。
+        - 禁止“纯实体匹配/纯定义检索”题...
+        ...
+    """).strip()
 
-1. **参数透传** ：
+# 针对 Graph 模式的修改
+def build_graph_1hop_step_prompt(
+    # ...
+) -> str:
+    # ...
+    return dedent(
+        f"""
+        ...
+        - 必须围绕图片中心视觉锚点展开，避免纯文本问答。
+      
+        [关键修改点 2]
+        - 隐藏推理逻辑(Hide Logic)：禁止在题干中显式指导计算步骤（如“请先读A，再算B”）。题干应直接询问基于知识链 {head}->{tail} 的最终推断结果，让模型自己去发现需要读取哪些图表数据来满足知识链的条件。
 
-* 将获取到的“视觉知识边列表”作为新参数传递给 `generate_steps` 函数。
+        - 本步必须是“条件计算题”，不能是概念解释/机制判断/实体匹配。
+        ...
+        """
+    ).strip()
+```
 
-#### 第三步：修改图模式生成逻辑
+### 修改方案 2: `prompts/final.py`
 
-这是修改的重点，位于 `steps/graph_mode.py` 文件中，目的是实现混合采样：
+Final 阶段的 Prompt 最容易把之前的 Step 1-2-3 串成一个长指令，这里必须强制“隐式化”。
 
-1. **构建统一实体池** ：
+**Python**
 
-* 在 `generate_steps_graph_mode` 函数内部，接收传入的“视觉知识边”。
-* 获取原有的文献知识边（`build_knowledge_edges_cached` 的结果）。
-* **合并操作** ：将“视觉知识边”与“文献知识边”合并为一个总的边列表（`all_edges`）。此时，系统就拥有了一个包含“文本概念”和“视觉元素”的统一图谱。
+```
+# rqlv1/autoqa/AutoQA-rqlv/prompts/final.py
 
-1. **路径采样策略优化** ：
+def build_final_compress_prompt(context: str, steps: list[StepResult], feedback: str) -> str:
+    # ... (保持不变)
+    return dedent(
+        f"""
+        你需要把下述多步推理链压缩成一个高难度单选题(MCQ)。
+        要求:
+        - 不要显式提“第一步/第二步”，把中间结论隐式化。
+      
+        [关键修改点 3]
+        - 彻底移除过程指导(No Procedural Guidance)：题干禁止包含任何“先做这个，再做那个”的指令。
+          - 必须将题目转化为“目标导向”：例如不要问“计算A和B的平均值”，要问“根据图示综合评估的最终指标 F 是多少？”（假设 F 定义为 A B 平均，这个定义放在背景知识里，而不是题干指令里）。
+          - 让中等模型因为不知道“要先算 A 和 B 再平均”而做错，迫使强模型去检索隐含逻辑。
 
-* 利用现有的 `sample_path` 函数对 `all_edges` 进行采样。
-* 由于图谱已合并，随机游走算法（Random Walk）或广度优先搜索（BFS）会自动产生跨模态的路径。例如：路径可能从文献中的“原理公式”跳转到视觉描述中的“仪表盘读数”。
-* **增强约束（可选）** ：可以在采样逻辑中增加权重，强制要求采样的路径必须包含至少一条来自“视觉源”的边，确保每一轮 Step 都在利用图片知识。
+        - 必须“留头留尾”：保留首步视觉锚点线索与末步关键结论/判别依据...
+        - 题干必须围绕图片中心视觉信息展开...
+        # ... (后续保持不变)
+        """
+    ).strip()
 
-1. **Prompt 动态适配** ：
-
-* 在构建 Step 的 Prompt（如 `build_graph_1hop_step_prompt`）时，需要根据当前采样到的边是来自“文献”还是“图片”来调整提示词前缀。
-* 如果是视觉边，提示词中应明确：“根据对图片的视觉分析（Visual Analysis）...”。
-* 如果是文献边，提示词保持原样：“根据参考信息（Reference）...”。
-
-#### 第四步：修改 Step 提示词模板
-
-需要微调 `prompts/steps.py` 中的模板，使其能消化视觉描述类型的知识：
-
-1. **新增视觉上下文输入** ：
-
-* 除了现有的 `context` 和 `fact_hint`，在 Prompt 模板中增加一个字段，专门展示“图片详细文本描述”的摘要。
-* 这可以作为除了 `image_path`（直接看图）之外的辅助信息，帮助模型更好地理解那些模糊的视觉细节。
-
-1. **知识来源标注** ：
-
-* 在 `fact_hint`（事实提示）部分，明确标注当前知识点的来源。例如：`[来源: 文献 L10-12]` 或 `[来源: 图片视觉分析]`。这有助于模型区分它是需要去“读文档”还是去“看图核实”。
+def build_final_revise_prompt(context: str, final_question: str, final_answer: str, reason: str) -> str:
+    return dedent(
+        f"""
+        需要修订最终题(单选题)，原因: {reason}
+      
+        [关键修改点 4]
+        修订要求:
+        - 消除“说明书”痕迹：如果原题干包含了具体计算步骤（如“请通过...公式计算...”），请将其改为只提供背景公式，问题直接指向最终结果。
+      
+        - 避免单模态捷径...
+        # ... (后续保持不变)
+        """
+    ).strip()
+```
