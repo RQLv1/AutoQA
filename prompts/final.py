@@ -119,3 +119,51 @@ def build_final_harden_prompt(
         <reasoning>简要推理过程(不超过4句)</reasoning>
         """
     ).strip()
+
+
+def build_final_targeted_revise_prompt(
+    context: str,
+    steps: list[StepResult],
+    final_question: str,
+    final_answer: str,
+    reason: str,
+    feedback: str,
+) -> str:
+    step_lines = []
+    for idx, step in enumerate(steps, start=1):
+        step_lines.append(
+            f"- Step {idx}: Q={step.question} | answer_text={step.answer_text} | answer_letter={step.answer_letter} | evidence={step.evidence}"
+        )
+    step_block = "\n".join(step_lines)
+    feedback_block = feedback.strip() or "(无补充反馈)"
+    return dedent(
+        f"""
+        你需要对最终题进行针对性改写，因为: {reason}
+        原题: {final_question}
+        原答案: {final_answer}
+
+        依据的反馈/推理要点:
+        {feedback_block}
+
+        强制要求:
+        - 必须隐藏推理逻辑与引导，不得出现“根据/因此/所以/先...再.../请先/由此可知”等提示语。
+        - 题干必须显式包含至少2条【中性条件/判据/公式】（来自 steps 的 evidence/fact_hint 改写，不提来源）。
+        - 题目必须至少包含2步推理（先由图选分支或读关键线索，再计算/判级/比较）。
+        - 题干必须围绕图片中心视觉锚点，去词汇化仅针对图上读数/视觉结果，不限制写入中性判据(阈值/公式/单位换算)。
+        - 选项必须为数值/区间/等级型答案，且单位/数量级一致。
+        - 干扰项必须体现三种错误路径：单位换算错 / 读图误读 / 条件误用。
+        - 禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
+        - 若反馈指出具体捷径或误导点，必须在新题中彻底移除或改写。
+
+        推理链:
+        {step_block}
+
+        参考信息(仅供内部推理；允许将其中1-2条事实改写为题干的中性条件/阈值/公式，不得提及来源):
+        {context.strip()}
+
+        只输出以下格式:
+        <question>题干，包含 A-D 选项</question>
+        <answer>正确选项字母</answer>
+        <reasoning>简要推理过程(不超过4句)</reasoning>
+        """
+    ).strip()

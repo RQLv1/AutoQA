@@ -1,6 +1,8 @@
 import re
 from pathlib import Path
 
+from pipeline.pipeline_final_refine import refine_final_question
+from pipeline.pipeline_review import review_question
 from pipeline.pipeline_solvers import evaluate_difficulty
 from pipeline.pipeline_vision_knowledge import build_visual_knowledge
 from prompts import build_analysis_prompt, build_final_compress_prompt, build_final_harden_prompt
@@ -133,11 +135,15 @@ def run_episode(
         },
     )
 
-    harden_attempted = False
+    refine_attempts = 0
+    max_refine_attempts = 2
     difficulty_metrics: dict[str, object] = {}
     structure_reasons: list[str] = []
     structure_stats: dict[str, int | bool] = {}
     reflect_feedback = ""
+    review_raw = None
+    review_passed = None
+    refine_feedback = ""
 
     while True:
         structure_ok, structure_reasons, structure_stats = _check_final_structure(
@@ -146,7 +152,7 @@ def run_episode(
             num_hops=len(compress_steps),
         )
         if not structure_ok:
-            if harden_attempted:
+            if refine_attempts >= max_refine_attempts:
                 difficulty_metrics = {
                     "structure_passed": False,
                     "structure_reasons": structure_reasons,
@@ -154,7 +160,7 @@ def run_episode(
                 }
                 reflect_feedback = f"结构检查未通过: {', '.join(structure_reasons)}"
                 break
-            harden_attempted = True
+            refine_attempts += 1
             harden_prompt = build_final_harden_prompt(
                 context,
                 compress_steps,
@@ -169,6 +175,7 @@ def run_episode(
                     "question": stage_final.question,
                     "answer": stage_final.answer,
                     "reasoning": stage_final.reasoning,
+                    "reason": "structure_check_failed",
                 },
             )
             continue
@@ -184,9 +191,9 @@ def run_episode(
         difficulty_metrics["structure_stats"] = structure_stats
 
         if difficulty_metrics.get("text_only_veto"):
-            if harden_attempted:
+            if refine_attempts >= max_refine_attempts:
                 break
-            harden_attempted = True
+            refine_attempts += 1
             harden_prompt = build_final_harden_prompt(
                 context,
                 compress_steps,
@@ -201,28 +208,60 @@ def run_episode(
                     "question": stage_final.question,
                     "answer": stage_final.answer,
                     "reasoning": stage_final.reasoning,
+                    "reason": "text_only_veto",
                 },
             )
             continue
 
         if difficulty_metrics.get("medium_correct"):
-            if harden_attempted:
+            if refine_attempts >= max_refine_attempts:
                 break
-            harden_attempted = True
-            harden_prompt = build_final_harden_prompt(
-                context,
-                compress_steps,
-                stage_final.question,
-                stage_final.answer,
-                "medium solver solved",
+            refine_attempts += 1
+            stage_final, refine_feedback = refine_final_question(
+                context=context,
+                steps=compress_steps,
+                image_path=image_path,
+                final=stage_final,
+                reason="medium_solved",
             )
-            stage_final = run_final(harden_prompt, image_path, MODEL_SUM)
             get_details_logger().log_event(
-                "final_stage_hardened",
+                "final_stage_refined",
                 {
                     "question": stage_final.question,
                     "answer": stage_final.answer,
                     "reasoning": stage_final.reasoning,
+                    "reason": "medium_solved",
+                    "feedback": refine_feedback,
+                },
+            )
+            continue
+
+        review_raw, review_passed = review_question(
+            stage_final.question,
+            stage_final.answer,
+            stage_final.reasoning,
+            image_path,
+        )
+        if review_passed is False:
+            if refine_attempts >= max_refine_attempts:
+                break
+            refine_attempts += 1
+            stage_final, refine_feedback = refine_final_question(
+                context=context,
+                steps=compress_steps,
+                image_path=image_path,
+                final=stage_final,
+                reason="review_failed",
+                review_raw=review_raw,
+            )
+            get_details_logger().log_event(
+                "final_stage_refined",
+                {
+                    "question": stage_final.question,
+                    "answer": stage_final.answer,
+                    "reasoning": stage_final.reasoning,
+                    "reason": "review_failed",
+                    "feedback": refine_feedback,
                 },
             )
             continue
@@ -273,4 +312,7 @@ def run_episode(
         difficulty_metrics=difficulty_metrics,
         judge_flags={},
         reflect_feedback=reflect_feedback,
+        review_raw=review_raw,
+        review_passed=review_passed,
+        refine_feedback=refine_feedback,
     )

@@ -41,3 +41,6 @@ class EpisodeResult:
     difficulty_metrics: dict[str, Any]
     judge_flags: dict[str, bool] | None = None
     reflect_feedback: str | None = None
+    review_raw: str | None = None
+    review_passed: bool | None = None
+    refine_feedback: str | None = None

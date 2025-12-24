@@ -27,3 +27,20 @@ def build_solver_prompt_text_only(question: str) -> str:
         <answer>A/B/C/D</answer>
         """
     ).strip()
+
+
+def build_solver_rationale_prompt(question: str, answer: str) -> str:
+    return dedent(
+        f"""
+        你是一名考生，已知正确答案是 {answer}。请用要点说明你为何能从题干与图片中得出该答案。
+
+        要求:
+        - 仅输出 3-5 条要点，每条不超过 20 个字。
+        - 只写关键依据与必要判断，不要复述题干。
+        - 禁止使用“因此/所以/首先/其次/然后/先...再...”等引导语。
+        - 不要直接写出图中具体读数或数值。
+
+        题目:
+        {question}
+        """
+    ).strip()

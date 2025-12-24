@@ -11,13 +11,6 @@ def validate_step(
     medium_correct: bool | None,
     text_only_correct: bool | None,
 ) -> tuple[bool, str]:
-    option_matches = list(
-        re.finditer(r"([A-D])[\\.|\\)|、|:：]\\s*([^\\n]{0,80})", step.question)
-    )
-    option_letters = {match.group(1) for match in option_matches}
-    if not {"A", "B", "C", "D"}.issubset(option_letters):
-        return True, "missing options"
-
     visual_anchors = [
         "图中",
         "图示",
@@ -51,6 +44,9 @@ def validate_step(
         return True, "missing visual anchor"
 
     if step.k >= 1:
+        option_matches = list(
+            re.finditer(r"([A-D])[\\.|\\)|、|:：]\\s*([^\\n]{0,80})", step.question)
+        )
         first_option = option_matches[0].start() if option_matches else len(step.question)
         stem = step.question[:first_option]
         condition_hits = len(
@@ -62,16 +58,6 @@ def validate_step(
         numeric_hits = len(re.findall(r"\\d+(?:\\.\\d+)?", stem))
         if condition_hits + numeric_hits < 1:
             return True, "missing neutral conditions"
-        numeric_like_options = 0
-        for match in option_matches:
-            segment = match.group(2)
-            if re.search(r"\\d", segment) or re.search(
-                r"(一级|二级|三级|四级|甲|乙|丙|丁|高|中|低)", segment
-            ):
-                numeric_like_options += 1
-        if numeric_like_options < 3:
-            return True, "options not numeric/graded"
-
     if not step.question:
         return True, "missing question"
     if step.answer_letter is None:

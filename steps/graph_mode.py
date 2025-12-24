@@ -476,20 +476,68 @@ def generate_steps_graph_mode(
             },
         )
 
-        print(f"[Step {current_step_index}] 正在进行视觉幻觉核查...")
-        verify_prompt = build_visual_verification_prompt(step.question)
-        try:
-            verify_raw = call_vision_model(verify_prompt, image_path, MODEL_SOLVE_STRONG)
-            if "<verified>no</verified>" in verify_raw:
+        max_visual_revisions = 2
+        visual_attempts = 0
+        while True:
+            print(f"[Step {current_step_index}] 正在进行视觉幻觉核查...")
+            verify_prompt = build_visual_verification_prompt(step.question)
+            try:
+                verify_raw = call_vision_model(verify_prompt, image_path, MODEL_SOLVE_STRONG)
+            except Exception as exc:
+                print(f"[Step {current_step_index}] 视觉核查调用出错: {exc}。默认放行。")
+                break
+
+            if "<verified>no</verified>" not in verify_raw:
+                print(f"[Step {current_step_index}] 视觉核查通过。")
+                break
+
+            visual_attempts += 1
+            print(
+                f"[Step {current_step_index}] 视觉核查失败: 题目包含图片中不存在的视觉特征。"
+            )
+            print(f"Question: {step.question}")
+            print(f"Reason: {verify_raw}")
+            if visual_attempts > max_visual_revisions:
                 print(
-                    f"[Step {current_step_index}] 视觉核查失败: 题目包含图片中不存在的视觉特征。"
+                    f"[Step {current_step_index}] 视觉核查失败次数过多，跳过该 step。"
                 )
-                print(f"Question: {step.question}")
-                print(f"Reason: {verify_raw}")
-                continue
-            print(f"[Step {current_step_index}] 视觉核查通过。")
-        except Exception as exc:
-            print(f"[Step {current_step_index}] 视觉核查调用出错: {exc}。默认放行。")
+                step = None
+                break
+
+            extra_requirements = (
+                "- 必须隐藏推理逻辑与引导，不要在题干中出现“根据/因此/由此可知/请先/先…再…”等提示语。\n"
+                "- 只给出中性条件与判据，不显式说明计算或分支步骤。"
+            )
+            revise_prompt = build_revise_prompt(
+                context,
+                step,
+                "visual hallucination",
+                f"knowledge_link=({edge.head},{edge.relation},{edge.tail})",
+                operate_distinction.draft,
+                operate_calculation.draft,
+                False,
+                visual_summary,
+                extra_requirements=extra_requirements,
+            )
+            step = run_step(revise_prompt, image_path, model, current_step_index)
+            if step.evidence is None:
+                step.evidence = edge_to_evidence_payload(edge)
+            get_details_logger().log_event(
+                "step_result_revised",
+                {
+                    "step": current_step_index,
+                    "reason": "visual_hallucination",
+                    "question": step.question,
+                    "answer_letter": step.answer_letter,
+                    "answer_text": step.answer_text,
+                    "reasoning": step.reasoning,
+                    "modal_use": step.modal_use,
+                    "cross_modal_bridge": step.cross_modal_bridge,
+                },
+            )
+
+        if step is None:
+            continue
 
         medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
         medium_correct = grade_answer(step.answer_letter or "", medium_letter)

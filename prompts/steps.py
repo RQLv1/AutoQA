@@ -247,6 +247,7 @@ def build_revise_prompt(
     operate_calculation_draft: str | None,
     force_cross_modal: bool,
     visual_summary: str | None = None,
+    extra_requirements: str | None = None,
 ) -> str:
     # Revise prompt 通常不直接接收外部 feedback (而是接收内部 reason)，
     # 但如果 reason 本身来自 difficulty check，也可以格式化强调。
@@ -254,6 +255,10 @@ def build_revise_prompt(
     operate_distinction_block = indent((operate_distinction_draft or "").strip() or "(empty)", "      ")
     operate_calculation_block = indent((operate_calculation_draft or "").strip() or "(empty)", "      ")
     visual_block = _format_visual_summary_block(visual_summary)
+    extra_block = ""
+    if extra_requirements:
+        extra_block = "\n        额外要求:\n"
+        extra_block += indent(extra_requirements.strip(), "        ")
     return dedent(
         f"""
         [必须执行的修正指令]
@@ -267,6 +272,7 @@ def build_revise_prompt(
         修正要求:
         1. 彻底解决上述判定原因。如果原因是"Low Difficulty"或"Simple Logic"，必须大幅增加推理深度。
         2. 不要只是微调措辞，请重构题目的逻辑路径。
+        {extra_block}
 
         其他要求:
         - {cross_modal}

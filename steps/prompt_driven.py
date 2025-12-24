@@ -32,6 +32,7 @@ from utils.config import (
 from utils.details_logger import get_details_logger
 from utils.genqa import save_genqa_item
 from utils.schema import StepResult
+from utils.terminal import print_step_input, print_step_summary
 
 
 def generate_steps_prompt_driven(
@@ -160,6 +161,15 @@ def generate_steps_prompt_driven(
                 visual_summary,
             )
 
+        print_step_input(
+            step_index=k,
+            model=model,
+            mode="prompt",
+            fact_hint=fact_hint,
+            force_cross_modal=force_cross_modal,
+            has_operate_calc=bool(operate_calculation_draft.strip()),
+            has_operate_dist=bool(operate_distinction_draft.strip()),
+        )
         step = run_step(prompt, image_path, model, k)
         get_details_logger().log_event(
             "step_result",
@@ -200,6 +210,7 @@ def generate_steps_prompt_driven(
             medium_correct,
             strong_text_only_correct,
         )
+        revise_reason = reason if needs_revision else None
 
         if not needs_revision and k > 0 and is_low_quality_entity_matching(step.question):
             needs_revision, reason = True, "LOW_QUALITY (entity matching / missing operator)"
@@ -257,6 +268,7 @@ def generate_steps_prompt_driven(
                     "cross_modal_bridge": step.cross_modal_bridge,
                 },
             )
+            revise_reason = reason
 
         if force_cross_modal and "cross_modal_bridge" not in step.raw:
             step.cross_modal_bridge = True
@@ -264,6 +276,13 @@ def generate_steps_prompt_driven(
         print(f"[Step {k}] 完成 (model={model})")
         print(step.question)
         print(f"标准答案: <answer>{step.answer_letter}</answer> | answer_text={step.answer_text}")
+        print_step_summary(
+            step=step,
+            medium_correct=medium_correct,
+            strong_correct=strong_correct,
+            text_only_correct=strong_text_only_correct,
+            revise_reason=revise_reason,
+        )
         print(f"中求解器: {medium_raw} | correct={medium_correct}")
         if not medium_correct:
             print(f"强求解器: {strong_raw} | correct={strong_correct}")

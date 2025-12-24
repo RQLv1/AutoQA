@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pipeline import review_question, run_episode
+from pipeline import run_episode
 from utils.config import GENQA_HARD_PATH, GENQA_SIMPLE_PATH, MAX_ROUNDS
 from utils.details_logger import setup_details_logging
 from utils.genqa import save_genqa_item
@@ -79,15 +79,10 @@ def main() -> None:
         else:
             print("Strong Solver 成功：中等难度题。")
 
-        review_raw = None
+        review_raw = episode.review_raw
+        review_passed = episode.review_passed
         review_decision = None
         if not medium_correct:
-            review_raw, review_passed = review_question(
-                episode.stage_final.question,
-                episode.stage_final.answer,
-                episode.stage_final.reasoning,
-                image_path,
-            )
             if review_passed is True:
                 review_decision = "correct"
                 if final_no_text_shortcut:
