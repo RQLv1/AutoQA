@@ -39,6 +39,7 @@ from utils.config import (
 from utils.details_logger import get_details_logger
 from utils.genqa import save_genqa_item
 from utils.schema import StepResult
+from utils.terminal import print_step_input, print_step_summary
 
 
 def _normalize_edges(
@@ -195,6 +196,15 @@ def generate_steps_graph_mode(
             visual_summary,
         )
 
+    print_step_input(
+        step_index=0,
+        model=model,
+        mode="graph",
+        fact_hint=fact_hint_for_revision if previous_final_question else "graph_anchor",
+        force_cross_modal=True,
+        has_operate_calc=bool(operate_calculation.draft.strip()) if operate_calculation else False,
+        has_operate_dist=bool(operate_distinction.draft.strip()) if operate_distinction else False,
+    )
     step0 = run_step(prompt, image_path, model, 0)
     get_details_logger().log_event(
         "step_result",
@@ -214,7 +224,6 @@ def generate_steps_graph_mode(
     if step0.answer_letter:
         medium_raw, medium_letter = solve_mcq(step0.question, image_path, MODEL_SOLVE_MEDIUM)
         medium_correct = grade_answer(step0.answer_letter or "", medium_letter)
-        print(f"中求解器: {medium_raw} | correct={medium_correct}")
         
         strong_raw = None
         strong_letter = None
@@ -232,13 +241,11 @@ def generate_steps_graph_mode(
             )
             strong_raw, strong_letter = solve_mcq(step0.question, image_path, MODEL_SOLVE_STRONG)
             strong_correct = grade_answer(step0.answer_letter or "", strong_letter)
-            print(f"强求解器: {strong_raw} | correct={strong_correct}")
-        else:
-            print("中求解器答对，跳过强求解器。")
 
         needs_revision, reason = validate_step(
             step0, False, strong_correct, medium_correct, strong_text_only_correct
         )
+        revise_reason = reason if needs_revision else None
         if needs_revision:
             print(f"[Step 0] 触发 revise: {reason}")
             revise_prompt = build_revise_prompt(
@@ -284,7 +291,20 @@ def generate_steps_graph_mode(
                     "cross_modal_bridge": step0.cross_modal_bridge,
                 },
             )
+            revise_reason = reason
 
+        print_step_summary(
+            step=step0,
+            medium_correct=medium_correct,
+            strong_correct=strong_correct,
+            text_only_correct=strong_text_only_correct,
+            revise_reason=revise_reason,
+        )
+        print(f"中求解器: {medium_raw} | correct={medium_correct}")
+        if not medium_correct:
+            print(f"强求解器: {strong_raw} | correct={strong_correct}")
+        else:
+            print("中求解器答对，跳过强求解器。")
         if not (medium_correct and strong_correct) and step0.reasoning:
             print(f"推理过程: <reasoning>{step0.reasoning}</reasoning>")
         if not medium_correct:
@@ -460,6 +480,15 @@ def generate_steps_graph_mode(
             visual_summary=visual_summary,
         )
         model = select_model_for_step(current_step_index)
+        print_step_input(
+            step_index=current_step_index,
+            model=model,
+            mode="graph",
+            fact_hint=operate_fact_hint,
+            force_cross_modal=False,
+            has_operate_calc=bool(operate_calculation.draft.strip()),
+            has_operate_dist=bool(operate_distinction.draft.strip()),
+        )
         step = run_step(prompt, image_path, model, current_step_index)
         if step.evidence is None:
             step.evidence = edge_to_evidence_payload(edge)
@@ -562,6 +591,7 @@ def generate_steps_graph_mode(
         needs_revision, reason = validate_step(
             step, False, strong_correct, medium_correct, strong_text_only_correct
         )
+        revise_reason = reason if needs_revision else None
         if not needs_revision and is_low_quality_entity_matching(step.question):
             needs_revision, reason = True, "LOW_QUALITY (entity matching / missing operator)"
         if (
@@ -615,10 +645,18 @@ def generate_steps_graph_mode(
                     "cross_modal_bridge": step.cross_modal_bridge,
                 },
             )
+            revise_reason = reason
 
         print(f"[Step {current_step_index}] 完成 (Graph Mode, model={model})")
         print(step.question)
         print(f"标准答案: <answer>{step.answer_letter}</answer> | answer_text={step.answer_text}")
+        print_step_summary(
+            step=step,
+            medium_correct=medium_correct,
+            strong_correct=strong_correct,
+            text_only_correct=strong_text_only_correct,
+            revise_reason=revise_reason,
+        )
         print(f"中求解器: {medium_raw} | correct={medium_correct}")
         if not medium_correct:
             print(f"强求解器: {strong_raw} | correct={strong_correct}")

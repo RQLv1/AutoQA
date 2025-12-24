@@ -16,12 +16,14 @@ from utils.config import (
 from utils.details_logger import get_details_logger
 from utils.parsing import extract_tag_optional
 from utils.schema import EpisodeResult, StageResult, StepResult
+from utils.terminal import print_final_input, print_final_summary
 
 
 _OPTION_SEGMENT_RE = re.compile(r"([A-D])[\\.|\\)|、|:：]\\s*([^\\n]{0,80})")
 _CONDITION_RE = re.compile(r"(若|如果|当|则|按|根据|阈值|公式|计算|换算|分级|判定|规则|标准|区间|≥|≤|>|<|=)")
-_NUMERIC_RE = re.compile(r"\\d")
-_GRADE_RE = re.compile(r"(一级|二级|三级|四级|甲|乙|丙|丁|高|中|低)")
+_FORBIDDEN_STEM_RE = re.compile(r"(【|】|已知条件|判据|任务说明|提示|步骤|解题思路|\\(1\\)|\\(2\\)|\\(3\\))")
+_GUIDE_PHRASE_RE = re.compile(r"(保留两位小数|代入公式|依次求出|依次计算|请按步骤|先.{0,6}再)")
+_RULE_KEYWORDS = ("规则", "阈值", "定义", "分级", "判定", "条件", "公式")
 _VISUAL_ANCHORS = [
     "图中",
     "图示",
@@ -58,26 +60,27 @@ def _check_final_structure(
 ) -> tuple[bool, list[str], dict[str, int | bool]]:
     reasons: list[str] = []
     matches = list(_OPTION_SEGMENT_RE.finditer(question))
-    letters = {match.group(1) for match in matches}
-    option_segments = [match.group(2) for match in matches]
-
-    if not {"A", "B", "C", "D"}.issubset(letters):
-        reasons.append("missing A-D options")
 
     first_option = matches[0].start() if matches else len(question)
     stem = question[:first_option]
     condition_hits = len(_CONDITION_RE.findall(stem))
     numeric_hits = len(re.findall(r"\\d+(?:\\.\\d+)?", stem))
     condition_total = condition_hits + numeric_hits
-    if condition_total < 2:
-        reasons.append("insufficient neutral conditions")
-
-    numeric_like_options = 0
-    for segment in option_segments:
-        if _NUMERIC_RE.search(segment) or _GRADE_RE.search(segment):
-            numeric_like_options += 1
-    if numeric_like_options < 3:
-        reasons.append("options not numeric/graded enough")
+    equation_count = stem.count("=")
+    if equation_count > 2:
+        reasons.append("too many equations")
+    if _FORBIDDEN_STEM_RE.search(stem):
+        reasons.append("forbidden prompt cues")
+    if _GUIDE_PHRASE_RE.search(stem):
+        reasons.append("guided phrasing detected")
+    sentences = [s.strip() for s in re.split(r"[。！？!?]", stem) if s.strip()]
+    rule_sentences = sum(
+        1 for sentence in sentences if any(keyword in sentence for keyword in _RULE_KEYWORDS)
+    )
+    if rule_sentences > 2:
+        reasons.append("too many rule sentences")
+    if "等级" in stem and "按文中等级阈值划分" not in stem:
+        reasons.append("grade threshold detail in stem")
 
     if not any(anchor in question for anchor in _VISUAL_ANCHORS):
         reasons.append("missing visual anchor cues")
@@ -90,9 +93,9 @@ def _check_final_structure(
 
     stats = {
         "conditions": condition_total,
-        "numeric_like_options": numeric_like_options,
+        "equations": equation_count,
+        "rule_sentences": rule_sentences,
         "has_visual_anchor": any(anchor in question for anchor in _VISUAL_ANCHORS),
-        "has_full_options": {"A", "B", "C", "D"}.issubset(letters),
     }
     return not reasons, reasons, stats
 
@@ -145,6 +148,13 @@ def run_episode(
     review_passed = None
     refine_feedback = ""
 
+    print_final_input(
+        steps_count=len(compress_steps),
+        cross_modal_used=cross_modal_used,
+        refine_attempts=refine_attempts,
+        max_refine_attempts=max_refine_attempts,
+    )
+
     while True:
         structure_ok, structure_reasons, structure_stats = _check_final_structure(
             stage_final.question,
@@ -161,23 +171,55 @@ def run_episode(
                 reflect_feedback = f"结构检查未通过: {', '.join(structure_reasons)}"
                 break
             refine_attempts += 1
-            harden_prompt = build_final_harden_prompt(
-                context,
-                compress_steps,
-                stage_final.question,
-                stage_final.answer,
-                "structure_check_failed: " + ", ".join(structure_reasons),
-            )
-            stage_final = run_final(harden_prompt, image_path, MODEL_SUM)
-            get_details_logger().log_event(
-                "final_stage_hardened",
-                {
-                    "question": stage_final.question,
-                    "answer": stage_final.answer,
-                    "reasoning": stage_final.reasoning,
-                    "reason": "structure_check_failed",
-                },
-            )
+            style_reasons = {
+                "too many equations",
+                "forbidden prompt cues",
+                "guided phrasing detected",
+                "too many rule sentences",
+                "grade threshold detail in stem",
+            }
+            if any(reason in style_reasons for reason in structure_reasons):
+                rewrite_hint = (
+                    "保持同一考点与答案不变，把题干压缩为一个自然段，"
+                    "仅保留必要的读图对象、两个基准值、以及一条简短规则（最多2句），"
+                    "删除所有步骤与判据表。"
+                )
+                stage_final, refine_feedback = refine_final_question(
+                    context=context,
+                    steps=compress_steps,
+                    image_path=image_path,
+                    final=stage_final,
+                    reason="style_violation",
+                    review_raw=rewrite_hint,
+                )
+                get_details_logger().log_event(
+                    "final_stage_refined",
+                    {
+                        "question": stage_final.question,
+                        "answer": stage_final.answer,
+                        "reasoning": stage_final.reasoning,
+                        "reason": "style_violation",
+                        "feedback": refine_feedback,
+                    },
+                )
+            else:
+                harden_prompt = build_final_harden_prompt(
+                    context,
+                    compress_steps,
+                    stage_final.question,
+                    stage_final.answer,
+                    "structure_check_failed: " + ", ".join(structure_reasons),
+                )
+                stage_final = run_final(harden_prompt, image_path, MODEL_SUM)
+                get_details_logger().log_event(
+                    "final_stage_hardened",
+                    {
+                        "question": stage_final.question,
+                        "answer": stage_final.answer,
+                        "reasoning": stage_final.reasoning,
+                        "reason": "structure_check_failed",
+                    },
+                )
             continue
 
         difficulty_metrics = evaluate_difficulty(
@@ -302,6 +344,15 @@ def run_episode(
             print("[Final] 反馈:", reflect_feedback)
     elif reflect_feedback:
         print("[Final] 反馈:", reflect_feedback)
+
+    print_final_summary(
+        final=stage_final,
+        metrics=difficulty_metrics,
+        review_passed=review_passed,
+        refine_attempts=refine_attempts,
+        max_refine_attempts=max_refine_attempts,
+        structure_reasons=structure_reasons,
+    )
 
     return EpisodeResult(
         stage_1=stage_1,
