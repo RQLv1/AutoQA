@@ -6,7 +6,13 @@
     "[Step 0] Input (graph, model=gpt-51-1113-global)",
     "  fact_hint: graph_anchor",
     "  cross_modal=required | operate_calc=no | operate_dist=no",
-    "[Step 0] 缺少 A-D 选项，触发格式化 revise"
+    "[Step 0] 缺少 A-D 选项，触发格式化 revise",
+    "[Step 0] 更新后题目:",
+    "图中展示了颗粒结构的示意图及其对应的轴向应变分布。已知晶态与非晶态固体相互包覆时，由于体积收缩不均会在交界处形成明显的轴向拉伸应变。该颗粒交界处的边界主要表示哪一类界面特征？",
+    "[Step 0] 完成 (Graph Mode anchor)",
+    "图中展示了颗粒结构的示意图及其对应的轴向应变分布。已知晶态与非晶态固体相互包覆时，由于体积收缩不均会在交界处形成明显的轴向拉伸应变。该颗粒交界处的边界主要表示哪一类界面特征？",
+    "标准答案: <answer>B</answer> | answer_text=晶态与非晶态 TiO2 之间产生应变的界面",
+    "[Step 0] 触发 revise: Too Simple (Medium Solved)"
   ],
   "events": [
     {
@@ -194,6 +200,19 @@
             "source_type": "image"
           }
         ]
+      }
+    },
+    {
+      "ts": 1766637849.634,
+      "kind": "step_result",
+      "payload": {
+        "step": 0,
+        "question": "图中展示了颗粒结构的示意图及其对应的轴向应变分布。已知晶态与非晶态固体相互包覆时，由于体积收缩不均会在交界处形成明显的轴向拉伸应变。该颗粒交界处的边界主要表示哪一类界面特征？",
+        "answer_letter": "B",
+        "answer_text": "晶态与非晶态 TiO2 之间产生应变的界面",
+        "reasoning": "图 c 将内侧规则点阵与外侧无序点阵明确区分为“crystalline TiO2”和“amorphous TiO2”，边界处标注为 interfacial strain；g、i 中 εyy 在同一环形区域呈现正负拉伸分布，说明这是由晶核与无定形壳层体积收缩不匹配导致的应变带，符合晶-非晶界面应变特征，而非有机配体层、电荷积累界面或 Rb 富集相/晶界等情形。",
+        "modal_use": "both",
+        "cross_modal_bridge": false
       }
     }
   ]
