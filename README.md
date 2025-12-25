@@ -289,3 +289,248 @@ python main.py
 * 旧版仍然可以只跑 Stage1→Stage2→Stage3→Final
 * 强化版在 `steps/` 中把 Stage2/Stage3 当作“扩链模板”循环调用，从而实现 `step_3..K`
 * 日志仍保留 Stage1/2/3/Final，新增 `steps` 不影响旧工具读取
+
+```mermaid
+flowchart TD
+  %% ========== Styling ==========
+  classDef agent fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+  classDef decision fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,stroke-dasharray: 5 5;
+  classDef process fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+  classDef storage fill:#e0f2f1,stroke:#00695c,stroke-width:2px;
+
+  %% ========== Entry ==========
+  subgraph MAIN["主控循环"]
+    U[("外部输入\ncontext.txt + image.png")] --> M["main.py: main()\n循环生成 Episode"]
+    M --> E["pipeline_episode.py: run_episode"]
+  end
+
+  %% ========== Vision Knowledge Agent ==========
+  subgraph VK["智能体：VisualKnowledge (视觉锚点)"]
+    direction TB
+    E --> VK_in["输入: Prompt + Image"]
+    VK_in --> VK_llm[["LLM: gemini-3-pro-preview"]]
+    VK_llm --> VK_parse["解析: Description + Edges"]
+    VK_parse --> VK_out["输出: Visual Summary"]
+  end
+  class VK agent
+
+  %% ========== Step Generation ==========
+  VK_out --> GS["steps_entry.py: generate_steps"]
+  
+  GS --> CHECK_MODE{"模式选择"}
+  class CHECK_MODE decision
+
+  %% Graph Mode Branch
+  CHECK_MODE -->|ENABLE_GRAPH_MODE| GM["graph_mode.py: generate_steps_graph_mode"]
+  GM --> EP
+
+  %% Prompt Driven Branch
+  CHECK_MODE -->|Prompt Driven| PD["prompt_driven.py: Loop k=0..MAX"]
+  PD --> EP["选择 effective_previous_step"]
+
+  subgraph OP["智能体：Operate Agents (算子草稿)"]
+    EP --> OP_in["构造 Prompt\n(含 feedback/prev_step)"]
+    OP_in --> OD_llm[["LLM: Distinction Draft"]]
+    OP_in --> OC_llm[["LLM: Calculation Draft"]]
+    OD_llm & OC_llm --> OP_out["Draft Context"]
+  end
+  class OP agent
+
+  subgraph SG["智能体：Step Generator (生成子问题)"]
+    OP_out --> SP["构造 Step Prompt\n(融合 Visual Summary)"]
+    SP --> SG_llm[["LLM: Vision Model"]]
+    SG_llm --> SG_parse["解析 StepResult"]
+  end
+  class SG agent
+
+  %% ========== Obfuscate & Validate Loop ==========
+  subgraph OB["智能体：Obfuscate (去词汇化)"]
+    SG_parse --> OB_in["输入: 原始 Question + Options"]
+    OB_in --> OB_llm[["LLM: Text Rewriter"]]
+    OB_llm --> OB_out["Step (Obfuscated)"]
+  end
+  class OB agent
+
+  OB_out --> VAL{"结构校验"}
+  class VAL decision
+  
+  VAL -->|"失败: 缺选项/非数值"| RV["智能体: Revise Step"]
+  class RV agent
+  RV --> SG_parse
+
+  %% ========== Solvers Gate (Intermediate) ==========
+  VAL -->|通过| SOL_GATE{"Solver 门控\n(捷径检测)"}
+  class SOL_GATE decision
+
+  subgraph SOLVERS["智能体: Solvers (难度/捷径检测)"]
+    SOL_GATE -->|Check| SNI[["Text-Only Solver"]]
+    SOL_GATE -->|Check| MED[["Medium Vision Solver"]]
+  end
+
+  SNI -->|"Text-Only Correct"| RV_HARD["Revise: 增加视觉依赖"]
+  RV_HARD --> SG_parse
+  
+  MED -->|"Vision Incorrect"| RV_EASY["Revise: 降低难度/澄清"]
+  RV_EASY --> SG_parse
+
+  SNI & MED -->|Pass| STEP_OK["Step 存入列表"]
+  
+  STEP_OK --> PD
+  STEP_OK -->|"Graph Mode Next"| GM
+
+  %% ========== Final Compress ==========
+  PD -->|Done| FC_IN
+  GM -->|Done| FC_IN
+
+  subgraph FINAL["智能体：Final Compress (终题生成)"]
+    FC_IN["输入: All Steps + Visual Summary"] --> FC_llm[["LLM: gemini-3-pro-preview"]]
+    FC_llm --> FC_ob["Obfuscate Final Question"]
+  end
+  class FINAL agent
+
+  %% ========== Final Refinement Loop ==========
+  FC_ob --> FCHK{"终题评估"}
+  class FCHK decision
+
+  FCHK -->|"Text Solver 破解"| FH["Refine: Harden (增加混淆/依赖)"]
+  FCHK -->|"缺少选项"| FR["Refine: Fix Format"]
+  
+  FCHK -->|"Check Pass"| REV
+
+  subgraph REVIEW["智能体：Review (最终审核)"]
+    REV["输入: Q + A + Image"] --> REV_llm[["LLM: gpt-5-mini"]]
+    REV_llm --> REV_dec{"Decision"}
+  end
+  class REVIEW agent
+
+  REV_dec -->|Incorrect| FF3["Refine: 根据 Review 意见修正"]
+  FH & FR & FF3 --> FC_llm
+
+  %% ========== Feedback & Save ==========
+  REV_dec -->|"Correct / Max Retries"| DIFF["评估最终难度指标"]
+  DIFF --> FBACK["生成 Reflection Feedback"]
+  class FBACK process
+
+  FBACK -->|"Feedback Loop"| M
+  DIFF --> SAVE[("保存至数据集\n(Simple/Medium/Hard)")]
+  class SAVE storage==
+  U[外部输入\ncontext.txt + image.png] --> M[main.py: main()\n循环生成 Episode]
+  M --> E[pipeline/pipeline_episode.py: run_episode(context,image,feedback,previous_final_question)]
+
+  %% ========== Vision Knowledge Agent ==========
+  subgraph VK["智能体：VisualKnowledge（视觉知识抽取）\n调用：call_vision_model(MODEL_VISION_KNOWLEDGE=gemini-3-pro-preview)"]
+    VK_in[输入\nprompt(固定视觉描述模板) + image] --> VK_llm[LLM(vision)\nutils/api_client.py: call_vision_model]
+    VK_llm --> VK_raw[输出 raw 文本\n<description>...<summary>...]
+    VK_raw --> VK_parse[解析\nsummary + edges(从description抽边)]
+    VK_parse --> VK_out[输出\nvisual_summary + visual_edges]
+  end
+  E --> VK
+
+  %% ========== Step Generation ==========
+  VK_out --> GS[steps/steps_entry.py: generate_steps()\n分支：GraphMode / PromptDriven]
+  GS -->|ENABLE_GRAPH_MODE=true| GM[steps/graph_mode.py: generate_steps_graph_mode()\n(此处省略内部细节)]
+  GS -->|否则| PD[steps/prompt_driven.py: generate_steps_prompt_driven()\nfor k in 0..MAX_STEPS_PER_ROUND]
+
+  %% operate agents only when there is previous step (k>0 or inherited previous_final_question)
+  PD --> EP[选择 effective_previous_step\n(k>0 用 steps[-1]\n或 k==0 继承 previous_final_question)]
+
+  subgraph OP["智能体：Operate Agents（生成算子草稿）\n调用：call_vision_model"]
+    EP --> OD_in[输入\nbuild_operate_distinction_prompt(context,prev_step,fact_hint,feedback,force_cross_modal)]
+    OD_in --> OD_llm[LLM(vision)\nMODEL_OPERATE_DISTINCTION]
+    OD_llm --> OD_out[输出\n<draft> distinction_draft]
+
+    EP --> OC_in[输入\nbuild_operate_calculation_prompt(context,prev_step,fact_hint,feedback,force_cross_modal)]
+    OC_in --> OC_llm[LLM(vision)\nMODEL_OPERATE_CALCULATION]
+    OC_llm --> OC_out[输出\n<draft> calculation_draft]
+  end
+
+  %% Step LLM (vision)
+  subgraph SG["智能体：Step Generator（生成子问题）\n调用：call_vision_model(MODEL_STAGE_1/2/3)"]
+    OD_out --> SP[构建 step prompt\nbuild_stage1/2/3/extend_step_prompt(..., visual_summary)]
+    OC_out --> SP
+    SP --> SG_llm[LLM(vision)\nsteps/runner.py: run_step -> call_vision_model]
+    SG_llm --> SG_raw[输出 raw\n含 <question>/<selections>/<answer>/<reasoning>]
+    SG_raw --> SG_parse[解析为 StepResult\nquestion+selections, answer_letter, ...]
+  end
+  EP --> SP
+
+  %% Obfuscate Agent (text)
+  subgraph OB["智能体：Obfuscate（题干去词汇化/隐去细节）\n调用：call_text_model(MODEL_OBFUSCATE=MODEL_SUM)"]
+    SG_parse --> OB_in[输入\nbuild_obfuscate_prompt(stem文本)\n(选项保持不变)]
+    OB_in --> OB_llm[LLM(text)\nutils/api_client.py: call_text_model]
+    OB_llm --> OB_out[输出\n改写后的 stem\n合并回 selections => step.question]
+  end
+
+  %% Solvers
+  subgraph SOL["智能体：Solvers（难度评估/捷径检测）"]
+    OB_out --> MED_in[输入\nbuild_solver_prompt(question)+image]
+    MED_in --> MED_llm[LLM(vision)\nMODEL_SOLVE_MEDIUM=gpt-5-mini-0807-global]
+    MED_llm --> MED_out[输出 raw + 解析 answer_letter]
+
+    OB_out --> STXT_in[输入\nbuild_solver_prompt_text_only(question)]
+    STXT_in --> STXT_llm[LLM(text)\nMODEL_SOLVE_STRONG=claude_sonnet4_5]
+    STXT_llm --> STXT_out[输出 raw + 解析 answer_letter]
+
+    OB_out --> STR_in[输入\nbuild_solver_prompt(question)+image]
+    STR_in --> STR_llm[LLM(vision)\nMODEL_SOLVE_STRONG=claude_sonnet4_5]
+    STR_llm --> STR_out[输出 raw + 解析 answer_letter]
+
+    OB_out --> SNI_in[输入\nbuild_solver_prompt(question)\n(无图 no_image)]
+    SNI_in --> SNI_llm[LLM(text/no-image)\nMODEL_SOLVE_STRONG=claude_sonnet4_5]
+    SNI_llm --> SNI_out[输出 raw + 解析 answer_letter]
+  end
+
+  %% Step validation + revise loop
+  OB_out --> VAL[非LLM：steps/validation.py: validate_step()\n可能返回 missing options / missing visual anchor / options not numeric/graded 等]
+  VAL -->|needs_revision=True| RV
+
+  subgraph RV["智能体：Revise Step（重写子问题）\n调用：call_vision_model(同 step 模型)"]
+    RV_in[输入\nbuild_revise_prompt(context,step,reason,fact_hint,operate_drafts,force_cross_modal,visual_summary)+image]
+    RV_in --> RV_llm[LLM(vision)\nsteps/runner.py: run_step]
+    RV_llm --> RV_raw[输出 raw]
+    RV_raw --> RV_parse[解析 StepResult]
+    RV_parse --> RV_ob[再次 Obfuscate（同上 call_text_model）]
+  end
+  VAL -->|needs_revision=False| STEP_OK[Step 通过\n追加 steps[]\n更新 cross_modal_used]
+
+  RV_ob --> STEP_OK
+
+  STEP_OK --> PD
+  PD -->|达到 min_steps 且满足 cross_modal| STEPS_OUT[输出 steps + cross_modal_used]
+
+  %% ========== Final Compress ==========
+  subgraph FINAL["智能体：Final（压缩生成最终题）\n调用：call_vision_model(MODEL_SUM=gemini-3-pro-preview)"]
+    STEPS_OUT --> FC_in[输入\nbuild_final_compress_prompt(context,steps,feedback)+image]
+    FC_in --> FC_llm[LLM(vision)\npipeline/pipeline_episode.py: run_final]
+    FC_llm --> FC_raw[输出 raw\n<question><answer><reasoning>]
+    FC_raw --> FC_parse[解析 StageResult]
+    FC_parse --> FC_ob[Obfuscate question\ncall_text_model(MODEL_OBFUSCATE)]
+  end
+
+  %% ========== Final refinement loop ==========
+  FC_ob --> FCHK{检查/评估}
+  FCHK -->|缺 A-D 选项| FF1[pipeline/pipeline_final_refine.py: refine_final_question\nreason=format_missing_options]
+  FCHK -->|text_only_veto=True| FH[prompts: build_final_harden_prompt -> run_final\n(vision MODEL_SUM) -> Obfuscate]
+  FCHK -->|medium_correct=True| FF2[refine_final_question\nreason=medium_solved\n先调用 _get_medium_rationale(vision MODEL_SOLVE_MEDIUM)]
+  FCHK -->|否则| REV
+
+  subgraph REV["智能体：Review（审核正确性）\n调用：call_vision_model(MODEL_REVIEW=gpt-5-mini-0807-global)"]
+    REV_in[输入\nbuild_review_prompt(question,answer,reasoning)+image]
+    REV_in --> REV_llm[LLM(vision)\nreview_question()]
+    REV_llm --> REV_out[输出 raw + decision(correct/incorrect/unknown)\n(incorrect 时含 <reason>)]
+  end
+
+  REV_out -->|incorrect 且可重试| FF3[refine_final_question\nreason=review_failed\n先 _get_review_feedback(vision MODEL_REVIEW)\n再 revision(vision MODEL_SUM)\n再 Obfuscate]
+  REV_out -->|correct/unknown 或超次数| DONE_FINAL[final stage 输出]
+
+  %% ========== Reflect feedback ==========
+  DONE_FINAL --> DIFF[pipeline/pipeline_solvers.py: evaluate_difficulty\n调用 medium/strong/text-only/no-image solver 链路（同上）]
+  DIFF --> FB_in[输入\nprompts/analysis.py: build_analysis_prompt(final_q,final_a,medium_raw)]
+  FB_in --> FB_llm[LLM(text)\ncall_text_model(MODEL_SUM)]
+  FB_llm --> FB_out[输出 reflect_feedback 字符串]
+
+  %% ========== Loop back ==========
+  FB_out --> M
+  DONE_FINAL --> SAVE[保存 genqa_item\n按 difficulty_metrics 分流到 simple/medium/hard]
+  SAVE --> M
+```

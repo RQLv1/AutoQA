@@ -19,8 +19,8 @@ def build_review_prompt(
         2. 检查推理是否合理且一致。
 
         输出格式:
-        - 如果有效且高质量，输出: <review>correct</review>
-        - 如果存在问题，输出: <review>incorrect</review>
+        - 无问题则输出: <review>correct</review>
+        - 存在问题则输出: <review>incorrect</review>
         - 如果判定为 incorrect，必须在后面给出具体原因: <reason>具体错误原因（例如：答案与推理不一致 / 推理逻辑存在跳跃 / 选项格式不规范 / 答案错误等）</reason>
 
         示例:

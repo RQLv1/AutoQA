@@ -34,6 +34,7 @@ from utils.config import (
     GENQA_SIMPLE_PATH,
     MAX_STEPS_PER_ROUND,
     MIN_HOPS,
+    MODEL_REVIEW,
     MODEL_SOLVE_MEDIUM,
     MODEL_SOLVE_STRONG,
 )
@@ -523,7 +524,7 @@ def generate_steps_graph_mode(
             print(f"[Step {current_step_index}] 正在进行视觉幻觉核查...")
             verify_prompt = build_visual_verification_prompt(step.question)
             try:
-                verify_raw = call_vision_model(verify_prompt, image_path, MODEL_SOLVE_STRONG)
+                verify_raw = call_vision_model(verify_prompt, image_path, MODEL_REVIEW)
             except Exception as exc:
                 print(f"[Step {current_step_index}] 视觉核查调用出错: {exc}。默认放行。")
                 break
