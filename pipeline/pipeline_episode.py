@@ -47,7 +47,7 @@ def run_episode(
     compress_steps = steps if not prior_steps else [*prior_steps, *steps]
     final_prompt = build_final_compress_prompt(context, compress_steps, feedback)
     stage_final = run_final(final_prompt, image_path, MODEL_SUM)
-    stage_final.question = obfuscate_question(stage_final.question)
+    stage_final.question = obfuscate_question(stage_final.question, raw=stage_final.raw)
     get_details_logger().log_event(
         "final_stage",
         {
@@ -92,7 +92,7 @@ def run_episode(
                 "text-only solved",
             )
             stage_final = run_final(harden_prompt, image_path, MODEL_SUM)
-            stage_final.question = obfuscate_question(stage_final.question)
+            stage_final.question = obfuscate_question(stage_final.question, raw=stage_final.raw)
             get_details_logger().log_event(
                 "final_stage_hardened",
                 {
@@ -115,7 +115,7 @@ def run_episode(
                 final=stage_final,
                 reason="medium_solved",
             )
-            stage_final.question = obfuscate_question(stage_final.question)
+            stage_final.question = obfuscate_question(stage_final.question, raw=stage_final.raw)
             get_details_logger().log_event(
                 "final_stage_refined",
                 {
@@ -146,7 +146,7 @@ def run_episode(
                 reason="review_failed",
                 review_raw=review_raw,
             )
-            stage_final.question = obfuscate_question(stage_final.question)
+            stage_final.question = obfuscate_question(stage_final.question, raw=stage_final.raw)
             get_details_logger().log_event(
                 "final_stage_refined",
                 {

@@ -1,0 +1,80 @@
+[
+  {
+    "source": "step",
+    "step_k": 2,
+    "question": "结合图示纳米粒子表面结构与元素面分布特征，获取单颗粒子伸出的 DPSi 链条数 $N$ 及代表有机修饰的元素点比例 $P$。定义界面充分修饰因子 $C = N \\times P$，设定 $C \\ge 1.00$ 为实现纳米粒子单分散的判定条件，则计算所得 $C$ 值最接近下列哪一数值？",
+    "answer": "C",
+    "reasoning": "由图 1a 估算单颗粒表面的 DPSi 链条数 N≈6，结合图 1j 得到 P≈0.17，代入 C=N×P≈6×0.17=1.02，满足 C≥1.00，对应选项 C。",
+    "difficulty_metrics": {
+      "medium_correct": false,
+      "strong_correct": true,
+      "strong_text_only_correct": false,
+      "strong_no_image_correct": false,
+      "difficulty_score": 1.0,
+      "cross_modal_used": false,
+      "num_hops": 2,
+      "medium_pred": "B",
+      "strong_pred": "C",
+      "strong_text_only_pred": "B",
+      "strong_no_image_pred": "B",
+      "medium_raw": "<answer>B</answer>",
+      "strong_raw": "<answer>C</answer>",
+      "strong_text_only_raw": "<answer>B</answer>",
+      "strong_no_image_raw": "<answer>B</answer>"
+    },
+    "review_decision": "correct",
+    "review_raw": "<review>correct</review>"
+  },
+  {
+    "source": "step",
+    "step_k": 1,
+    "question": "图中给出了 Rb‑TiO₂/TB‑CS 样品在 (200) 与 (101) 晶面处的晶面间距及未掺杂 TiO₂ 的对应数据，用于表征各向异性拉伸畸变。各向异性结构调节指数 I 定义为样品相对于未掺杂 TiO₂ 在上述两晶面的拉伸应变的加权平均，设定当 (101) 面拉伸应变幅值超过 2% 时，其权重为 (200) 面的 2 倍。基于图中晶面间距数据，该样品的 I 数值最接近下列哪一项？",
+    "answer": "C",
+    "reasoning": "由图读出：Rb‑TiO₂/TB‑CS 的 (200) 面与未掺杂样品分别为 1.95 Å 与 1.90 Å，(101) 面为 3.59 Å 与 3.51 Å。对应应变约为 ε₂₀₀ ≈ (1.95−1.90)/1.90 ≈ 2.63%，ε₁₀₁ ≈ (3.59−3.51)/3.51 ≈ 2.28%，且 ε₁₀₁＞2%，故 I = (ε₂₀₀ + 2ε₁₀₁)/3 ≈ (2.63% + 2×2.28%)/3 ≈ 2.40%，对应选项 C。",
+    "difficulty_metrics": {
+      "medium_correct": false,
+      "strong_correct": true,
+      "strong_text_only_correct": false,
+      "strong_no_image_correct": false,
+      "difficulty_score": 1.0,
+      "cross_modal_used": false,
+      "num_hops": 1,
+      "medium_pred": "B",
+      "strong_pred": "C",
+      "strong_text_only_pred": "B",
+      "strong_no_image_pred": "B",
+      "medium_raw": "<answer>B</answer>",
+      "strong_raw": "<answer>C</answer>",
+      "strong_text_only_raw": "<answer>B</answer>",
+      "strong_no_image_raw": "<answer>B</answer>"
+    },
+    "review_decision": "correct",
+    "review_raw": "<review>correct</review>"
+  },
+  {
+    "source": "step",
+    "step_k": 3,
+    "question": "依据图中Si元素映射图像，设X为颗粒内部与背景区域信号点数量的比值，若按X明显大于1.5为显著富集、接近1.0为无明显富集、中间情形依次为中等或轻微富集的标准划分，则该元素的富集等级最接近下列哪一项。",
+    "answer": "A",
+    "reasoning": "从 Si 元素映射可见绿色点几乎只集中在颗粒轮廓处，背景区域几乎没有信号，因此 X 远大于 1。按照给出的经验划分，这种内外点数比明显大于 1.5，应归入“显著富集”等级。显著富集说明 Si 优先分布在颗粒表面层。",
+    "difficulty_metrics": {
+      "medium_correct": false,
+      "strong_correct": true,
+      "strong_text_only_correct": false,
+      "strong_no_image_correct": false,
+      "difficulty_score": 1.0,
+      "cross_modal_used": false,
+      "num_hops": 3,
+      "medium_pred": "D",
+      "strong_pred": "A",
+      "strong_text_only_pred": "B",
+      "strong_no_image_pred": "B",
+      "medium_raw": "<answer>D</answer>",
+      "strong_raw": "<answer>A</answer>",
+      "strong_text_only_raw": "<answer>B</answer>",
+      "strong_no_image_raw": "<answer>B</answer>"
+    },
+    "review_decision": "correct",
+    "review_raw": "<review>correct</review>"
+  }
+]
