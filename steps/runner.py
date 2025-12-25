@@ -5,6 +5,7 @@ from utils.config import MODEL_STAGE_1, MODEL_STAGE_2, MODEL_STAGE_3
 from utils.parsing import (
     extract_labeled_value,
     extract_option_text,
+    extract_question_and_selections,
     extract_tag_optional,
     parse_bool,
     parse_evidence,
@@ -23,7 +24,16 @@ def select_model_for_step(k: int) -> str:
 
 def run_step(prompt: str, image_path: Path, model: str, k: int) -> StepResult:
     raw = call_vision_model(prompt, image_path, model)
-    question = extract_tag_optional(raw, "question") or raw.strip()
+
+    # 提取题干和选项（支持新格式 <question> + <selections>）
+    question_stem, selections = extract_question_and_selections(raw)
+
+    # 合并题干和选项为完整问题
+    if selections:
+        question = f"{question_stem}\n{selections}"
+    else:
+        question = question_stem
+
     answer_text = extract_tag_optional(raw, "answer_text") or extract_labeled_value(raw, "answer_text") or ""
     answer_tag = extract_tag_optional(raw, "answer")
     answer_letter = parse_option_letter_optional(answer_tag) if answer_tag else None

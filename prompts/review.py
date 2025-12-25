@@ -18,9 +18,14 @@ def build_review_prompt(
         1. 检查题目是否为标准单选题：必须包含 A/B/C/D 四个选项，且答案为其中一个字母；否则判为 incorrect。
         2. 检查推理是否合理且一致。
 
-        仅输出以下之一:
-        <review>correct</review> (如果有效且高质量)
-        <review>incorrect</review> (如果逻辑存在缺陷或答案错误)
+        输出格式:
+        - 如果有效且高质量，输出: <review>correct</review>
+        - 如果存在问题，输出: <review>incorrect</review>
+        - 如果判定为 incorrect，必须在后面给出具体原因: <reason>具体错误原因（例如：答案与推理不一致 / 推理逻辑存在跳跃 / 选项格式不规范 / 答案错误等）</reason>
+
+        示例:
+        <review>incorrect</review>
+        <reason>答案字母 B 与推理过程中得出的结论 A 不一致</reason>
         """
     ).strip()
 

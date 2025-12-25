@@ -3,7 +3,7 @@ import re
 from prompts import build_obfuscate_prompt
 from utils.api_client import call_text_model
 from utils.config import DEFAULT_TEMPERATURE, MODEL_OBFUSCATE
-from utils.parsing import extract_option_text, extract_tag_optional
+from utils.parsing import extract_option_text, extract_question_and_selections, extract_tag_optional
 from utils.schema import StepResult
 
 
@@ -93,28 +93,39 @@ def obfuscate_question(
 ) -> str:
     if not question or not question.strip():
         return question
-    stem, options, has_options = _split_question(question)
-    if not has_options and raw:
-        extracted_question = extract_tag_optional(raw, "question") or raw
-        recovered = _extract_option_block(extracted_question)
-        if recovered:
-            options = recovered
-            has_options = True
+
+    # 优先使用新方法提取题干和选项
+    if raw:
+        stem, selections = extract_question_and_selections(raw)
+        if not selections:
+            # 如果 raw 中没有 selections，尝试从 question 中分离
+            stem, selections, has_options = _split_question(question)
+        else:
+            has_options = bool(selections)
+    else:
+        stem, selections, has_options = _split_question(question)
+
     if not stem:
         return question
     if not has_options and _OPTION_HINT_RE.search(question):
         return question
+
+    # 只改写题干，保持选项不变
     prompt = build_obfuscate_prompt(stem)
-    raw = call_text_model(prompt, model, temperature=DEFAULT_TEMPERATURE)
-    rewritten = extract_tag_optional(raw, "stem") or raw.strip()
+    obfuscate_raw = call_text_model(prompt, model, temperature=DEFAULT_TEMPERATURE)
+    rewritten = extract_tag_optional(obfuscate_raw, "stem") or obfuscate_raw.strip()
     rewritten = rewritten.strip()
     if not rewritten:
         return question
+
     rewritten = _ensure_visual_anchor(rewritten)
-    if options:
-        obfuscated = f"{rewritten}\n{options}"
+
+    # 合并改写后的题干和原始选项
+    if selections:
+        obfuscated = f"{rewritten}\n{selections}"
     else:
         obfuscated = rewritten
+
     if has_options and not _OPTION_HINT_RE.search(obfuscated):
         return question
     return obfuscated

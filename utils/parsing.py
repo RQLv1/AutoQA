@@ -24,6 +24,56 @@ def extract_tag_optional(content: str, tag: str) -> str | None:
     return content[start + len(start_tag) : end].strip()
 
 
+def extract_question_and_selections(content: str) -> tuple[str, str | None]:
+    """
+    从模型输出中提取题干和选项。
+    返回 (question_text, selections_text)
+    如果没有 <selections> 标签，尝试从 <question> 中分离。
+    """
+    question = extract_tag_optional(content, "question")
+    selections = extract_tag_optional(content, "selections")
+
+    if question is None:
+        # 兼容旧格式：没有 <question> 标签，直接使用原文
+        question = content.strip()
+
+    if selections is None and question:
+        # 尝试从 question 中分离选项
+        selections = _try_extract_selections_from_text(question)
+        if selections:
+            # 从 question 中移除选项部分
+            question = _remove_selections_from_text(question, selections)
+
+    return question, selections
+
+
+def _try_extract_selections_from_text(text: str) -> str | None:
+    """尝试从文本中提取选项块"""
+    import re
+    # 匹配类似 A. xxx B. xxx C. xxx D. xxx 的模式
+    pattern = re.compile(r'(?:^|\n)\s*[A-D][\s\.、:：)）]', re.MULTILINE)
+    matches = list(pattern.finditer(text))
+    if len(matches) >= 2:
+        # 找到至少2个选项，提取选项块
+        first_match = matches[0]
+        return text[first_match.start():].strip()
+    return None
+
+
+def _remove_selections_from_text(text: str, selections: str) -> str:
+    """从文本中移除选项部分"""
+    if selections in text:
+        text = text.replace(selections, '').strip()
+    else:
+        # 尝试找到选项开始的位置
+        import re
+        pattern = re.compile(r'(?:^|\n)\s*[A-D][\s\.、:：)）]', re.MULTILINE)
+        match = pattern.search(text)
+        if match:
+            text = text[:match.start()].strip()
+    return text
+
+
 def extract_labeled_value(content: str, label: str) -> str | None:
     if not content:
         return None

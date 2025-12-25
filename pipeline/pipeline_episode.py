@@ -153,13 +153,15 @@ def run_episode(
             )
             continue
 
-        review_raw, review_passed = review_question(
+        review_raw, review_passed, review_reason = review_question(
             stage_final.question,
             stage_final.answer,
             stage_final.reasoning,
             image_path,
         )
         if review_passed is False:
+            if review_reason:
+                print(f"[Review] Final 错误原因: {review_reason}")
             if refine_attempts >= max_refine_attempts:
                 break
             refine_attempts += 1
