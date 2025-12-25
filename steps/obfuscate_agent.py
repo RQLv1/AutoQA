@@ -95,7 +95,8 @@ def obfuscate_question(
         return question
     stem, options, has_options = _split_question(question)
     if not has_options and raw:
-        recovered = _extract_option_block(raw)
+        extracted_question = extract_tag_optional(raw, "question") or raw
+        recovered = _extract_option_block(extracted_question)
         if recovered:
             options = recovered
             has_options = True
@@ -111,8 +112,12 @@ def obfuscate_question(
         return question
     rewritten = _ensure_visual_anchor(rewritten)
     if options:
-        return f"{rewritten}\n{options}"
-    return rewritten
+        obfuscated = f"{rewritten}\n{options}"
+    else:
+        obfuscated = rewritten
+    if has_options and not _OPTION_HINT_RE.search(obfuscated):
+        return question
+    return obfuscated
 
 
 def obfuscate_step_question(step: StepResult, *, model: str = MODEL_OBFUSCATE) -> StepResult:

@@ -45,6 +45,7 @@ def build_stage1_step_prompt(
         你需要围绕图片“中心区域”的视觉锚点，生成一个多跳题的第1步子问题(单选题)。
         要求:
         - 题干包含 A-D 四个选项。
+        - 选项格式建议每个选项单独一行：A. ... / B. ... / C. ... / D. ...
         - 题干必须围绕图片中心视觉锚点，不得引导读者查阅文档/文献。
         - 题干中禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
         - 风格硬约束：
@@ -60,7 +61,13 @@ def build_stage1_step_prompt(
         {context.strip()}
 
         只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
+        <question>
+        题干描述（作为连续自然段）。
+        A. 选项内容
+        B. 选项内容
+        C. 选项内容
+        D. 选项内容
+        </question>
         <answer>A/B/C/D</answer>
         <reasoning>简要推理过程(不超过4句)</reasoning>
         """
@@ -103,6 +110,7 @@ def build_stage2_step_prompt(
         - 题干规则只能采用 operate_calculation 草稿中的 short_rule_for_stem（可微调措辞），禁止搬运完整公式链条或阈值表。
         - {cross_modal}
         - 题干包含 A-D 选项，答案需可验证。
+        - 选项格式建议每个选项单独一行：A. ... / B. ... / C. ... / D. ...
         - 题干必须围绕图片中心视觉锚点，禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
         - 风格硬约束：
           - 题干正文不得出现“【】”以及“已知条件/判据/任务说明/提示/步骤/解题思路”等词。
@@ -138,7 +146,13 @@ def build_stage2_step_prompt(
         {context.strip()}
 
         只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
+        <question>
+        题干描述（作为连续自然段）。
+        A. 选项内容
+        B. 选项内容
+        C. 选项内容
+        D. 选项内容
+        </question>
         <answer>A/B/C/D</answer>
         <reasoning>简要推理过程</reasoning>
         """
@@ -181,6 +195,7 @@ def build_stage3_step_prompt(
         - 题干规则只能采用 operate_calculation 草稿中的 short_rule_for_stem（可微调措辞），禁止搬运完整公式链条或阈值表。
         - {cross_modal}
         - 题干包含 A-D 选项，答案需可验证。
+        - 选项格式建议每个选项单独一行：A. ... / B. ... / C. ... / D. ...
         - 题干必须围绕图片中心视觉锚点，禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
         - 风格硬约束：
           - 题干正文不得出现“【】”以及“已知条件/判据/任务说明/提示/步骤/解题思路”等词。
@@ -216,7 +231,13 @@ def build_stage3_step_prompt(
         {context.strip()}
 
         只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
+        <question>
+        题干描述（作为连续自然段）。
+        A. 选项内容
+        B. 选项内容
+        C. 选项内容
+        D. 选项内容
+        </question>
         <answer>A/B/C/D</answer>
         <reasoning>简要推理过程</reasoning>
         """
@@ -259,6 +280,7 @@ def build_extend_step_prompt(
         - 题干规则只能采用 operate_calculation 草稿中的 short_rule_for_stem（可微调措辞），禁止搬运完整公式链条或阈值表。
         - {cross_modal}
         - 题干包含 A-D 选项，答案需可验证。
+        - 选项格式建议每个选项单独一行：A. ... / B. ... / C. ... / D. ...
         - 题干必须围绕图片中心视觉锚点，禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
         - 风格硬约束：
           - 题干正文不得出现“【】”以及“已知条件/判据/任务说明/提示/步骤/解题思路”等词。
@@ -280,7 +302,13 @@ def build_extend_step_prompt(
         {context.strip()}
 
         只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
+        <question>
+        题干描述（作为连续自然段）。
+        A. 选项内容
+        B. 选项内容
+        C. 选项内容
+        D. 选项内容
+        </question>
         <answer>A/B/C/D</answer>
         <reasoning>简要推理过程</reasoning>
         """
@@ -334,6 +362,7 @@ def build_revise_prompt(
 {operate_calculation_block}
         - 题干规则只能采用 operate_calculation 草稿中的 short_rule_for_stem（可微调措辞），禁止搬运完整公式链条或阈值表。
         - 题干包含 A-D 选项，答案唯一且可验证。
+        - 选项格式建议每个选项单独一行：A. ... / B. ... / C. ... / D. ...
         - 题干必须围绕图片中心视觉锚点，禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
         - 风格硬约束：
           - 题干正文不得出现“【】”以及“已知条件/判据/任务说明/提示/步骤/解题思路”等词。
@@ -352,7 +381,13 @@ def build_revise_prompt(
         {context.strip()}
 
         只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
+        <question>
+        题干描述（作为连续自然段）。
+        A. 选项内容
+        B. 选项内容
+        C. 选项内容
+        D. 选项内容
+        </question>
         <answer>A/B/C/D</answer>
         <reasoning>简要推理过程</reasoning>
         """
@@ -447,7 +482,13 @@ def build_graph_1hop_step_prompt(
         - 针对 Feedback 的特别执行：如果 Feedback 要求隐藏规则或增加前置计算，请务必移除题目中直接给出的判断标准（例如"当X>5时..."），改为更隐性的规则描述。
 
         只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
+        <question>
+        题干描述（作为连续自然段）。
+        A. 选项内容
+        B. 选项内容
+        C. 选项内容
+        D. 选项内容
+        </question>
         <answer>A/B/C/D</answer>
         <reasoning>简要推理过程(不超过4句)</reasoning>
         """

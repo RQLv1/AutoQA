@@ -39,6 +39,7 @@ from utils.config import (
 )
 from utils.details_logger import get_details_logger
 from utils.genqa import save_genqa_item
+from utils.mcq import has_abcd_options
 from utils.schema import StepResult
 from utils.terminal import print_step_input, print_step_summary
 
@@ -208,6 +209,24 @@ def generate_steps_graph_mode(
     )
     step0 = run_step(prompt, image_path, model, 0)
     step0 = obfuscate_step_question(step0)
+    if not has_abcd_options(step0.question):
+        print("[Step 0] 缺少 A-D 选项，触发格式化 revise")
+        revise_prompt = build_revise_prompt(
+            context,
+            step0,
+            "format_missing_options",
+            fact_hint_for_revision,
+            operate_distinction.draft if operate_distinction else "",
+            operate_calculation.draft if operate_calculation else "",
+            False,
+            visual_summary,
+            extra_requirements=(
+                "- 必须包含 A-D 四个选项，建议每个选项单独一行，格式为“ A. ... / B. ... / C. ... / D. ... ”。\n"
+                "- 题干正文仍需满足：一个自然段、无【】、无(1)(2)(3)、无“先…再…”等指令式引导。"
+            ),
+        )
+        step0 = run_step(revise_prompt, image_path, model, 0)
+        step0 = obfuscate_step_question(step0)
     print("[Step 0] 更新后题目:")
     print(step0.question)
     get_details_logger().log_event(
@@ -264,6 +283,27 @@ def generate_steps_graph_mode(
             )
             step0 = run_step(revise_prompt, image_path, model, 0)
             step0 = obfuscate_step_question(step0)
+
+            # revise 后也要检查选项
+            if not has_abcd_options(step0.question):
+                print("[Step 0] revise 后缺少 A-D 选项，触发格式化 revise")
+                revise_prompt = build_revise_prompt(
+                    context,
+                    step0,
+                    "format_missing_options",
+                    fact_hint_for_revision,
+                    operate_distinction.draft if operate_distinction else "",
+                    operate_calculation.draft if operate_calculation else "",
+                    False,
+                    visual_summary,
+                    extra_requirements=(
+                        "- 必须包含 A-D 四个选项，建议每个选项单独一行，格式为 A. ... / B. ... / C. ... / D. ... 。\n"
+                        "- 题干正文仍需满足：一个自然段、无【】、无(1)(2)(3)、无指令式引导。"
+                    ),
+                )
+                step0 = run_step(revise_prompt, image_path, model, 0)
+                step0 = obfuscate_step_question(step0)
+
             print("[Step 0] 更新后题目:")
             print(step0.question)
             medium_raw, medium_letter = solve_mcq(step0.question, image_path, MODEL_SOLVE_MEDIUM)
@@ -361,19 +401,22 @@ def generate_steps_graph_mode(
                     if strong_correct:
                         target_path = Path(GENQA_HARD_PATH)
                         print(f"[Review] Step 0 结果: correct -> {target_path} (Hard: Medium=X, Strong=O)")
-                        save_genqa_item(
-                            target_path,
-                            {
-                                "source": "step",
-                                "step_k": 0,
-                                "question": step0.question,
-                                "answer": step0.answer_letter,
-                                "reasoning": step0.reasoning,
-                                "difficulty_metrics": step_metrics,
-                                "review_decision": "correct",
-                                "review_raw": review_raw,
-                            },
-                        )
+                        if not has_abcd_options(step0.question):
+                            print("[Review] Step 0 题目缺少 A-D 选项，跳过入库")
+                        else:
+                            save_genqa_item(
+                                target_path,
+                                {
+                                    "source": "step",
+                                    "step_k": 0,
+                                    "question": step0.question,
+                                    "answer": step0.answer_letter,
+                                    "reasoning": step0.reasoning,
+                                    "difficulty_metrics": step_metrics,
+                                    "review_decision": "correct",
+                                    "review_raw": review_raw,
+                                },
+                            )
                     else:
                         print(f"[Review] Step 0 结果: Strong Solver 也失败，视为无效/超难题，跳过入库")
             elif review_passed is False:
@@ -498,6 +541,24 @@ def generate_steps_graph_mode(
         )
         step = run_step(prompt, image_path, model, current_step_index)
         step = obfuscate_step_question(step)
+        if not has_abcd_options(step.question):
+            print(f"[Step {current_step_index}] 缺少 A-D 选项，触发格式化 revise")
+            revise_prompt = build_revise_prompt(
+                context,
+                step,
+                "format_missing_options",
+                f"knowledge_link=({edge.head},{edge.relation},{edge.tail})",
+                operate_distinction.draft,
+                operate_calculation.draft,
+                False,
+                visual_summary,
+                extra_requirements=(
+                    "- 必须包含 A-D 四个选项，建议每个选项单独一行，格式为“ A. ... / B. ... / C. ... / D. ... ”。\n"
+                    "- 题干正文仍需满足：一个自然段、无【】、无(1)(2)(3)、无“先…再…”等指令式引导。"
+                ),
+            )
+            step = run_step(revise_prompt, image_path, model, current_step_index)
+            step = obfuscate_step_question(step)
         print(f"[Step {current_step_index}] 更新后题目:")
         print(step.question)
         if step.evidence is None:
@@ -560,6 +621,28 @@ def generate_steps_graph_mode(
             )
             step = run_step(revise_prompt, image_path, model, current_step_index)
             step = obfuscate_step_question(step)
+
+            # 视觉核查 revise 后也要检查选项
+            if not has_abcd_options(step.question):
+                print(f"[Step {current_step_index}] 视觉核查 revise 后缺少 A-D 选项，触发格式化 revise")
+                revise_prompt = build_revise_prompt(
+                    context,
+                    step,
+                    "format_missing_options",
+                    f"knowledge_link=({edge.head},{edge.relation},{edge.tail})",
+                    operate_distinction.draft,
+                    operate_calculation.draft,
+                    False,
+                    visual_summary,
+                    extra_requirements=(
+                        "- 必须包含 A-D 四个选项，建议每个选项单独一行，格式为 A. ... / B. ... / C. ... / D. ... 。\n"
+                        "- 题干正文仍需满足：一个自然段、无【】、无(1)(2)(3)、无指令式引导。\n"
+                        "- 确保题目描述的视觉特征在图片中确实存在。"
+                    ),
+                )
+                step = run_step(revise_prompt, image_path, model, current_step_index)
+                step = obfuscate_step_question(step)
+
             print(f"[Step {current_step_index}] 更新后题目:")
             print(step.question)
             if step.evidence is None:
@@ -627,6 +710,27 @@ def generate_steps_graph_mode(
             )
             step = run_step(revise_prompt, image_path, model, current_step_index)
             step = obfuscate_step_question(step)
+
+            # revise 后也要检查选项
+            if not has_abcd_options(step.question):
+                print(f"[Step {current_step_index}] revise 后缺少 A-D 选项，触发格式化 revise")
+                revise_prompt = build_revise_prompt(
+                    context,
+                    step,
+                    "format_missing_options",
+                    f"knowledge_link=({edge.head},{edge.relation},{edge.tail})",
+                    operate_distinction.draft,
+                    operate_calculation.draft,
+                    False,
+                    visual_summary,
+                    extra_requirements=(
+                        "- 必须包含 A-D 四个选项，建议每个选项单独一行，格式为 A. ... / B. ... / C. ... / D. ... 。\n"
+                        "- 题干正文仍需满足：一个自然段、无【】、无(1)(2)(3)、无指令式引导。"
+                    ),
+                )
+                step = run_step(revise_prompt, image_path, model, current_step_index)
+                step = obfuscate_step_question(step)
+
             print(f"[Step {current_step_index}] 更新后题目:")
             print(step.question)
             medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
@@ -735,6 +839,11 @@ def generate_steps_graph_mode(
                         target_path = Path(GENQA_SIMPLE_PATH)
                         print(f"[Review] Step {current_step_index} 结果: correct -> {target_path} (Simple: Medium=X, Strong=O)")
 
+                    if not has_abcd_options(step.question):
+                        print(
+                            f"[Review] Step {current_step_index} 题目缺少 A-D 选项，跳过入库"
+                        )
+                        continue
                     save_genqa_item(
                         target_path,
                         {

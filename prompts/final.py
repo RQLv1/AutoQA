@@ -19,6 +19,7 @@ def build_final_compress_prompt(context: str, steps: list[StepResult], feedback:
         - 必须“留头留尾”：保留首步视觉锚点线索与末步关键结论/判别依据，中间步骤刻意隐藏，仅以隐含条件/背景融入题干。
         - 题干必须围绕图片中心视觉信息展开，参考信息仅作为隐含依据。
         - 题干包含 A-D 选项，且唯一正确答案。
+        - 选项格式建议每个选项单独一行：A. ... / B. ... / C. ... / D. ...
         - 题干中禁止出现“文献”,“文档”,“上下文”,“context”“结合文献”“依据文献”等字样。
         - 禁止“纯实体匹配/纯定义检索”题；必须以计算作为核心。
         - 出题风格偏向条件计算：优先生成“数值/区间/等级”型单选题。
@@ -60,7 +61,13 @@ def build_final_compress_prompt(context: str, steps: list[StepResult], feedback:
         {context.strip()}
 
         只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
+        <question>
+        题干描述（作为连续自然段）。
+        A. 选项内容
+        B. 选项内容
+        C. 选项内容
+        D. 选项内容
+        </question>
         <answer>正确选项字母</answer>
         <reasoning>简要推理过程(不超过4句)</reasoning>
         """
@@ -80,6 +87,7 @@ def build_final_revise_prompt(context: str, final_question: str, final_answer: s
         - 去词汇化(避免文本捷径)：题干不要直接写出图中读数/颜色/形状等具体值，改用“图中…的读数/显示的状态/位于…的部件”等指代性或位置性描述。
         - 去词汇化仅针对图上读数/视觉结果，不限制写入中性规则(阈值/公式/单位换算)。
         - 题干包含 A-D 选项，且唯一正确答案。
+        - 选项格式建议每个选项单独一行：A. ... / B. ... / C. ... / D. ...
         - 干扰项同类同粒度且合理。
         - 题干中禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
         - 风格硬约束：
@@ -98,7 +106,13 @@ def build_final_revise_prompt(context: str, final_question: str, final_answer: s
         {context.strip()}
 
         只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
+        <question>
+        题干描述（作为连续自然段）。
+        A. 选项内容
+        B. 选项内容
+        C. 选项内容
+        D. 选项内容
+        </question>
         <answer>正确选项字母</answer>
         <reasoning>简要推理过程(不超过4句)</reasoning>
         """
@@ -129,6 +143,7 @@ def build_final_harden_prompt(
         - 必须增加一个分支规则（先由图像选择分支，再计算/判级）。
         - 题干必须围绕图片中心视觉锚点，去词汇化仅针对图上读数/视觉结果，不限制写入中性规则(阈值/公式/单位换算)。
         - 选项必须为数值/区间/等级型答案，且单位/数量级一致。
+        - 选项格式建议每个选项单独一行：A. ... / B. ... / C. ... / D. ...
         - 错误选项必须来自三条错误路径：单位换算错 / 读图误读 / 条件误用。
         - 禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
         - 风格硬约束：
@@ -147,7 +162,13 @@ def build_final_harden_prompt(
         {context.strip()}
 
         只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
+        <question>
+        题干描述（作为连续自然段）。
+        A. 选项内容
+        B. 选项内容
+        C. 选项内容
+        D. 选项内容
+        </question>
         <answer>正确选项字母</answer>
         <reasoning>简要推理过程(不超过4句)</reasoning>
         """
@@ -183,6 +204,7 @@ def build_final_targeted_revise_prompt(
         - 题目必须包含至少2步推理（先由图选分支或读关键线索，再计算/判级/比较），但不要明示步骤。
         - 题干必须围绕图片中心视觉锚点，去词汇化仅针对图上读数/视觉结果，不限制写入中性规则(阈值/公式/单位换算)。
         - 选项必须为数值/区间/等级型答案，且单位/数量级一致。
+        - 选项格式建议每个选项单独一行：A. ... / B. ... / C. ... / D. ...
         - 干扰项必须体现三种错误路径：单位换算错 / 读图误读 / 条件误用。
         - 禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
         - 风格硬约束：
@@ -202,7 +224,13 @@ def build_final_targeted_revise_prompt(
         {context.strip()}
 
         只输出以下格式:
-        <question>题干，包含 A-D 选项</question>
+        <question>
+        题干描述（作为连续自然段）。
+        A. 选项内容
+        B. 选项内容
+        C. 选项内容
+        D. 选项内容
+        </question>
         <answer>正确选项字母</answer>
         <reasoning>简要推理过程(不超过4句)</reasoning>
         """

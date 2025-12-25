@@ -13,6 +13,7 @@ from utils.config import (
     MODEL_SUM,
 )
 from utils.details_logger import get_details_logger
+from utils.mcq import has_abcd_options
 from utils.parsing import extract_tag_optional
 from utils.schema import EpisodeResult, StageResult, StepResult
 from utils.terminal import print_final_input, print_final_summary
@@ -73,6 +74,30 @@ def run_episode(
     )
 
     while True:
+        if not has_abcd_options(stage_final.question):
+            if refine_attempts >= max_refine_attempts:
+                break
+            refine_attempts += 1
+            stage_final, refine_feedback = refine_final_question(
+                context=context,
+                steps=compress_steps,
+                image_path=image_path,
+                final=stage_final,
+                reason="format_missing_options",
+                review_raw="补全为标准单选题，必须包含 A-D 四个选项（建议每个选项单独一行：A. / B. / C. / D.）。",
+            )
+            stage_final.question = obfuscate_question(stage_final.question, raw=stage_final.raw)
+            get_details_logger().log_event(
+                "final_stage_refined",
+                {
+                    "question": stage_final.question,
+                    "answer": stage_final.answer,
+                    "reasoning": stage_final.reasoning,
+                    "reason": "format_missing_options",
+                    "feedback": refine_feedback,
+                },
+            )
+            continue
         difficulty_metrics = evaluate_difficulty(
             stage_final,
             image_path,
