@@ -27,10 +27,9 @@ python -m py_compile $(find . -name "*.py" -not -path "./env/*" | tr '\n' ' ')
 ### 1. Main Loop (`main.py`)
 
 Orchestrates adversarial filtering:
-- Runs episodes until collecting target number of hard questions (default: 5)
-- Filters by difficulty: Medium solver fails → keep, Medium succeeds → discard
-- Classifies into Simple/Medium/Hard based on Medium/Strong solver results
-- Uses Review agent to verify correctness before saving
+- Runs episodes until collecting target number of strong questions (default: 5)
+- Routes outcomes by solver results: Medium correct → Simple, Medium fails & Strong correct → Medium, both fail → Strong
+- Uses Review agent plus text-only/no-image checks before saving
 
 ### 2. Episode Structure (`pipeline/pipeline_episode.py`)
 
@@ -140,9 +139,9 @@ All settings support environment variable overrides:
 - `MAX_SHORTCUT_EDGES`: allowed shortcut edges (default: 10)
 
 **Output**:
-- `GENQA_SIMPLE_PATH`: Medium fails, Strong passes (default: genqa_simple.json)
-- `GENQA_MEDIUM_PATH`: Medium fails, Strong fails (default: genqa_medium.json)
-- `GENQA_HARD_PATH`: both solvers fail (default: genqa_hard.json)
+- `GENQA_SIMPLE_PATH`: Medium solves (default: genqa_simple.json)
+- `GENQA_MEDIUM_PATH`: Medium fails, Strong solves (default: genqa_medium.json)
+- `GENQA_STRONG_PATH`: Medium and Strong fail (default: genqa_strong.json)
 - `DETAILS_PATH`: execution log with stdout events (default: details.json)
 
 ## Module Organization

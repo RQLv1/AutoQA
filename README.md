@@ -116,11 +116,12 @@ AutoQA 是一个「图片为主 + 参考信息为辅」驱动的自动出题系�
 
 `main.py` 负责最终筛选逻辑（`run_episode()` 内包含 compress + difficulty 评估）：
 
-- `medium_correct == true` → 说明 Episode 内评估仍偏简单，直接废弃并继续生成
-- `medium_correct == false` → 保留并记录，`strong_correct` 仅用于标记“中难/极难”
-- 若 `medium_correct == false` → 触发 Review 智能体复核；复核为正确则写入 `GENQA_SIMPLE_PATH` 或 `GENQA_HARD_PATH`
+- `medium_correct == true` → 视为简单题，Review 通过则写入 `GENQA_SIMPLE_PATH`
+- `medium_correct == false && strong_correct == true` → 视为中等题，Review 通过则写入 `GENQA_MEDIUM_PATH`
+- `medium_correct == false && strong_correct == false` → 视为困难题，Review 通过则写入 `GENQA_STRONG_PATH`
+- 任意 Text-Only/No-Image 可解则直接废弃
 
-默认会一直生成直到找到固定数量的难题（见 `main.py` 的 `target_hard_questions`）。
+默认会一直生成直到找到固定数量的困难题（见 `main.py` 的 `target_strong_questions`，默认 5）。
 
 ---
 
@@ -179,7 +180,8 @@ python main.py
 * `MODEL_SUM（或 MODEL_STAGE_SUM）`
 * `MAX_ROUNDS`
 * `GENQA_SIMPLE_PATH`
-* `GENQA_HARD_PATH`
+* `GENQA_MEDIUM_PATH`
+* `GENQA_STRONG_PATH`
 * `DETAILS_PATH`（默认 `details.json`）
 * `API_MAX_RETRIES`：API 最大重试次数（默认 5）
 * `API_RETRY_SLEEP_SECONDS`：API 报错后等待秒数再重试（默认 5）
@@ -232,8 +234,9 @@ python main.py
 
 默认写以下文件：
 
-- `GENQA_SIMPLE_PATH`（默认 `genqa_simple.json`）：Medium 失败 & Strong 成功，经 Review 判定题目正确才会加入（包含 step/final）。
-- `GENQA_HARD_PATH`（默认 `genqa_hard.json`）：Medium 失败 & Strong 失败，经 Review 判定题目正确才会加入（包含 step/final）。
+- `GENQA_SIMPLE_PATH`（默认 `genqa_simple.json`）：Medium 答对，经 Review 判定题目正确才会加入（包含 step/final）。
+- `GENQA_MEDIUM_PATH`（默认 `genqa_medium.json`）：Medium 失败 & Strong 成功，经 Review 判定题目正确才会加入（包含 step/final）。
+- `GENQA_STRONG_PATH`（默认 `genqa_strong.json`）：Medium 失败 & Strong 失败，经 Review 判定题目正确才会加入（包含 step/final）。
 - `DETAILS_PATH`（默认 `details.json`）：记录 stdout 与事件，UTF-8 多行 JSON，便于阅读与定位。
 - `question_log.jsonl/.json` 写入当前已禁用（如需恢复可在 `pipeline/pipeline_logging.py` 中恢复 `save_round_questions`）。
 

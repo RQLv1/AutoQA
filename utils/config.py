@@ -50,7 +50,9 @@ API_RECONNECT_SLEEP_SECONDS = int(
 MAX_ROUNDS = int(os.getenv("MAX_ROUNDS", "10"))  # 最大生成轮次
 GENQA_SIMPLE_PATH = os.getenv("GENQA_SIMPLE_PATH", "genqa_simple.json")  # 简单题目保存路径
 GENQA_MEDIUM_PATH = os.getenv("GENQA_MEDIUM_PATH", "genqa_medium.json")  # 中等题目保存路径
-GENQA_HARD_PATH = os.getenv("GENQA_HARD_PATH", "genqa_hard.json")  # 难题保存路径
+GENQA_STRONG_PATH = os.getenv(
+    "GENQA_STRONG_PATH", os.getenv("GENQA_HARD_PATH", "genqa_strong.json")
+)  # 困难题目保存路径
 DETAILS_PATH = os.getenv("DETAILS_PATH", "details.json")  # 终端与草稿信息日志
 
 MAX_STEPS_PER_ROUND = int(os.getenv("MAX_STEPS_PER_ROUND", "6"))  # 每轮生成的最大推理步数

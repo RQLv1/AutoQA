@@ -22,8 +22,9 @@ from steps.quality import is_low_quality_entity_matching
 from steps.runner import run_step, select_model_for_step
 from steps.validation import validate_step
 from utils.config import (
-    GENQA_HARD_PATH,
+    GENQA_MEDIUM_PATH,
     GENQA_SIMPLE_PATH,
+    GENQA_STRONG_PATH,
     MAX_STEPS_PER_ROUND,
     MIN_HOPS,
     MODEL_SOLVE_MEDIUM,
@@ -298,7 +299,7 @@ def generate_steps_prompt_driven(
             
         if not (medium_correct and strong_correct) and step.reasoning:
             print(f"推理过程: <reasoning>{step.reasoning}</reasoning>")
-        if step.answer_letter and not medium_correct:
+        if step.answer_letter:
             review_raw, review_passed, review_reason = review_question(
                 step.question,
                 step.answer_letter,
@@ -306,14 +307,15 @@ def generate_steps_prompt_driven(
                 image_path,
             )
             if review_passed is True:
-                strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
-                    step.question, MODEL_SOLVE_STRONG
-                )
+                if strong_text_only_raw is None or strong_text_only_correct is None:
+                    strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
+                        step.question, MODEL_SOLVE_STRONG
+                    )
+                    strong_text_only_correct = grade_answer(
+                        step.answer_letter or "", strong_text_only_letter
+                    )
                 strong_no_image_raw, strong_no_image_letter = solve_mcq_no_image(
                     step.question, MODEL_SOLVE_STRONG
-                )
-                strong_text_only_correct = grade_answer(
-                    step.answer_letter or "", strong_text_only_letter
                 )
                 strong_no_image_correct = grade_answer(
                     step.answer_letter or "", strong_no_image_letter
@@ -323,11 +325,13 @@ def generate_steps_prompt_driven(
                     "strong_correct": strong_correct,
                     "strong_text_only_correct": strong_text_only_correct,
                     "strong_no_image_correct": strong_no_image_correct,
-                    "difficulty_score": 1.0
-                    if (strong_correct and not medium_correct)
-                    else 0.5
-                    if strong_correct
-                    else 0.0,
+                    "difficulty_score": (
+                        0.0
+                        if medium_correct
+                        else 0.5
+                        if strong_correct
+                        else 1.0
+                    ),
                     "cross_modal_used": step.cross_modal_bridge,
                     "num_hops": step.k,
                     "medium_pred": medium_letter,
@@ -342,13 +346,15 @@ def generate_steps_prompt_driven(
                 if strong_text_only_correct or strong_no_image_correct:
                     print(f"[Review] Step {k} 结果: text-only/no-image 可解，跳过入库")
                 else:
-                    # 逻辑修改：Strong 错 -> Hard; Strong 对 -> Simple
-                    if not strong_correct:
-                        target_path = Path(GENQA_HARD_PATH)
-                        print(f"[Review] Step {k} 结果: correct -> {target_path} (Hard: Medium=X, Strong=X)")
-                    else:
+                    if medium_correct:
                         target_path = Path(GENQA_SIMPLE_PATH)
-                        print(f"[Review] Step {k} 结果: correct -> {target_path} (Simple: Medium=X, Strong=O)")
+                        print(f"[Review] Step {k} 结果: correct -> {target_path} (Simple: Medium=O)")
+                    elif strong_correct:
+                        target_path = Path(GENQA_MEDIUM_PATH)
+                        print(f"[Review] Step {k} 结果: correct -> {target_path} (Medium: Medium=X, Strong=O)")
+                    else:
+                        target_path = Path(GENQA_STRONG_PATH)
+                        print(f"[Review] Step {k} 结果: correct -> {target_path} (Strong: Medium=X, Strong=X)")
 
                     save_genqa_item(
                         target_path,

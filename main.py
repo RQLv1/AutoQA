@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from pipeline import run_episode
-from utils.config import GENQA_HARD_PATH, GENQA_MEDIUM_PATH, GENQA_SIMPLE_PATH, MAX_ROUNDS
+from utils.config import GENQA_MEDIUM_PATH, GENQA_SIMPLE_PATH, GENQA_STRONG_PATH, MAX_ROUNDS
 from utils.details_logger import setup_details_logging
 from utils.genqa import save_genqa_item
 
@@ -21,19 +21,19 @@ def main() -> None:
 
     genqa_simple_path = Path(GENQA_SIMPLE_PATH)
     genqa_medium_path = Path(GENQA_MEDIUM_PATH)
-    genqa_hard_path = Path(GENQA_HARD_PATH)
+    genqa_strong_path = Path(GENQA_STRONG_PATH)
     generated_count = 0
     simple_questions_found = 0
     medium_questions_found = 0
-    hard_questions_found = 0
-    target_hard_questions = 5
+    strong_questions_found = 0
+    target_strong_questions = 5
     max_attempts = MAX_ROUNDS * 3
     feedback = ""
     previous_final_question = None
 
-    print(f"=== 开始对抗式生成模式 (Target: {target_hard_questions} Hard Questions) ===")
+    print(f"=== 开始对抗式生成模式 (Target: {target_strong_questions} Strong Questions) ===")
 
-    while hard_questions_found < target_hard_questions:
+    while strong_questions_found < target_strong_questions:
         generated_count += 1
         print(f"\n>>> 尝试第 {generated_count} 次生成 ...")
 
@@ -74,9 +74,9 @@ def main() -> None:
                 medium_questions_found += 1
                 print(f"[Review] 结果: correct -> {target_path} (Medium: Medium=X, Strong=O, TextOnly=X)")
             else:
-                target_path = genqa_hard_path
-                hard_questions_found += 1
-                print(f"[Review] 结果: correct -> {target_path} (Hard: Medium=X, Strong=X, TextOnly=X)")
+                target_path = genqa_strong_path
+                strong_questions_found += 1
+                print(f"[Review] 结果: correct -> {target_path} (Strong: Medium=X, Strong=X, TextOnly=X)")
 
             save_genqa_item(
                 target_path,
@@ -112,7 +112,7 @@ def main() -> None:
         f"共尝试 {generated_count} 次，"
         f"筛选出 Simple={simple_questions_found}, "
         f"Medium={medium_questions_found}, "
-        f"Hard={hard_questions_found}。"
+        f"Strong={strong_questions_found}。"
     )
 
 

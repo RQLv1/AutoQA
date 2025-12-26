@@ -11,7 +11,8 @@ from pipeline.pipeline_solvers import (
 )
 from steps.validation import validate_step
 from utils.config import (
-    GENQA_HARD_PATH,
+    GENQA_MEDIUM_PATH,
+    GENQA_STRONG_PATH,
     GENQA_SIMPLE_PATH,
     MODEL_SOLVE_MEDIUM,
     MODEL_SOLVE_STRONG,
@@ -108,9 +109,8 @@ def review_and_save_step(
 ) -> None:
     """
     Review step and save to appropriate output file if it passes review.
-    Only runs review if medium solver fails.
     """
-    if not step.answer_letter or medium_correct:
+    if not step.answer_letter:
         return
 
     review_raw, review_passed, review_reason = review_question(
@@ -140,11 +140,13 @@ def review_and_save_step(
             "strong_correct": strong_correct,
             "strong_text_only_correct": strong_text_only_correct,
             "strong_no_image_correct": strong_no_image_correct,
-            "difficulty_score": 1.0
-            if (strong_correct and not medium_correct)
-            else 0.5
-            if strong_correct
-            else 0.0,
+            "difficulty_score": (
+                0.0
+                if medium_correct
+                else 0.5
+                if strong_correct
+                else 1.0
+            ),
             "cross_modal_used": step.cross_modal_bridge,
             "num_hops": step.k,
             "medium_pred": medium_letter,
@@ -162,39 +164,20 @@ def review_and_save_step(
                 f"[Review] Step {step_index} 结果: text-only/no-image 可解，跳过入库"
             )
         else:
-            # Step 0 logic: Strong correct -> Hard, Strong incorrect -> skip
-            if step_index == 0:
-                if strong_correct:
-                    target_path = Path(GENQA_HARD_PATH)
-                    print(f"[Review] Step 0 结果: correct -> {target_path} (Hard: Medium=X, Strong=O)")
-                    save_genqa_item(
-                        target_path,
-                        {
-                            "source": "step",
-                            "step_k": 0,
-                            "question": step.question,
-                            "answer": step.answer_letter,
-                            "reasoning": step.reasoning,
-                            "difficulty_metrics": step_metrics,
-                            "review_decision": "correct",
-                            "review_raw": review_raw,
-                        },
-                    )
-                else:
-                    print(f"[Review] Step 0 结果: Strong Solver 也失败，视为无效/超难题，跳过入库")
-            # Step 1+ logic: Strong incorrect -> Hard, Strong correct -> Simple
+            if medium_correct:
+                target_path = Path(GENQA_SIMPLE_PATH)
+                print(f"[Review] Step {step_index} 结果: correct -> {target_path} (Simple: Medium=O)")
+            elif strong_correct:
+                target_path = Path(GENQA_MEDIUM_PATH)
+                print(f"[Review] Step {step_index} 结果: correct -> {target_path} (Medium: Medium=X, Strong=O)")
             else:
-                if not strong_correct:
-                    target_path = Path(GENQA_HARD_PATH)
-                    print(f"[Review] Step {step_index} 结果: correct -> {target_path} (Hard: Medium=X, Strong=X)")
-                else:
-                    target_path = Path(GENQA_SIMPLE_PATH)
-                    print(f"[Review] Step {step_index} 结果: correct -> {target_path} (Simple: Medium=X, Strong=O)")
+                target_path = Path(GENQA_STRONG_PATH)
+                print(f"[Review] Step {step_index} 结果: correct -> {target_path} (Strong: Medium=X, Strong=X)")
 
-                save_genqa_item(
-                    target_path,
-                    {
-                        "source": "step",
+            save_genqa_item(
+                target_path,
+                {
+                    "source": "step",
                         "step_k": step_index,
                         "question": step.question,
                         "answer": step.answer_letter,
