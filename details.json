@@ -2,7 +2,374 @@
   "stdout": [
     "=== 开始对抗式生成模式 (Target: 5 Hard Questions) ===",
     "",
-    ">>> 尝试第 1 次生成 ..."
+    ">>> 尝试第 1 次生成 ...",
+    "[api_client] call failed (attempt 1/5), retry in 10s: APIConnectionError: Connection error.",
+    "[api_client] call failed (attempt 2/5), retry in 10s: APIConnectionError: Connection error."
   ],
-  "events": []
+  "events": [
+    {
+      "ts": 1766713333.753,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "Traceback (most recent call last):"
+      }
+    },
+    {
+      "ts": 1766713333.753,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/main.py\", line 120, in <module>"
+      }
+    },
+    {
+      "ts": 1766713333.753,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    main()"
+      }
+    },
+    {
+      "ts": 1766713333.753,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/main.py\", line 40, in main"
+      }
+    },
+    {
+      "ts": 1766713333.754,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    episode = run_episode("
+      }
+    },
+    {
+      "ts": 1766713333.754,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/pipeline/pipeline_episode.py\", line 37, in run_episode"
+      }
+    },
+    {
+      "ts": 1766713333.754,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    visual_knowledge = build_visual_knowledge(image_path)"
+      }
+    },
+    {
+      "ts": 1766713333.754,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/pipeline/pipeline_vision_knowledge.py\", line 76, in build_visual_knowledge"
+      }
+    },
+    {
+      "ts": 1766713333.755,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    edges = extract_edges_from_context(description, source_type=\"image\")"
+      }
+    },
+    {
+      "ts": 1766713333.755,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/graph/pipeline_graph.py\", line 145, in extract_edges_from_context"
+      }
+    },
+    {
+      "ts": 1766713333.756,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    raw = call_text_model("
+      }
+    },
+    {
+      "ts": 1766713333.756,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/utils/api_client.py\", line 146, in call_text_model"
+      }
+    },
+    {
+      "ts": 1766713333.757,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    resp = client.chat.completions.create("
+      }
+    },
+    {
+      "ts": 1766713333.757,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/openai/_utils/_utils.py\", line 286, in wrapper"
+      }
+    },
+    {
+      "ts": 1766713333.757,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    return func(*args, **kwargs)"
+      }
+    },
+    {
+      "ts": 1766713333.757,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/openai/resources/chat/completions/completions.py\", line 1192, in create"
+      }
+    },
+    {
+      "ts": 1766713333.757,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    return self._post("
+      }
+    },
+    {
+      "ts": 1766713333.757,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/openai/_base_client.py\", line 1259, in post"
+      }
+    },
+    {
+      "ts": 1766713333.758,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))"
+      }
+    },
+    {
+      "ts": 1766713333.76,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/openai/_base_client.py\", line 982, in request"
+      }
+    },
+    {
+      "ts": 1766713333.76,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    response = self._client.send("
+      }
+    },
+    {
+      "ts": 1766713333.76,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/httpx/_client.py\", line 914, in send"
+      }
+    },
+    {
+      "ts": 1766713333.76,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    response = self._send_handling_auth("
+      }
+    },
+    {
+      "ts": 1766713333.761,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/httpx/_client.py\", line 942, in _send_handling_auth"
+      }
+    },
+    {
+      "ts": 1766713333.762,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    response = self._send_handling_redirects("
+      }
+    },
+    {
+      "ts": 1766713333.765,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/httpx/_client.py\", line 979, in _send_handling_redirects"
+      }
+    },
+    {
+      "ts": 1766713333.766,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    response = self._send_single_request(request)"
+      }
+    },
+    {
+      "ts": 1766713333.766,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/httpx/_client.py\", line 1014, in _send_single_request"
+      }
+    },
+    {
+      "ts": 1766713333.766,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    response = transport.handle_request(request)"
+      }
+    },
+    {
+      "ts": 1766713333.766,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/httpx/_transports/default.py\", line 250, in handle_request"
+      }
+    },
+    {
+      "ts": 1766713333.767,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    resp = self._pool.handle_request(req)"
+      }
+    },
+    {
+      "ts": 1766713333.767,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/httpcore/_sync/connection_pool.py\", line 256, in handle_request"
+      }
+    },
+    {
+      "ts": 1766713333.767,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    raise exc from None"
+      }
+    },
+    {
+      "ts": 1766713333.767,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/httpcore/_sync/connection_pool.py\", line 236, in handle_request"
+      }
+    },
+    {
+      "ts": 1766713333.768,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    response = connection.handle_request("
+      }
+    },
+    {
+      "ts": 1766713333.768,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/httpcore/_sync/http_proxy.py\", line 343, in handle_request"
+      }
+    },
+    {
+      "ts": 1766713333.768,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    return self._connection.handle_request(request)"
+      }
+    },
+    {
+      "ts": 1766713333.768,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/httpcore/_sync/http11.py\", line 136, in handle_request"
+      }
+    },
+    {
+      "ts": 1766713333.769,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    raise exc"
+      }
+    },
+    {
+      "ts": 1766713333.769,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/httpcore/_sync/http11.py\", line 106, in handle_request"
+      }
+    },
+    {
+      "ts": 1766713333.769,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    ) = self._receive_response_headers(**kwargs)"
+      }
+    },
+    {
+      "ts": 1766713333.77,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/httpcore/_sync/http11.py\", line 177, in _receive_response_headers"
+      }
+    },
+    {
+      "ts": 1766713333.77,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    event = self._receive_event(timeout=timeout)"
+      }
+    },
+    {
+      "ts": 1766713333.77,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/httpcore/_sync/http11.py\", line 217, in _receive_event"
+      }
+    },
+    {
+      "ts": 1766713333.771,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    data = self._network_stream.read("
+      }
+    },
+    {
+      "ts": 1766713333.771,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/worksapce/任务/AutoQA/env/lib/python3.10/site-packages/httpcore/_backends/sync.py\", line 128, in read"
+      }
+    },
+    {
+      "ts": 1766713333.771,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    return self._sock.recv(max_bytes)"
+      }
+    },
+    {
+      "ts": 1766713333.772,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/.local/share/uv/python/cpython-3.10.19-macos-aarch64-none/lib/python3.10/ssl.py\", line 1292, in recv"
+      }
+    },
+    {
+      "ts": 1766713333.772,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    return self.read(buflen)"
+      }
+    },
+    {
+      "ts": 1766713333.772,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "  File \"/Users/lvrenquan/.local/share/uv/python/cpython-3.10.19-macos-aarch64-none/lib/python3.10/ssl.py\", line 1165, in read"
+      }
+    },
+    {
+      "ts": 1766713333.774,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "    return self._sslobj.read(len)"
+      }
+    },
+    {
+      "ts": 1766713333.774,
+      "kind": "stderr_line",
+      "payload": {
+        "line": "KeyboardInterrupt"
+      }
+    }
+  ]
 }

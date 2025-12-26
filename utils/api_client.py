@@ -99,7 +99,7 @@ def call_vision_model(
     max_attempts = max(5, int(API_RECONNECT_RETRIES))
     for attempt in range(1, max_attempts + 1):
         try:
-            client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
+            client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL, timeout=180.0)
             resp = client.chat.completions.create(
                 model=model,
                 temperature=temperature,
@@ -142,7 +142,7 @@ def call_text_model(
     max_attempts = max(5, int(API_RECONNECT_RETRIES))
     for attempt in range(1, max_attempts + 1):
         try:
-            client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
+            client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL, timeout=180.0)
             resp = client.chat.completions.create(
                 model=model,
                 temperature=temperature,
