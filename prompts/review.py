@@ -17,6 +17,7 @@ def build_review_prompt(
         任务:
         1. 检查题目是否为标准单选题：必须包含 A/B/C/D 四个选项，且答案为其中一个字母；否则判为 incorrect。
         2. 检查推理是否合理且一致。
+        3. 【新增】检查数值区间互斥性：如果选项包含数值范围（如 10-20），必须检查各选项是否存在数学重叠。如果存在重叠导致答案不唯一（例如 A:10-20, B:15-25），必须判为 incorrect。
 
         输出格式:
         - 无问题则输出: <review>correct</review>
@@ -25,7 +26,7 @@ def build_review_prompt(
 
         示例:
         <review>incorrect</review>
-        <reason>答案字母 B 与推理过程中得出的结论 A 不一致</reason>
+        <reason>选项 A (0.9-1.0) 与选项 B (0.95-1.05) 存在数值重叠，导致题目不严谨</reason>
         """
     ).strip()
 
