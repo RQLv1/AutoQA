@@ -1,0 +1,28 @@
+[
+  {
+    "source": "step",
+    "step_k": 1,
+    "question": "根据对图片的视觉分析：图1a 顶部示意中，加入“Extra TBOT”前后的两个阶段颗粒内部蓝色标记点（代表同一前驱）分布明显不同：在“Extra TBOT”处理后得到的颗粒中，蓝点主要集中于颗粒内部，而在其后经有机壳层修饰得到的最终颗粒中，蓝点除保留在核心外，还被部分“稀释”到外层示意区域。若定义前驱利用效率系数 η 为“最终颗粒核心区域蓝点占整颗粒蓝点总数的比例”与“仅经历 Extra TBOT 处理后颗粒核心区域蓝点占整颗粒蓝点总数比例”的比值，请结合图1a 中两阶段蓝点的大致占比变化，判断 η 更可能落在哪一数值区间？\nA. 0.90–1.00  \nB. 0.95–1.05  \nC. 1.00–1.10  \nD. 1.05–1.15",
+    "answer": "B",
+    "reasoning": "从图1a 观察，“Extra TBOT”后阶段中蓝点几乎全部位于颗粒内部，占比接近 1；最终带有壳层的颗粒中，仍有大部分蓝点集中在核心，但有少量分散到外层，占比略低于 1。代入 η＝P最终/PExtra，可估计 PExtra≈1，P最终≈0.95–1.00，因此 η 接近 1，最可能位于 0.95–1.05 区间，对应选项 B。",
+    "difficulty_metrics": {
+      "medium_correct": false,
+      "strong_correct": false,
+      "strong_text_only_correct": false,
+      "strong_no_image_correct": false,
+      "difficulty_score": 0.0,
+      "cross_modal_used": false,
+      "num_hops": 1,
+      "medium_pred": "A",
+      "strong_pred": "A",
+      "strong_text_only_pred": "A",
+      "strong_no_image_pred": "A",
+      "medium_raw": "<answer>A</answer>",
+      "strong_raw": "<answer>A</answer>",
+      "strong_text_only_raw": "<answer>A</answer>",
+      "strong_no_image_raw": "<answer>A</answer>"
+    },
+    "review_decision": "correct",
+    "review_raw": "<review>correct</review>"
+  }
+]
