@@ -4,7 +4,7 @@ import os
 # 模型配置 (Model Configuration)
 # =============================================================================
 # 生成阶段使用的模型
-MODEL_STAGE_1 = os.getenv("MODEL_STAGE_1", "gpt-51-1113-global")  # 阶段1：通常用于初始分析
+MODEL_STAGE_1 = os.getenv("MODEL_STAGE_1", "gemini-3-pro-preview")  # 阶段1：通常用于初始分析 "gpt-51-1113-global"
 MODEL_STAGE_2 = os.getenv("MODEL_STAGE_2", MODEL_STAGE_1)  # 阶段2：通常用于深入推理
 MODEL_STAGE_3 = os.getenv("MODEL_STAGE_3", MODEL_STAGE_1)  # 阶段3：通常用于最终生成
 # 视觉理解与知识抽取使用的模型
