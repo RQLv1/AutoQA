@@ -1,3 +1,4 @@
+import argparse
 from pathlib import Path
 
 from pipeline import run_episode
@@ -13,7 +14,19 @@ def _pick_existing_path(candidates: list[Path]) -> Path:
     raise FileNotFoundError(f"未找到文件: {', '.join(str(p) for p in candidates)}")
 
 
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="AutoQA adversarial generation")
+    parser.add_argument(
+        "--mode",
+        default="multi_select",
+        choices=["multi_select", "single_select"],
+        help="题型模式（支持多选题 multi_select 或单选题 single_select）",
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
+    args = _parse_args()
     setup_details_logging()
     image_path = _pick_existing_path([Path("data/test.png"), Path("test.png")])
     context_path = _pick_existing_path([Path("data/context.txt"), Path("context.txt")])
@@ -31,7 +44,9 @@ def main() -> None:
     feedback = ""
     previous_final_question = None
 
-    print(f"=== 开始对抗式生成模式 (Target: {target_strong_questions} Strong Questions) ===")
+    print(
+        f"=== 开始对抗式生成模式 (mode={args.mode}, Target: {target_strong_questions} Strong Questions) ==="
+    )
 
     while strong_questions_found < target_strong_questions:
         generated_count += 1
@@ -43,6 +58,7 @@ def main() -> None:
             feedback=feedback,
             previous_final_question=previous_final_question,
             prior_steps=None,
+            mode=args.mode,
         )
         if episode.stage_final and episode.stage_final.question:
             previous_final_question = episode.stage_final.question
@@ -50,8 +66,9 @@ def main() -> None:
 
         metrics = episode.difficulty_metrics
         medium_correct = metrics.get("medium_correct", False)
+        medium_partial = metrics.get("medium_partial_correct", False)
         strong_correct = metrics.get("strong_correct")
-        strong_text_only_correct = metrics.get("strong_text_only_correct", True)
+        strong_text_only_correct = metrics.get("strong_text_only_correct", False)
 
         if strong_text_only_correct:
             print("发现文本捷径：Text-only 可解，直接废弃。")
@@ -69,6 +86,10 @@ def main() -> None:
                 target_path = genqa_simple_path
                 simple_questions_found += 1
                 print(f"[Review] 结果: correct -> {target_path} (Simple: Medium=O, TextOnly=X)")
+            elif medium_partial:
+                target_path = genqa_medium_path
+                medium_questions_found += 1
+                print(f"[Review] 结果: correct -> {target_path} (Medium: Medium=Partial，无错选)")
             elif strong_correct:
                 target_path = genqa_medium_path
                 medium_questions_found += 1
@@ -94,7 +115,7 @@ def main() -> None:
                 "当前已收集题目: "
                 f"Simple={simple_questions_found}, "
                 f"Medium={medium_questions_found}, "
-                f"Hard={hard_questions_found}/{target_hard_questions}"
+                f"Strong={strong_questions_found}/{target_strong_questions}"
             )
         elif review_passed is False:
             review_decision = "incorrect"

@@ -91,6 +91,7 @@ def print_final_summary(
     print(
         "  medium="
         f"{_fmt_bool(metrics.get('medium_correct'))}"
+        f" | medium_partial={_fmt_bool(metrics.get('medium_partial_correct'))}"
         f" | strong={_fmt_bool(metrics.get('strong_correct'))}"
         f" | text_only={_fmt_bool(metrics.get('text_only_veto'))}"
         f" | review={_fmt_bool(review_passed)}"

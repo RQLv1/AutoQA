@@ -1,57 +1,129 @@
-### 1. 修改 `prompts/steps.py`：解除对判据和逻辑深度的封锁
 
- **目标** ：允许题干包含完整的判断标准（阈值表），并允许复杂的链式逻辑，从而消除“模棱两可”并提升难度。
+### 修改方案：支持多选模式 (Multiple Select) 与 A-H 选项
 
-请在 `build_graph_1hop_step_prompt`（以及 `build_stage2_step_prompt` 等类似函数）中找到以下 **“信息约束”** 部分并进行替换。
+#### 1. 修改 Prompt 生成 (提示词)
 
-**修改建议 (Refined Code):**
+ **目标** ：明确告知模型生成多选题，支持 A-H 选项范围，并移除互斥限制。
 
-**Python**
+* **文件** : `rqlv1/autoqa/AutoQA-rqlv/prompts/final.py`
+* **函数** : `build_final_compress_prompt`, `build_final_revise_prompt`, `build_final_harden_prompt`, `build_final_targeted_revise_prompt`
+* **修改点** :
+  *  **题型定义** : 将 `单选题(MCQ)` 修改为 `多选题(Multiple Select Question)`。
+  *  **选项范围** : 明确指示 `选项范围为 A-H (至少4个，最多8个)`。
+  *  **答案格式** : 修改 `<answer>` 说明，允许输出如 `AC`, `A,C,E` 等组合。
+  *  **生成约束** :
+  * 删除“四个数值选项”的硬性数量限制，改为“选项数量 4-8 个”。
+  * 删除“互斥”相关暗示，明确“可能有一个或多个正确选项”。
+  * 保留“干扰项设计”逻辑，但需适配多选（例如：漏选、多选包含干扰项）。
+* **文件** : `rqlv1/autoqa/AutoQA-rqlv/prompts/solver.py`
+* **函数** : `build_solver_prompt`, `build_solver_prompt_text_only`
+* **修改点** :
+  *  **任务说明** : 增加 `这是一道多选题，请选择所有正确的选项`。
+  *  **输出格式** : 允许 `<answer>A,C</answer>` 或 `<answer>AC</answer>`。
 
-```
-        - 信息约束：
-          - **必须完整保留解题所需的判据**：若题目要求根据计算结果判定等级（如偏离度等级、安全等级），**必须在题干中明确列出具体的数值阈值表**（例如：“规定：F < 1.0 为低估，1.0 ≤ F < 1.1 为正常，F ≥ 1.1 为高估”），严禁使用“按文中规定”这种模糊表述代替具体数值。
-          - **支持链式推理**：允许描述 A -> B -> C 的多步推导逻辑。不要为了简化而牺牲逻辑的严密性。如果需要先计算中间变量再查表，请完整描述这一过程。
-          - **自包含性**：题目必须包含所有必要的常量定义和公式，确保读者仅凭题干和图片即可得出唯一确定的答案，无需“猜测”文中的隐藏设定。
-```
+#### 2. 修改答案解析逻辑 (Parsing)
 
- **效果预期** ：
-修改后，生成的题目将不再出现“偏离等级最接近哪一项”却不给范围的情况，而是会明确给出 `[0.9, 1.05)` 等具体区间，使题目从“猜谜”变为严谨的“计算+查表”题。
+ **目标** ：正确提取形如 "A, C" 或 "AC" 的多选答案，并标准化为 "AC"。
 
----
+* **文件** : `rqlv1/autoqa/AutoQA-rqlv/utils/parsing.py`
+* **修改全局常量/正则** (如有): 确保所有涉及选项的正则支持 `[A-H]` 而非仅 `[A-D]`。
+* **函数** : `parse_option_letter_optional`, `_find_option_letter`, `extract_option_text`
+* **修改点** :
+  *  **正则扩展** : 将 `r"[A-D]"` 扩展为 `r"[A-H]"`。
+  *  **提取逻辑** : 不再只返回匹配到的最后一个字母，而是提取所有出现的字母， **去重并按字母顺序排序** 。
+  *  **代码示例** :
+  **Python**
 
-### 2. 修改 `prompts/obfuscate.py`：保留关键计算数据
+  ```
+  def parse_option_letters(text: str) -> str:
+      # 提取 A-H 的所有字母，忽略大小写
+      matches = re.findall(r"[A-H]", text.upper())
+      if not matches:
+          return ""
+      # 去重并排序，例如: "C, A" -> "AC"
+      return "".join(sorted(set(matches)))
+  ```
 
- **目标** ：防止“去词汇化”过程误删了解题必须的视觉读数（Visual Readings），导致计算题无法下手或变得模糊。
+    ***兼容性** : 替换原有的 `parse_option_letter` 逻辑，确保单选答案 (如 "A") 也能通过此逻辑变为 "A"。
 
-请修改 `build_obfuscate_prompt` 函数中的提示词。
+#### 3. 修改求解与判题逻辑 (Solver & Grading)
 
-**修改建议 (Refined Code):**
+ **目标** ：实现集合判题（全对才算对），并支持“部分正确”的特殊标记。
 
-**Python**
+* **文件** : `rqlv1/autoqa/AutoQA-rqlv/pipeline/pipeline_solvers.py`
+* **函数** : `grade_answer`
+* **修改点** : 使用集合比较实现严格匹配。
+* **代码示例** :
+  **Python**
 
-```
-        - **精准保留计算锚点**：对于计算类题目，**必须保留**图片中关键的视觉读数、刻度、比例或特定状态的描述（例如“图中仪表盘显示约为 2.4”或“红色区域占比约 1/4”）。**严禁泛化**这些解题必须的数值输入，否则题目将不可解。
-        - **仅泛化装饰性细节**：只删除与解题逻辑无关的背景描述（如图片的具体的拍摄角度、无关的颜色细节）。
-        - **客观化陈述**：彻底删除所有来源指代词（如“按文中”、“据资料”），直接陈述规则（例如：“已知判定规则为：当 X > 5 时...”）。
-```
+    ``    def grade_answer(standard: str, prediction: str | None) -> bool:         if not standard or not prediction:             return False         # 严格全等：标准答案 "ABC" vs 预测 "ABC" -> True; "AC" -> False         return set(standard) == set(prediction)    ``
 
----
+* **新增函数** : `grade_partial_answer` (用于支持你的校验需求)
+* **功能** : 判断是否“部分答对且未选错”。
+* **代码示例** :
+  **Python**
 
-### 3. 进阶建议：在 `steps.py` 中引入“多步推理”模板
+    ``    def grade_partial_answer(standard: str, prediction: str | None) -> bool:         if not standard or not prediction:             return False         std_set = set(standard)         pred_set = set(prediction)         # 预测集是标准集的真子集 (Partial) 且 非空         # 例如 Std=ABC, Pred=AC -> True; Pred=AD -> False (D错); Pred=ABC -> False (全对, 非Partial)         return pred_set.issubset(std_set) and len(pred_set) > 0 and pred_set != std_set    ``
 
- **目标** ：强制模型生产“难题”，而不仅仅是单跳（1-hop）题。
+* **函数** : `evaluate_difficulty`
+* **修改点** :
+  * 在返回的字典 `metrics` 中，增加 `medium_partial_correct` 字段。
+  * 调用 `grade_partial_answer(final.answer, medium_letter)` 赋值给该字段。
+  * 保持原有的 `medium_correct` 为严格全对判定。
 
-建议在 `build_graph_1hop_step_prompt` 函数的 prompt 模板中，在“要求”部分增加以下指令：
+#### 4. 修改主流程路由 (Main)
 
-**添加内容 (Add to Prompt):**
+ **目标** ：落实“若部分答对...则加入 genqa_medium.json”的业务规则。
 
-**Python**
+* **文件** : `rqlv1/autoqa/AutoQA-rqlv/main.py`
+* **函数** : `main` (循环内部)
+* **修改点** : 调整结果保存的分流逻辑。
+* **逻辑调整** :
+  **Python**
 
-```
-        - 难度提升策略（Hardness Booster）：
-          - 禁止直接询问图中显而易见的信息。
-          - **必须构造合成推理**：题目应要求读者结合“视觉读数”与“题干给出的复杂规则”进行运算。
-          - 示例逻辑：不要问“图中数值是多少？”，要问“若图中的数值代表输入 I，且输出 O = I² + C（C=5），则系统状态处于哪个区间？”
-          - 干扰项设计：必须包含“中间计算错误”或“临界值判断错误”导致的常见错误选项（Hard Negatives）。
-```
+    ```
+    # 获取 metrics
+    medium_correct = metrics.get("medium_correct", False)
+    medium_partial = metrics.get("medium_partial_correct", False) # 新增
+    strong_correct = metrics.get("strong_correct", False)
+
+    if review_passed:
+        if medium_correct:
+            # Medium 模型全对 -> Simple
+            target_path = genqa_simple_path
+            # ...
+        elif medium_partial:
+            # Medium 模型部分正确 (无错选) -> Medium
+            # 符合需求：若部分答对且没选择非正确答案... 加入 genqa_medium
+            target_path = genqa_medium_path
+            # ...
+        elif strong_correct:
+            # Medium 全错或有错选，但 Strong 全对 -> Medium (原逻辑)
+            target_path = genqa_medium_path
+            # ...
+        else:
+            # 均为错 -> Strong / Hard
+            target_path = genqa_strong_path
+    ```
+
+#### 5. 修改质量检查与辅助工具 (Judge & Utils)
+
+ **目标** ：适配 A-H 选项解析，防止因选项增多导致的解析错误。
+
+* **文件** : `rqlv1/autoqa/AutoQA-rqlv/pipeline/pipeline_judge.py`
+* **函数** : `_extract_options`, `judge_mcq`
+* **修改点** :
+  * 将 `_OPTION_MARKER` 正则中的 `[A-D]` 修改为 `[A-H]`。
+  * **禁用或调整** `flags["correct_option_longest"]`：多选题通常不适用此规则（可能有多个正确项，长度不一），建议直接移除或仅当只有一个正确选项时才启用。
+  * `missing_options`: 检查标准由 `< 4` 保持不变，但要能识别 A-H。
+* **文件** : `rqlv1/autoqa/AutoQA-rqlv/utils/mcq.py`
+* **函数** : `has_abcd_options` (建议重命名为 `has_valid_options`)
+* **修改点** :
+  * 正则 `_OPTION_RE` 支持 `[A-H]`。
+  * 逻辑更新为：检查是否存在至少 4 个连续的选项（如 A,B,C,D...）。
+
+#### 6. 总结检查清单
+
+1. **范围** : 确认所有正则 `[A-D]` 均替换为 `[A-H]`。
+2. **排序** : 确认 Parsing 模块输出的答案是字母排序的（如 "CA" -> "AC"），否则集合比较外的字符串日志会乱。
+3. **路由** : 确认 `main.py` 中优先处理 `medium_correct` (Simple)，其次处理 `medium_partial` (Medium)。

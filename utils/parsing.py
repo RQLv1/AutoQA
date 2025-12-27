@@ -51,23 +51,23 @@ def _try_extract_selections_from_text(text: str) -> str | None:
     """尝试从文本中提取选项块"""
     import re
     # 匹配类似 A. xxx B. xxx C. xxx D. xxx 的模式
-    pattern = re.compile(r'(?:^|\n)\s*[A-D][\s\.、:：)）]', re.MULTILINE)
+    pattern = re.compile(r"(?:^|\n)\s*[A-H][\s\.、:：)）]", re.MULTILINE)
     matches = list(pattern.finditer(text))
     if len(matches) >= 2:
         # 找到至少2个选项，提取选项块
         first_match = matches[0]
-        return text[first_match.start():].strip()
+        return text[first_match.start() :].strip()
     return None
 
 
 def _remove_selections_from_text(text: str, selections: str) -> str:
     """从文本中移除选项部分"""
     if selections in text:
-        text = text.replace(selections, '').strip()
+        text = text.replace(selections, "").strip()
     else:
         # 尝试找到选项开始的位置
         import re
-        pattern = re.compile(r'(?:^|\n)\s*[A-D][\s\.、:：)）]', re.MULTILINE)
+        pattern = re.compile(r"(?:^|\n)\s*[A-H][\s\.、:：)）]", re.MULTILINE)
         match = pattern.search(text)
         if match:
             text = text[:match.start()].strip()
@@ -87,67 +87,80 @@ def extract_labeled_value(content: str, label: str) -> str | None:
 def extract_option_text(question: str, letter: str) -> str | None:
     if not question or not letter:
         return None
-    pattern = re.compile(r"(?s)(^|\s)([A-D])\s*[\\.、:：)]\s*")
+    pattern = re.compile(r"(?s)(^|\s)([A-H])\s*[\\.、:：)]\s*")
     matches = list(pattern.finditer(question))
     if not matches:
-        pattern = re.compile(r"(?m)^\\s*([A-D])\\s+")
+        pattern = re.compile(r"(?m)^\s*([A-H])\s+")
         matches = list(pattern.finditer(question))
     if not matches:
         return None
-    for idx, match in enumerate(matches):
-        opt = match.group(2) if match.lastindex and match.lastindex >= 2 else match.group(1)
-        if opt != letter:
-            continue
-        start = match.end()
-        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(question)
-        return question[start:end].strip()
-    return None
+    texts: list[str] = []
+    for target in sorted(set(letter.upper())):
+        for idx, match in enumerate(matches):
+            opt = match.group(2) if match.lastindex and match.lastindex >= 2 else match.group(1)
+            if opt.upper() != target:
+                continue
+            start = match.end()
+            end = matches[idx + 1].start() if idx + 1 < len(matches) else len(question)
+            chunk = question[start:end].strip()
+            if chunk:
+                texts.append(chunk)
+            break
+    if not texts:
+        return None
+    return " | ".join(texts)
 
 
 def _normalize_option_text(text: str) -> str:
     return unicodedata.normalize("NFKC", text)
 
 
-def _find_option_letter(text: str) -> str | None:
+def _find_option_letters(text: str) -> str:
     if not text:
-        return None
+        return ""
     normalized = _normalize_option_text(text)
-    match = re.search(r"[A-D]", normalized, flags=re.IGNORECASE)
-    if not match:
-        return None
-    return match.group(0).upper()
+    matches = re.findall(r"[A-H]", normalized, flags=re.IGNORECASE)
+    if not matches:
+        return ""
+    return "".join(sorted({match.upper() for match in matches}))
 
 
 def parse_option_letter(text: str) -> str:
-    letter = _find_option_letter(text)
-    if not letter:
+    letters = parse_option_letter_optional(text)
+    if not letters:
         raise ValueError(f"未能解析选项字母: {text}")
-    return letter
+    return letters
 
 
 def parse_option_letter_optional(text: str) -> str | None:
     if not text:
         return None
+
     tagged = extract_tag_optional(text, "answer")
     if tagged:
-        letter = _find_option_letter(tagged)
-        if letter:
-            return letter
+        letters = _find_option_letters(tagged)
+        if letters:
+            return letters
+
     normalized = _normalize_option_text(text)
-    head_match = re.match(r"\s*([A-D])\b", normalized, flags=re.IGNORECASE)
+    head_match = re.match(r"\s*([A-H](?:\s*[,\s]\s*[A-H])*)", normalized, flags=re.IGNORECASE)
     if head_match:
-        return head_match.group(1).upper()
+        letters = _find_option_letters(head_match.group(1))
+        if letters:
+            return letters
     patterns = [
-        r"(?:正确答案|答案)\s*[为是:：]\s*([A-D])",
-        r"(?:Correct|Answer)\s*(?:is|:)\s*([A-D])",
+        r"(?:正确答案|答案)\s*[为是:：]\s*([A-H][A-H,\s]*)",
+        r"(?:Correct|Answer)\s*(?:is|:)\s*([A-H][A-H,\s]*)",
     ]
     for pattern in patterns:
         matches = re.findall(pattern, normalized, flags=re.IGNORECASE)
         if matches:
-            return matches[-1].upper()
-    letters = re.findall(r"[A-D]", normalized, flags=re.IGNORECASE)
+            letters = _find_option_letters(matches[-1])
+            if letters:
+                return letters
+    letters = _find_option_letters(normalized)
     if letters:
-        return letters[-1].upper()
+        return letters
     return None
 
 
@@ -156,18 +169,18 @@ def parse_tagged_option_letter(text: str, tag: str = "answer") -> str | None:
         return None
     tagged = extract_tag_optional(text, tag)
     if tagged:
-        letter = _find_option_letter(tagged)
-        if letter:
-            return letter
+        letters = _find_option_letters(tagged)
+        if letters:
+            return letters
 
     start_tag = f"<{tag}>"
     start = text.find(start_tag)
     if start == -1:
         return parse_option_letter_optional(text)
     after = text[start + len(start_tag) :]
-    letter = _find_option_letter(after)
-    if letter:
-        return letter
+    letters = _find_option_letters(after)
+    if letters:
+        return letters
     return parse_option_letter_optional(text)
 
 

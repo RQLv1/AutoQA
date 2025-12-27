@@ -39,6 +39,7 @@ def refine_final_question(
     final: StageResult,
     reason: str,
     review_raw: str | None = None,
+    mode: str = "multi_select",
 ) -> tuple[StageResult, str]:
     feedback_detail = ""
     if reason == "medium_solved":
@@ -59,6 +60,7 @@ def refine_final_question(
         final.answer,
         reason,
         feedback_detail,
+        mode,
     )
     revised = _run_final_revision(revise_prompt, image_path)
     return revised, feedback_detail

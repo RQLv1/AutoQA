@@ -8,12 +8,12 @@ from utils.schema import StepResult
 
 
 _OPTION_PUNCT = r"[\\.．、:：)）]"
-_OPTION_INLINE_RE = re.compile(rf"([A-DＡ-Ｄ]){_OPTION_PUNCT}\\s*")
+_OPTION_INLINE_RE = re.compile(rf"([A-HＡ-Ｈ]){_OPTION_PUNCT}\\s*")
 _OPTION_LINE_RE = re.compile(
-    rf"(?m)^\\s*[\\(（【]?[A-DＡ-Ｄ][\\)）】]?\\s*(?:{_OPTION_PUNCT}\\s*)?[^\\n]+"
+    rf"(?m)^\\s*[\\(（【]?[A-HＡ-Ｈ][\\)）】]?\\s*(?:{_OPTION_PUNCT}\\s*)?[^\\n]+"
 )
 _OPTION_HINT_RE = re.compile(
-    rf"(?:[A-DＡ-Ｄ]\\s*{_OPTION_PUNCT}|\\([A-DＡ-Ｄ]\\)|（[A-DＡ-Ｄ]）|^\\s*[A-DＡ-Ｄ]\\s+[^\\n]+)",
+    rf"(?:[A-HＡ-Ｈ]\\s*{_OPTION_PUNCT}|\\([A-HＡ-Ｈ]\\)|（[A-HＡ-Ｈ]）|^\\s*[A-HＡ-Ｈ]\\s+[^\\n]+)",
     flags=re.MULTILINE,
 )
 _VISUAL_ANCHORS = ("图中", "图示", "图像", "图片")
@@ -27,11 +27,15 @@ def _normalize_letter(letter: str) -> str:
         .replace("Ｂ", "B")
         .replace("Ｃ", "C")
         .replace("Ｄ", "D")
+        .replace("Ｅ", "E")
+        .replace("Ｆ", "F")
+        .replace("Ｇ", "G")
+        .replace("Ｈ", "H")
     )
 
 
 def _extract_leading_letter(text: str) -> str | None:
-    match = re.match(r"^\\s*[\\(（【]?(?P<letter>[A-DＡ-Ｄ])", text)
+    match = re.match(r"^\\s*[\\(（【]?(?P<letter>[A-HＡ-Ｈ])", text)
     if not match:
         return None
     return _normalize_letter(match.group("letter"))

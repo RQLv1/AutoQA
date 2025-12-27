@@ -1,30 +1,46 @@
 from textwrap import dedent
 
 
-def build_solver_prompt(question: str) -> str:
+def _solver_answer_hint(mode: str) -> str:
+    if mode == "single_select":
+        return "<answer>A/B/C/D</answer>"
+    return "<answer>按字母顺序列出的全部正确选项，如 AC 或 A,C,E</answer>"
+
+
+def _solver_instructions(mode: str, text_only: bool) -> str:
+    prefix = (
+        "你是一名考生。你看不到图片，只能看到题目文字；请根据题目本身作答"
+        if text_only
+        else "你是一名考生，请结合图片和题目作答"
+    )
+    suffix = "单选题" if mode == "single_select" else "多选题，请选择所有正确的选项"
+    return f"{prefix}{suffix}。"
+
+
+def build_solver_prompt(question: str, mode: str = "multi_select") -> str:
     return dedent(
         f"""
-        你是一名考生，请结合图片和题目作答单选题。
+        {_solver_instructions(mode, False)}
 
         题目:
         {question}
 
         **严格只输出以下格式，禁止解释或追加其他内容，输出中不得出现除该标签外的任何字符:**
-        <answer>A/B/C/D</answer>
+        {_solver_answer_hint(mode)}
         """
     ).strip()
 
 
-def build_solver_prompt_text_only(question: str) -> str:
+def build_solver_prompt_text_only(question: str, mode: str = "multi_select") -> str:
     return dedent(
         f"""
-        你是一名考生。你看不到图片，只能看到题目文字；请根据题目本身作答单选题。
+        {_solver_instructions(mode, True)}
 
         题目:
         {question}
 
         **严格只输出以下格式，禁止解释或追加其他内容，输出中不得出现除该标签外的任何字符:**
-        <answer>A/B/C/D</answer>
+        {_solver_answer_hint(mode)}
         """
     ).strip()
 

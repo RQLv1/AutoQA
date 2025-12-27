@@ -4,7 +4,11 @@ from pipeline.pipeline_final_refine import refine_final_question
 from pipeline.pipeline_review import review_question
 from pipeline.pipeline_solvers import evaluate_difficulty
 from pipeline.pipeline_vision_knowledge import build_visual_knowledge
-from prompts import build_analysis_prompt, build_final_compress_prompt, build_final_harden_prompt
+from prompts import (
+    build_analysis_prompt,
+    build_final_compress_prompt,
+    build_final_harden_prompt,
+)
 from steps import derive_stage_results, generate_steps
 from steps.obfuscate_agent import obfuscate_question
 from utils.api_client import call_text_model, call_vision_model
@@ -13,7 +17,7 @@ from utils.config import (
     MODEL_SUM,
 )
 from utils.details_logger import get_details_logger
-from utils.mcq import has_abcd_options
+from utils.mcq import has_valid_options
 from utils.parsing import extract_tag_optional
 from utils.schema import EpisodeResult, StageResult, StepResult
 from utils.terminal import print_final_input, print_final_summary
@@ -33,6 +37,7 @@ def run_episode(
     feedback: str = "",
     previous_final_question: str | None = None,
     prior_steps: list[StepResult] | None = None,
+    mode: str = "multi_select",
 ) -> EpisodeResult:
     visual_knowledge = build_visual_knowledge(image_path)
     steps, cross_modal_used = generate_steps(
@@ -46,7 +51,7 @@ def run_episode(
     stage_1, stage_2, stage_3 = derive_stage_results(steps)
 
     compress_steps = steps if not prior_steps else [*prior_steps, *steps]
-    final_prompt = build_final_compress_prompt(context, compress_steps, feedback)
+    final_prompt = build_final_compress_prompt(context, compress_steps, feedback, mode)
     stage_final = run_final(final_prompt, image_path, MODEL_SUM)
     stage_final.question = obfuscate_question(stage_final.question, raw=stage_final.raw)
     get_details_logger().log_event(
@@ -55,6 +60,7 @@ def run_episode(
             "question": stage_final.question,
             "answer": stage_final.answer,
             "reasoning": stage_final.reasoning,
+            "mode": mode,
         },
     )
 
@@ -66,6 +72,12 @@ def run_episode(
     review_passed = None
     refine_feedback = ""
 
+    print(f"[Final] 生成模式: {mode}")
+    format_hint = (
+        "补全为标准多选题，必须包含 4-8 个按顺序排列的选项（A-H），答案可包含多个字母。"
+        if mode != "single_select"
+        else "补全为标准单选题，必须包含 A-D 四个选项，且答案只能是其中一个字母。"
+    )
     print_final_input(
         steps_count=len(compress_steps),
         cross_modal_used=cross_modal_used,
@@ -74,7 +86,7 @@ def run_episode(
     )
 
     while True:
-        if not has_abcd_options(stage_final.question):
+        if not has_valid_options(stage_final.question):
             if refine_attempts >= max_refine_attempts:
                 break
             refine_attempts += 1
@@ -84,7 +96,8 @@ def run_episode(
                 image_path=image_path,
                 final=stage_final,
                 reason="format_missing_options",
-                review_raw="补全为标准单选题，必须包含 A-D 四个选项（建议每个选项单独一行：A. / B. / C. / D.）。",
+                review_raw=format_hint,
+                mode=mode,
             )
             stage_final.question = obfuscate_question(stage_final.question, raw=stage_final.raw)
             get_details_logger().log_event(
@@ -95,6 +108,7 @@ def run_episode(
                     "reasoning": stage_final.reasoning,
                     "reason": "format_missing_options",
                     "feedback": refine_feedback,
+                    "mode": mode,
                 },
             )
             continue
@@ -103,6 +117,7 @@ def run_episode(
             image_path,
             cross_modal_used,
             len(compress_steps),
+            mode=mode,
         )
 
         if difficulty_metrics.get("text_only_veto"):
@@ -115,6 +130,7 @@ def run_episode(
                 stage_final.question,
                 stage_final.answer,
                 "text-only solved",
+                mode,
             )
             stage_final = run_final(harden_prompt, image_path, MODEL_SUM)
             stage_final.question = obfuscate_question(stage_final.question, raw=stage_final.raw)
@@ -125,6 +141,7 @@ def run_episode(
                     "answer": stage_final.answer,
                     "reasoning": stage_final.reasoning,
                     "reason": "text_only_veto",
+                    "mode": mode,
                 },
             )
             continue
@@ -139,6 +156,7 @@ def run_episode(
                 image_path=image_path,
                 final=stage_final,
                 reason="medium_solved",
+                mode=mode,
             )
             stage_final.question = obfuscate_question(stage_final.question, raw=stage_final.raw)
             get_details_logger().log_event(
@@ -149,6 +167,7 @@ def run_episode(
                     "reasoning": stage_final.reasoning,
                     "reason": "medium_solved",
                     "feedback": refine_feedback,
+                    "mode": mode,
                 },
             )
             continue
@@ -158,6 +177,7 @@ def run_episode(
             stage_final.answer,
             stage_final.reasoning,
             image_path,
+            mode=mode,
         )
         if review_passed is False:
             if review_reason:
@@ -172,6 +192,7 @@ def run_episode(
                 final=stage_final,
                 reason="review_failed",
                 review_raw=review_raw,
+                mode=mode,
             )
             stage_final.question = obfuscate_question(stage_final.question, raw=stage_final.raw)
             get_details_logger().log_event(
@@ -182,6 +203,7 @@ def run_episode(
                     "reasoning": stage_final.reasoning,
                     "reason": "review_failed",
                     "feedback": refine_feedback,
+                    "mode": mode,
                 },
             )
             continue
@@ -195,6 +217,7 @@ def run_episode(
     print(
         "[Final] Difficulty 评估:",
         f"medium_correct={difficulty_metrics.get('medium_correct')}",
+        f"medium_partial={difficulty_metrics.get('medium_partial_correct')}",
         f"strong_correct={difficulty_metrics.get('strong_correct')}",
         f"score={difficulty_metrics.get('difficulty_score')}",
     )
@@ -208,6 +231,7 @@ def run_episode(
         stage_final.question,
         stage_final.answer,
         str(difficulty_metrics.get("medium_raw") or ""),
+        mode,
     )
     reflect_feedback = call_text_model(
         feedback_prompt,

@@ -5,7 +5,14 @@ def build_review_prompt(
     question: str,
     answer: str,
     reasoning: str,
+    mode: str = "multi_select",
 ) -> str:
+    is_single = mode == "single_select"
+    option_rule = (
+        "必须包含 4-8 个按顺序编号的选项（A-H），且答案由一个或多个选项字母组成（可用逗号分隔，需按字母顺序）"
+        if not is_single
+        else "必须包含 A/B/C/D 四个选项，且答案为其中一个字母"
+    )
     return dedent(
         f"""
         你是一名视觉问答数据集的严格审稿人。
@@ -15,7 +22,7 @@ def build_review_prompt(
         推理: {reasoning}
 
         任务:
-        1. 检查题目是否为标准单选题：必须包含 A/B/C/D 四个选项，且答案为其中一个字母；否则判为 incorrect。
+        1. 检查题目是否为标准{"多选题" if not is_single else "单选题"}：{option_rule}；否则判为 incorrect。
         2. 检查推理是否合理且一致。
         3. 【新增】检查数值区间互斥性：如果选项包含数值范围（如 10-20），必须检查各选项是否存在数学重叠。如果存在重叠导致答案不唯一（例如 A:10-20, B:15-25），必须判为 incorrect。
 

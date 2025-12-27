@@ -11,6 +11,7 @@ def review_question(
     answer: str,
     reasoning: str | None,
     image_path: Path,
+    mode: str = "multi_select",
 ) -> tuple[str, bool | None, str | None]:
     """
     Review a question and return (raw_output, decision, reason).
@@ -18,7 +19,7 @@ def review_question(
     - decision: True (correct) / False (incorrect) / None (unknown)
     - reason: 如果 decision 为 False，返回错误原因；否则为 None
     """
-    prompt = build_review_prompt(question, answer, reasoning or "")
+    prompt = build_review_prompt(question, answer, reasoning or "", mode)
     raw = call_vision_model(
         prompt,
         image_path,

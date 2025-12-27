@@ -1,7 +1,7 @@
 import re
 
 
-_OPTION_MARKER = re.compile(r"(?i)(?P<letter>[A-D])\s*[\.．、】【\)]\s*")
+_OPTION_MARKER = re.compile(r"(?i)(?P<letter>[A-H])\s*[\.．、】【\)]\s*")
 
 
 def _extract_options(question: str) -> list[str]:
@@ -75,4 +75,3 @@ def is_low_quality_entity_matching(question: str) -> bool:
         "说法正确",
     ]
     return any(cue in question for cue in low_quality_cues)
-

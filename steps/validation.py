@@ -45,7 +45,7 @@ def validate_step(
 
     if step.k >= 1:
         option_matches = list(
-            re.finditer(r"([A-D])[\\.|\\)|、|:：]\\s*([^\\n]{0,80})", step.question)
+            re.finditer(r"([A-H])[\.、:：\)]\s*([^\n]{0,80})", step.question)
         )
         first_option = option_matches[0].start() if option_matches else len(step.question)
         stem = step.question[:first_option]
