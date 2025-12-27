@@ -19,6 +19,7 @@ class KnowledgeEdge:
     tail: str
     evidence: str | None = None
     source_id: int | None = None
+    source_type: str | None = None
 
 
 _EDGE_CACHE: dict[str, list[KnowledgeEdge]] = {}
@@ -73,6 +74,7 @@ def _serialize_edges(edges: list[KnowledgeEdge]) -> list[dict[str, Any]]:
             "tail": edge.tail,
             "evidence": edge.evidence,
             "source_id": edge.source_id,
+            "source_type": edge.source_type,
         }
         for edge in edges
     ]
@@ -97,6 +99,11 @@ def _deserialize_edges(data: list[dict[str, Any]]) -> list[KnowledgeEdge]:
                 source_id = int(source_id)
             except (TypeError, ValueError):
                 source_id = None
+        source_type = item.get("source_type")
+        if source_type is None:
+            source_type = "text"
+        else:
+            source_type = str(source_type).strip() or "text"
         edges.append(
             KnowledgeEdge(
                 head=head,
@@ -104,6 +111,7 @@ def _deserialize_edges(data: list[dict[str, Any]]) -> list[KnowledgeEdge]:
                 tail=tail,
                 evidence=evidence,
                 source_id=source_id,
+                source_type=source_type,
             )
         )
     return edges
@@ -132,7 +140,7 @@ def _chain_extraction_prompt(context: str) -> str:
     )
 
 
-def extract_edges_from_context(context: str) -> list[KnowledgeEdge]:
+def extract_edges_from_context(context: str, source_type: str | None = "text") -> list[KnowledgeEdge]:
     prompt = _chain_extraction_prompt(context)
     raw = call_text_model(
         prompt,
@@ -194,6 +202,7 @@ def extract_edges_from_context(context: str) -> list[KnowledgeEdge]:
                     tail=tail,
                     evidence=evidence,
                     source_id=edge_id,
+                    source_type=source_type,
                 )
             )
     if not edges:
@@ -226,7 +235,7 @@ def build_knowledge_edges_cached(context: str) -> list[KnowledgeEdge]:
             )
             return edges
 
-    edges = extract_edges_from_context(context)
+    edges = extract_edges_from_context(context, source_type="text")
     _EDGE_CACHE[key] = edges
     disk_cache[key] = {
         "version": _DISK_CACHE_VERSION,
@@ -262,11 +271,16 @@ def group_edges_by_tail(edges: list[KnowledgeEdge]) -> dict[str, list[KnowledgeE
 
 def edge_to_evidence_payload(edge: KnowledgeEdge) -> dict[str, Any]:
     snippet = edge.evidence or ""
+    doc_span = "context"
+    if edge.source_type == "image":
+        doc_span = "visual_description"
     payload: dict[str, Any] = {
-        "doc_spans": ["context"],
+        "doc_spans": [doc_span],
         "snippet": snippet,
         "image_regions": ["中心区域(参照 step_0 视觉锚点)"],
     }
     if edge.source_id is not None:
         payload["source_id"] = edge.source_id
+    if edge.source_type:
+        payload["source_type"] = edge.source_type
     return payload

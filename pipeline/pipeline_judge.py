@@ -3,7 +3,7 @@ import re
 from utils.parsing import parse_option_letter_optional
 
 
-_OPTION_MARKER = re.compile(r"(?i)(?P<letter>[A-D])\s*[\.．、】【\)]\s*")
+_OPTION_MARKER = re.compile(r"(?i)(?P<letter>[A-H])\s*[\.．、】【\)]\s*")
 _UNIT_RE = re.compile(
     r"(?i)\b(%|℃|°c|kpa|mpa|pa|kv|v|ma|a|mw|kw|w|nm|um|mm|cm|m|kg|g|mg|s|min|h)\b"
 )
@@ -50,9 +50,15 @@ def _extract_decimal_places(option_text: str) -> int | None:
 def judge_mcq(question: str, answer: str) -> dict[str, bool]:
     options = _extract_options(question)
     correct = parse_option_letter_optional(answer) or ""
+    correct_letters = set(correct)
 
     flags: dict[str, bool] = {}
     flags["missing_options"] = len(options) < 4
+    flags["correct_option_longest"] = False
+    flags["option_length_bias"] = False
+    flags["option_length_variance_20pct"] = False
+    flags["unit_inconsistent"] = False
+    flags["decimal_places_inconsistent"] = False
 
     if options:
         lengths = {k: len(v) for k, v in options.items() if v}
@@ -61,8 +67,10 @@ def judge_mcq(question: str, answer: str) -> dict[str, bool]:
             min_len = min(lengths.values())
             flags["option_length_bias"] = (min_len > 0) and (max_len / min_len >= 2.5)
             flags["option_length_variance_20pct"] = (min_len > 0) and (max_len / min_len >= 1.2)
-            if correct and correct in lengths:
-                flags["correct_option_longest"] = lengths[correct] == max_len and max_len > 0
+            if len(correct_letters) == 1 and max_len > 0:
+                letter = next(iter(correct_letters))
+                if letter in lengths:
+                    flags["correct_option_longest"] = lengths[letter] == max_len
 
         units = {k: _extract_unit(v) for k, v in options.items()}
         present_units = [u for u in units.values() if u]
@@ -73,11 +81,5 @@ def judge_mcq(question: str, answer: str) -> dict[str, bool]:
         flags["decimal_places_inconsistent"] = (
             len(set(present_decimals)) >= 2 if len(present_decimals) >= 3 else False
         )
-    else:
-        flags["option_length_bias"] = False
-        flags["option_length_variance_20pct"] = False
-        flags["correct_option_longest"] = False
-        flags["unit_inconsistent"] = False
-        flags["decimal_places_inconsistent"] = False
 
     return flags

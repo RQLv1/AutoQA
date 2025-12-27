@@ -39,11 +39,14 @@ _load_dotenv_if_present()
 # 模型配置 (Model Configuration)
 # =============================================================================
 # 生成阶段使用的模型
-MODEL_STAGE_1 = os.getenv("MODEL_STAGE_1", "gpt-51-1113-global")  # 阶段1：通常用于初始分析
+MODEL_STAGE_1 = os.getenv("MODEL_STAGE_1", "gemini-3-pro-preview")  # 阶段1：通常用于初始分析 "gpt-51-1113-global"
 MODEL_STAGE_2 = os.getenv("MODEL_STAGE_2", MODEL_STAGE_1)  # 阶段2：通常用于深入推理
 MODEL_STAGE_3 = os.getenv("MODEL_STAGE_3", MODEL_STAGE_1)  # 阶段3：通常用于最终生成
+# 视觉理解与知识抽取使用的模型
+MODEL_VISION_KNOWLEDGE = os.getenv("MODEL_VISION_KNOWLEDGE", "gemini-3-pro-preview")
 # 汇总和通用任务使用的模型
 MODEL_SUM = os.getenv("MODEL_SUM", os.getenv("MODEL_STAGE_SUM", "gemini-3-pro-preview"))
+MODEL_OBFUSCATE = os.getenv("MODEL_OBFUSCATE", MODEL_SUM)  # 题干改写(隐去细节)模型
 
 # 操作代理使用的模型
 MODEL_OPERATE = os.getenv("MODEL_OPERATE", MODEL_STAGE_1)  # 默认操作模型
@@ -51,26 +54,18 @@ MODEL_OPERATE_DISTINCTION = os.getenv("MODEL_OPERATE_DISTINCTION", MODEL_OPERATE
 MODEL_OPERATE_CALCULATION = os.getenv("MODEL_OPERATE_CALCULATION", MODEL_OPERATE)  # 计算任务
 
 # 求解器模型 (Solver Models) - 用于评估题目难度
-MODEL_SOLVE_MEDIUM = os.getenv("MODEL_SOLVE_MEDIUM", "gemini-3-flash-preview")  # 中等能力模型 (用于检测题目是否过简单)
+MODEL_SOLVE_MEDIUM = os.getenv("MODEL_SOLVE_MEDIUM", "gpt-5-mini-0807-global")  # 中等能力模型 (用于检测题目是否过简单)
 MODEL_SOLVE_STRONG = os.getenv("MODEL_SOLVE_STRONG", "claude_sonnet4_5")  # 强能力模型 (用于确保题目可解)
 # 评审模型 (Review Model) - 用于审核题目质量
-MODEL_REVIEW = os.getenv("MODEL_REVIEW", MODEL_SOLVE_STRONG)
+MODEL_REVIEW = os.getenv("MODEL_REVIEW", "gemini-3-flash-preview")
 
 # 裁判模型 (Judge Model)
-MODEL_JUDGE = os.getenv("MODEL_JUDGE", "gpt-51-1113-global")
+MODEL_JUDGE = os.getenv("MODEL_JUDGE", MODEL_REVIEW)
 
 # =============================================================================
 # 生成参数配置 (Generation Parameters)
 # =============================================================================
 DEFAULT_TEMPERATURE = float(os.getenv("DEFAULT_TEMPERATURE", "0"))
-
-# Max Tokens Definitions
-# MAX_TOKENS_GRAPH_EXTRACTION = int(os.getenv("MAX_TOKENS_GRAPH_EXTRACTION", "16384"))
-# MAX_TOKENS_SOLVER_VISION = int(os.getenv("MAX_TOKENS_SOLVER_VISION", "16384"))
-# MAX_TOKENS_SOLVER_TEXT = int(os.getenv("MAX_TOKENS_SOLVER_TEXT", "16384"))
-# MAX_TOKENS_AGENT = int(os.getenv("MAX_TOKENS_AGENT", "16384"))
-# MAX_TOKENS_REVIEW = int(os.getenv("MAX_TOKENS_REVIEW", "16384"))
-# MAX_TOKENS_FEEDBACK = int(os.getenv("MAX_TOKENS_FEEDBACK", "16384"))
 
 # =============================================================================
 # API 配置 (API Configuration)
@@ -88,9 +83,12 @@ API_RECONNECT_SLEEP_SECONDS = int(
 # 生成流程配置 (Generation Process Configuration)
 # =============================================================================
 MAX_ROUNDS = int(os.getenv("MAX_ROUNDS", "10"))  # 最大生成轮次
-QUESTION_LOG_PATH = os.getenv("QUESTION_LOG_PATH", "question_log.jsonl")  # 过程日志文件路径
-GENQA_SIMPLE_PATH = os.getenv("GENQA_SIMPLE_PATH", "genqa_simple.json")  # 简单/中等题目保存路径
-GENQA_HARD_PATH = os.getenv("GENQA_HARD_PATH", "genqa_hard.json")  # 难题保存路径
+GENQA_SIMPLE_PATH = os.getenv("GENQA_SIMPLE_PATH", "genqa_simple.json")  # 简单题目保存路径
+GENQA_MEDIUM_PATH = os.getenv("GENQA_MEDIUM_PATH", "genqa_medium.json")  # 中等题目保存路径
+GENQA_STRONG_PATH = os.getenv(
+    "GENQA_STRONG_PATH", os.getenv("GENQA_HARD_PATH", "genqa_strong.json")
+)  # 困难题目保存路径
+DETAILS_PATH = os.getenv("DETAILS_PATH", "details.json")  # 终端与草稿信息日志
 
 MAX_STEPS_PER_ROUND = int(os.getenv("MAX_STEPS_PER_ROUND", "6"))  # 每轮生成的最大推理步数
 MIN_HOPS = int(os.getenv("MIN_HOPS", "5"))  # 最小推理跳数 (用于控制题目复杂度)
