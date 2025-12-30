@@ -43,6 +43,7 @@ def generate_steps_prompt_driven(
     feedback: str,
     previous_final_question: str | None,
     visual_summary: str | None,
+    mode: str = "multi_select",
 ) -> tuple[list[StepResult], bool]:
     fact_candidates = load_fact_candidates(context, max(MAX_STEPS_PER_ROUND, 3))
     steps: list[StepResult] = []
@@ -121,6 +122,7 @@ def generate_steps_prompt_driven(
                     feedback,
                     force_cross_modal,
                     visual_summary,
+                    mode=mode,
                 )
             else:
                 prompt = build_stage1_step_prompt(
@@ -128,6 +130,7 @@ def generate_steps_prompt_driven(
                     feedback,
                     previous_final_question,
                     visual_summary,
+                    mode=mode,
                 )
         elif k == 1:
             prompt = build_stage2_step_prompt(
@@ -139,6 +142,7 @@ def generate_steps_prompt_driven(
                 feedback,
                 force_cross_modal,
                 visual_summary,
+                mode=mode,
             )
         elif k == 2:
             prompt = build_stage3_step_prompt(
@@ -150,6 +154,7 @@ def generate_steps_prompt_driven(
                 feedback,
                 force_cross_modal,
                 visual_summary,
+                mode=mode,
             )
         else:
             prompt = build_extend_step_prompt(
@@ -161,6 +166,7 @@ def generate_steps_prompt_driven(
                 feedback,
                 force_cross_modal,
                 visual_summary,
+                mode=mode,
             )
 
         print_step_input(
@@ -188,7 +194,7 @@ def generate_steps_prompt_driven(
                 "cross_modal_bridge": step.cross_modal_bridge,
             },
         )
-        medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
+        medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM, mode=mode)
         medium_correct = grade_answer(step.answer_letter or "", medium_letter)
         
         strong_raw = None
@@ -200,12 +206,12 @@ def generate_steps_prompt_driven(
         
         if not medium_correct:
             strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
-                step.question, MODEL_SOLVE_STRONG
+                step.question, MODEL_SOLVE_STRONG, mode=mode
             )
             strong_text_only_correct = grade_answer(
                 step.answer_letter or "", strong_text_only_letter
             )
-            strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
+            strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG, mode=mode)
             strong_correct = grade_answer(step.answer_letter or "", strong_letter)
             
         needs_revision, reason = validate_step(
@@ -214,6 +220,7 @@ def generate_steps_prompt_driven(
             strong_correct,
             medium_correct,
             strong_text_only_correct,
+            mode=mode,
         )
         revise_reason = reason if needs_revision else None
 
@@ -239,12 +246,13 @@ def generate_steps_prompt_driven(
                 operate_calculation_draft,
                 force_cross_modal,
                 visual_summary,
+                mode=mode,
             )
             step = run_step(revise_prompt, image_path, model, k)
             step = obfuscate_step_question(step)
             print(f"[Step {k}] 更新后题目:")
             print(step.question)
-            medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
+            medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM, mode=mode)
             medium_correct = grade_answer(step.answer_letter or "", medium_letter)
             
             strong_raw = None
@@ -256,12 +264,12 @@ def generate_steps_prompt_driven(
             
             if not medium_correct:
                 strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
-                    step.question, MODEL_SOLVE_STRONG
+                    step.question, MODEL_SOLVE_STRONG, mode=mode
                 )
                 strong_text_only_correct = grade_answer(
                     step.answer_letter or "", strong_text_only_letter
                 )
-                strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
+                strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG, mode=mode)
                 strong_correct = grade_answer(step.answer_letter or "", strong_letter)
             get_details_logger().log_event(
                 "step_result_revised",
@@ -305,17 +313,18 @@ def generate_steps_prompt_driven(
                 step.answer_letter,
                 step.reasoning,
                 image_path,
+                mode=mode,
             )
             if review_passed is True:
                 if strong_text_only_raw is None or strong_text_only_correct is None:
                     strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
-                        step.question, MODEL_SOLVE_STRONG
+                        step.question, MODEL_SOLVE_STRONG, mode=mode
                     )
                     strong_text_only_correct = grade_answer(
                         step.answer_letter or "", strong_text_only_letter
                     )
                 strong_no_image_raw, strong_no_image_letter = solve_mcq_no_image(
-                    step.question, MODEL_SOLVE_STRONG
+                    step.question, MODEL_SOLVE_STRONG, mode=mode
                 )
                 strong_no_image_correct = grade_answer(
                     step.answer_letter or "", strong_no_image_letter

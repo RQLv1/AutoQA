@@ -143,7 +143,7 @@ def parse_option_letter_optional(text: str) -> str | None:
             return letters
 
     normalized = _normalize_option_text(text)
-    head_match = re.match(r"\s*([A-H](?:\s*[,\s]\s*[A-H])*)", normalized, flags=re.IGNORECASE)
+    head_match = re.match(r"\s*([A-H](?:\s*[,\s]?\s*[A-H])*)", normalized, flags=re.IGNORECASE)
     if head_match:
         letters = _find_option_letters(head_match.group(1))
         if letters:

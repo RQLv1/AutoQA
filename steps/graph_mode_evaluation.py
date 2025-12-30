@@ -26,6 +26,7 @@ def evaluate_step_with_solvers(
     step: StepResult,
     image_path: Path,
     is_graph_mode: bool,
+    mode: str = "multi_select",
 ) -> tuple[
     str | None,  # medium_raw
     str | None,  # medium_letter
@@ -46,7 +47,7 @@ def evaluate_step_with_solvers(
     if not step.answer_letter:
         return None, None, False, None, None, None, None, None, None
 
-    medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM)
+    medium_raw, medium_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_MEDIUM, mode=mode)
     medium_correct = grade_answer(step.answer_letter or "", medium_letter)
 
     strong_raw = None
@@ -58,12 +59,12 @@ def evaluate_step_with_solvers(
 
     if not medium_correct:
         strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
-            step.question, MODEL_SOLVE_STRONG
+            step.question, MODEL_SOLVE_STRONG, mode=mode
         )
         strong_text_only_correct = grade_answer(
             step.answer_letter or "", strong_text_only_letter
         )
-        strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG)
+        strong_raw, strong_letter = solve_mcq(step.question, image_path, MODEL_SOLVE_STRONG, mode=mode)
         strong_correct = grade_answer(step.answer_letter or "", strong_letter)
 
     return (
@@ -85,13 +86,14 @@ def validate_and_check_needs_revision(
     strong_correct: bool | None,
     medium_correct: bool,
     strong_text_only_correct: bool | None,
+    mode: str = "multi_select",
 ) -> tuple[bool, str]:
     """
     Check if step needs revision based on validation rules.
     Returns (needs_revision, reason).
     """
     needs_revision, reason = validate_step(
-        step, is_graph_mode, strong_correct, medium_correct, strong_text_only_correct
+        step, is_graph_mode, strong_correct, medium_correct, strong_text_only_correct, mode=mode
     )
     return needs_revision, reason
 
@@ -106,6 +108,7 @@ def review_and_save_step(
     strong_letter: str | None,
     medium_raw: str | None,
     strong_raw: str | None,
+    mode: str = "multi_select",
 ) -> None:
     """
     Review step and save to appropriate output file if it passes review.
@@ -118,15 +121,16 @@ def review_and_save_step(
         step.answer_letter,
         step.reasoning,
         image_path,
+        mode=mode,
     )
 
     if review_passed is True:
         # Run additional solver tests
         strong_text_only_raw, strong_text_only_letter = solve_mcq_text_only(
-            step.question, MODEL_SOLVE_STRONG
+            step.question, MODEL_SOLVE_STRONG, mode=mode
         )
         strong_no_image_raw, strong_no_image_letter = solve_mcq_no_image(
-            step.question, MODEL_SOLVE_STRONG
+            step.question, MODEL_SOLVE_STRONG, mode=mode
         )
         strong_text_only_correct = grade_answer(
             step.answer_letter or "", strong_text_only_letter

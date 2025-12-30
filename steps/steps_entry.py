@@ -14,6 +14,7 @@ def generate_steps(
     previous_final_question: str | None,
     visual_summary: str | None,
     visual_edges: list[KnowledgeEdge] | None,
+    mode: str = "multi_select",
 ) -> tuple[list[StepResult], bool]:
     if ENABLE_GRAPH_MODE:
         return generate_steps_graph_mode(
@@ -23,6 +24,7 @@ def generate_steps(
             previous_final_question,
             visual_summary,
             visual_edges,
+            mode=mode,
         )
     return generate_steps_prompt_driven(
         context,
@@ -30,4 +32,5 @@ def generate_steps(
         feedback,
         previous_final_question,
         visual_summary,
+        mode=mode,
     )

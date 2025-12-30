@@ -28,12 +28,64 @@ def _format_visual_summary_block(visual_summary: str | None) -> str:
     """.strip()
 
 
+def _step_mode_config(mode: str) -> dict[str, str]:
+    multi = mode != "single_select"
+    question_type = "多选题" if multi else "单选题"
+    option_range_rule = (
+        "- 选项范围为 A-H，至少4个、最多8个，按顺序排列（如无需使用全部选项，可省略尾部行）。"
+        if multi
+        else "- 选项范围为 A-D，必须提供 4 个选项。"
+    )
+    answer_rule = (
+        "- 多选硬约束：答案必须包含至少两个选项字母，按字母顺序连续输出（如 ACEF），不得空格或逗号。"
+        if multi
+        else "- 单选硬约束：答案只能是一个字母（A/B/C/D）。"
+    )
+    selections_block = (
+        """
+        <selections>
+        A. 选项内容
+        B. 选项内容
+        C. 选项内容
+        D. 选项内容
+        E. 选项内容
+        F. 选项内容
+        G. 选项内容
+        H. 选项内容
+        </selections>
+        """.strip()
+        if multi
+        else """
+        <selections>
+        A. 选项内容
+        B. 选项内容
+        C. 选项内容
+        D. 选项内容
+        </selections>
+        """.strip()
+    )
+    answer_hint = (
+        "<answer>按字母顺序连续输出的正确选项(至少2个，无空格/逗号，如 ACEF)</answer>"
+        if multi
+        else "<answer>A/B/C/D</answer>"
+    )
+    return {
+        "question_type": question_type,
+        "option_range_rule": option_range_rule,
+        "answer_rule": answer_rule,
+        "selections_block": selections_block,
+        "answer_hint": answer_hint,
+    }
+
+
 def build_stage1_step_prompt(
     context: str,
     feedback: str,
     previous_question: str | None,
     visual_summary: str | None = None,
+    mode: str = "multi_select",
 ) -> str:
+    cfg = _step_mode_config(mode)
     feedback_block = _format_feedback_block(feedback)
     visual_block = _format_visual_summary_block(visual_summary)
     previous = f"\n上一轮最终问题: {previous_question.strip()}" if previous_question else ""
@@ -42,8 +94,10 @@ def build_stage1_step_prompt(
         {feedback_block}
         {visual_block}
 
-        你需要围绕图片“中心区域”的视觉锚点，生成一个多跳题的第1步子问题(单选题)。
+        你需要围绕图片“中心区域”的视觉锚点，生成一个多跳题的第1步子问题({cfg['question_type']})。
         要求:
+        {cfg['option_range_rule']}
+        {cfg['answer_rule']}
         - 题干必须围绕图片中心视觉锚点，不得引导读者查阅文档/文献。
         - 题干中禁止出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
         - 风格硬约束：
@@ -60,13 +114,8 @@ def build_stage1_step_prompt(
 
         只输出以下格式（必须严格遵守，将题干和选项分开）:
         <question>题干描述（作为连续自然段，不包含选项）</question>
-        <selections>
-        A. 选项内容
-        B. 选项内容
-        C. 选项内容
-        D. 选项内容
-        </selections>
-        <answer>A/B/C/D</answer>
+        {cfg['selections_block']}
+        {cfg['answer_hint']}
         <reasoning>简要推理过程</reasoning>
         """
     ).strip()
@@ -81,10 +130,17 @@ def build_stage2_step_prompt(
     feedback: str,
     force_cross_modal: bool,
     visual_summary: str | None = None,
+    mode: str = "multi_select",
 ) -> str:
+    cfg = _step_mode_config(mode)
     feedback_block = _format_feedback_block(feedback)
     visual_block = _format_visual_summary_block(visual_summary)
     cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
+    option_leak_rule = (
+        "- A-H 选项只允许输出“数值/区间/等级标签”（长度≤12字），不得附带原因、现象、分布描述或任何与图像特征对应的解释；"
+        if mode != "single_select"
+        else "- A-D 选项只允许输出“数值/区间/等级标签”（长度≤12字），不得附带原因、现象、分布描述或任何与图像特征对应的解释；"
+    )
     operate_distinction_block = indent((operate_distinction_draft.strip() or "(empty)"), "          ")
     operate_calculation_block = indent((operate_calculation_draft.strip() or "(empty)"), "          ")
     return dedent(
@@ -97,7 +153,11 @@ def build_stage2_step_prompt(
         答案字母: {previous_step.answer_letter}
         答案短语: {previous_step.answer_text}
 
-        现在生成第2步子问题(单选题)，需在视觉锚点基础上引入新的关键信息形成推理。
+        现在生成第2步子问题({cfg['question_type']})，需在视觉锚点基础上引入新的关键信息形成推理。
+        {cfg['option_range_rule']}
+        {cfg['answer_rule']}
+        {cfg['option_range_rule']}
+        {cfg['answer_rule']}
         - 新问题必须使用新的关键信息: {fact_hint}
         - operate_distinction 智能体草稿(仅供内部推理，不得在题干中提到):
           - draft:
@@ -119,7 +179,7 @@ def build_stage2_step_prompt(
         - 去词汇化(避免文本捷径)：题干不要直接写出图中读数/颜色/形状等具体值，改用“图中…的读数/显示的状态/位于…的部件”等指代性或位置性描述，迫使读者看图。
         - 去词汇化仅针对图上读数/视觉结果，不限制写入中性规则(阈值/公式/单位换算)。
         - 选项泄露禁令：
-          - A-D 选项只允许输出“数值/区间/等级标签”（长度≤12字），不得附带原因、现象、分布描述或任何与图像特征对应的解释；
+          {option_leak_rule}
           - 禁止出现“高度重合/明显分离/只在外圈/几乎只在背景”等可被直接图像匹配的词。
         - 可核验视觉量化：
           - 若题材是元素点映射/点云分布，必须使用可计数/可网格估算的量化证据（如：指定ROI内点数比、内外环点数比、四象限计数、网格覆盖格数）；
@@ -152,13 +212,8 @@ def build_stage2_step_prompt(
 
         只输出以下格式（必须严格遵守，将题干和选项分开）:
         <question>题干描述（作为连续自然段，不包含选项）</question>
-        <selections>
-        A. 选项内容
-        B. 选项内容
-        C. 选项内容
-        D. 选项内容
-        </selections>
-        <answer>A/B/C/D</answer>
+        {cfg['selections_block']}
+        {cfg['answer_hint']}
         <reasoning>简要推理过程</reasoning>
         """
     ).strip()
@@ -173,10 +228,17 @@ def build_stage3_step_prompt(
     feedback: str,
     force_cross_modal: bool,
     visual_summary: str | None = None,
+    mode: str = "multi_select",
 ) -> str:
+    cfg = _step_mode_config(mode)
     feedback_block = _format_feedback_block(feedback)
     visual_block = _format_visual_summary_block(visual_summary)
     cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
+    option_leak_rule = (
+        "- A-H 选项只允许输出“数值/区间/等级标签”（长度≤12字），不得附带原因、现象、分布描述或任何与图像特征对应的解释；"
+        if mode != "single_select"
+        else "- A-D 选项只允许输出“数值/区间/等级标签”（长度≤12字），不得附带原因、现象、分布描述或任何与图像特征对应的解释；"
+    )
     operate_distinction_block = indent((operate_distinction_draft.strip() or "(empty)"), "          ")
     operate_calculation_block = indent((operate_calculation_draft.strip() or "(empty)"), "          ")
     return dedent(
@@ -188,7 +250,7 @@ def build_stage3_step_prompt(
         问题: {previous_step.question}
         答案字母: {previous_step.answer_letter}
         答案短语: {previous_step.answer_text}
-        现在生成第3步子问题(单选题)，继续引入新的关键信息形成更深推理。
+        现在生成第3步子问题({cfg['question_type']})，继续引入新的关键信息形成更深推理。
         - 新问题必须使用新的关键信息: {fact_hint}
         - operate_distinction 智能体草稿(仅供内部推理，不得在题干中提到):
           - draft:
@@ -210,7 +272,7 @@ def build_stage3_step_prompt(
         - 去词汇化(避免文本捷径)：题干不要直接写出图中读数/颜色/形状等具体值，改用“图中…的读数/显示的状态/位于…的部件”等指代性或位置性描述，迫使读者看图。
         - 去词汇化仅针对图上读数/视觉结果，不限制写入中性规则(阈值/公式/单位换算)。
         - 选项泄露禁令：
-          - A-D 选项只允许输出“数值/区间/等级标签”（长度≤12字），不得附带原因、现象、分布描述或任何与图像特征对应的解释；
+          {option_leak_rule}
           - 禁止出现“高度重合/明显分离/只在外圈/几乎只在背景”等可被直接图像匹配的词。
         - 可核验视觉量化：
           - 若题材是元素点映射/点云分布，必须使用可计数/可网格估算的量化证据（如：指定ROI内点数比、内外环点数比、四象限计数、网格覆盖格数）；
@@ -239,13 +301,8 @@ def build_stage3_step_prompt(
 
         只输出以下格式（必须严格遵守，将题干和选项分开）:
         <question>题干描述（作为连续自然段，不包含选项）</question>
-        <selections>
-        A. 选项内容
-        B. 选项内容
-        C. 选项内容
-        D. 选项内容
-        </selections>
-        <answer>A/B/C/D</answer>
+        {cfg['selections_block']}
+        {cfg['answer_hint']}
         <reasoning>简要推理过程</reasoning>
         """
     ).strip()
@@ -260,7 +317,9 @@ def build_extend_step_prompt(
     feedback: str,
     force_cross_modal: bool,
     visual_summary: str | None = None,
+    mode: str = "multi_select",
 ) -> str:
+    cfg = _step_mode_config(mode)
     feedback_block = _format_feedback_block(feedback)
     visual_block = _format_visual_summary_block(visual_summary)
     cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
@@ -276,7 +335,9 @@ def build_extend_step_prompt(
         答案字母: {previous_step.answer_letter}
         答案短语: {previous_step.answer_text}
 
-        请继续扩链生成新的子问题(单选题)，要求:
+        请继续扩链生成新的子问题({cfg['question_type']})，要求:
+        {cfg['option_range_rule']}
+        {cfg['answer_rule']}
         - 使用新的关键信息或新的视觉关系: {fact_hint}
         - operate_distinction 智能体草稿(仅供内部推理，不得在题干中提到):
           - draft:
@@ -313,13 +374,8 @@ def build_extend_step_prompt(
 
         只输出以下格式（必须严格遵守，将题干和选项分开）:
         <question>题干描述（作为连续自然段，不包含选项）</question>
-        <selections>
-        A. 选项内容
-        B. 选项内容
-        C. 选项内容
-        D. 选项内容
-        </selections>
-        <answer>A/B/C/D</answer>
+        {cfg['selections_block']}
+        {cfg['answer_hint']}
         <reasoning>简要推理过程</reasoning>
         """
     ).strip()
@@ -335,9 +391,9 @@ def build_revise_prompt(
     force_cross_modal: bool,
     visual_summary: str | None = None,
     extra_requirements: str | None = None,
+    mode: str = "multi_select",
 ) -> str:
-    # Revise prompt 通常不直接接收外部 feedback (而是接收内部 reason)，
-    # 但如果 reason 本身来自 difficulty check，也可以格式化强调。
+    cfg = _step_mode_config(mode)
     cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
     operate_distinction_block = indent((operate_distinction_draft or "").strip() or "(empty)", "      ")
     operate_calculation_block = indent((operate_calculation_draft or "").strip() or "(empty)", "      ")
@@ -362,6 +418,8 @@ def build_revise_prompt(
         {extra_block}
 
         其他要求:
+        {cfg['option_range_rule']}
+        {cfg['answer_rule']}
         - {cross_modal}
         - 使用新的关键信息或明确证据: {fact_hint}
         - operate_distinction 草稿(仅供内部推理，不得在题干中提到):
@@ -391,13 +449,8 @@ def build_revise_prompt(
 
         只输出以下格式（必须严格遵守，将题干和选项分开）:
         <question>题干描述（作为连续自然段，不包含选项）</question>
-        <selections>
-        A. 选项内容
-        B. 选项内容
-        C. 选项内容
-        D. 选项内容
-        </selections>
-        <answer>A/B/C/D</answer>
+        {cfg['selections_block']}
+        {cfg['answer_hint']}
         <reasoning>简要推理过程</reasoning>
         """
     ).strip()
@@ -420,10 +473,17 @@ def build_graph_1hop_step_prompt(
     knowledge_source_label: str | None = None,
     knowledge_source_prefix: str | None = None,
     visual_summary: str | None = None,
+    mode: str = "multi_select",
 ) -> str:
+    cfg = _step_mode_config(mode)
     feedback_block = _format_feedback_block(feedback)
     visual_block = _format_visual_summary_block(visual_summary)
     cross_modal = "必须跨模态桥接(同时依赖图片与参考信息)。" if force_cross_modal else "可以跨模态桥接。"
+    option_leak_rule = (
+        "- A-H 选项只允许输出“数值/区间/等级标签”（长度≤12字），不得附带原因、现象、分布描述或任何与图像特征对应的解释；"
+        if mode != "single_select"
+        else "- A-D 选项只允许输出“数值/区间/等级标签”（长度≤12字），不得附带原因、现象、分布描述或任何与图像特征对应的解释；"
+    )
     distractors = ", ".join(distractor_entities[:12]) if distractor_entities else "(由你生成)"
     operate_distinction_block = indent((operate_distinction_draft.strip() or "(empty)"), "        ")
     operate_calculation_block = indent((operate_calculation_draft.strip() or "(empty)"), "        ")
@@ -444,15 +504,17 @@ def build_graph_1hop_step_prompt(
         {feedback_block}
         {visual_block}
 
-        你需要基于“本地知识点链”生成一个 1-hop 子问题(单选题)。
+        你需要基于“本地知识点链”生成一个 1-hop 子问题({cfg['question_type']})。
         提示前缀: {source_prefix}。
         {context_bridge}
 
         当前使用知识链: {head} --[{relation}]--> {tail}
-        正确答案必须对应实体: {target_concept}
+        多选约束：答案至少包含2个选项字母；其中至少1个正确选项必须对应实体: {target_concept}（其余正确选项必须同样完全满足题干判据）。
 
         要求：
         
+        {cfg['option_range_rule']}
+        {cfg['answer_rule']}
         - 题干中不要直接出现正确答案 {target_concept} (包括同义词)。
         - {cross_modal}
         - 题干中禁止出现“文献”“文档”“context”等字样。
@@ -500,14 +562,8 @@ def build_graph_1hop_step_prompt(
         - 难度递进：必须利用 operate_calculation 将定性描述转化为半定量或逻辑推断题。
         - 针对 Feedback 的特别执行：如果 Feedback 要求隐藏规则或增加前置计算，请务必移除题目中直接给出的判断标准（例如"当X>5时..."），改为更隐性的规则描述。）
         </question>
-        <selections>
-        - 生成 4 个选项 A-D，其中正确选项对应 {target_side} ({target_concept})，其他为干扰项。
-        A. 选项内容
-        B. 选项内容
-        C. 选项内容
-        D. 选项内容
-        </selections>
-        <answer>A/B/C/D</answer>
+        {cfg['selections_block']}
+        {cfg['answer_hint']}
         <reasoning>简要推理过程</reasoning>
         """
     ).strip()

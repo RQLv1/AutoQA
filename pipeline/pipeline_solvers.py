@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 from typing import Any
 
 from prompts import build_solver_prompt, build_solver_prompt_text_only
@@ -21,6 +22,15 @@ def _normalize_solver_output(raw: str) -> tuple[str, str | None]:
     if letter:
         return f"<answer>{letter}</answer>", letter
     return "<answer></answer>", None
+
+
+def _normalize_answer_letters(answer: str) -> str | None:
+    if not answer:
+        return None
+    stripped = answer.strip()
+    if re.fullmatch(r"[A-H]+", stripped, flags=re.IGNORECASE):
+        return "".join(sorted({c.upper() for c in stripped}))
+    return parse_option_letter_optional(stripped)
 
 
 def solve_mcq(
@@ -60,17 +70,19 @@ def solve_mcq_no_image(
 
 
 def grade_answer(answer: str, solver_letter: str | None) -> bool:
-    standard = parse_option_letter_optional(answer)
+    standard = _normalize_answer_letters(answer)
     if not standard or not solver_letter:
         return False
     return set(standard) == set(solver_letter)
 
 
 def grade_partial_answer(standard: str, prediction: str | None) -> bool:
-    if not standard or not prediction:
+    std_letters = _normalize_answer_letters(standard)
+    pred_letters = _normalize_answer_letters(prediction or "")
+    if not std_letters or not pred_letters:
         return False
-    std_set = set(parse_option_letter_optional(standard) or "")
-    pred_set = set(parse_option_letter_optional(prediction) or "")
+    std_set = set(std_letters)
+    pred_set = set(pred_letters)
     return bool(pred_set) and pred_set.issubset(std_set) and pred_set != std_set
 
 

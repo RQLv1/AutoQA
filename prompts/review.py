@@ -9,7 +9,7 @@ def build_review_prompt(
 ) -> str:
     is_single = mode == "single_select"
     option_rule = (
-        "必须包含 4-8 个按顺序编号的选项（A-H），且答案由一个或多个选项字母组成（可用逗号分隔，需按字母顺序）"
+        "必须包含 4-8 个按顺序编号的选项（A-H），且答案由一个或多个选项字母组成（按字母顺序连续输出，不得空格或逗号）"
         if not is_single
         else "必须包含 A/B/C/D 四个选项，且答案为其中一个字母"
     )

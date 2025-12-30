@@ -4,7 +4,7 @@ from textwrap import dedent
 def _solver_answer_hint(mode: str) -> str:
     if mode == "single_select":
         return "<answer>A/B/C/D</answer>"
-    return "<answer>按字母顺序列出的全部正确选项，如 AC 或 A,C,E</answer>"
+    return "<answer>按字母顺序连续输出的正确选项(无空格/逗号，如 ACEF)</answer>"
 
 
 def _solver_instructions(mode: str, text_only: bool) -> str:

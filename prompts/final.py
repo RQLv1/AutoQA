@@ -8,7 +8,7 @@ def _final_mode_config(mode: str) -> dict[str, str]:
     question_type = "多选题(Multiple Select Question)" if multi else "单选题(MCQ)"
     calc_style = "多选题" if multi else "单选题"
     option_instruction = (
-        "- 这是多选题，可能有一个或多个正确选项，请在答案中列出全部正确字母（按字母顺序，如 AC 或 A,C,E）。"
+        "- 这是多选题，可能有一个或多个正确选项，请在答案中列出全部正确字母（按字母顺序连续输出，无空格/逗号，如 ACEF）。"
         if multi
         else "- 这是单选题，只有一个正确选项，答案写一个字母（如 A）。"
     )
@@ -51,7 +51,7 @@ def _final_mode_config(mode: str) -> dict[str, str]:
         """
     ).strip()
     answer_hint = (
-        "<answer>正确选项字母(可多选，如 AC 或 A,C,E)</answer>"
+        "<answer>正确选项字母(多选需按字母顺序连续输出，无空格/逗号，如 ACEF)</answer>"
         if multi
         else "<answer>正确选项字母(单选，如 A)</answer>"
     )

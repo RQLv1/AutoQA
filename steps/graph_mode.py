@@ -18,6 +18,7 @@ def generate_steps_graph_mode(
     previous_final_question: str | None,
     visual_summary: str | None,
     visual_edges: list[KnowledgeEdge] | None,
+    mode: str = "multi_select",
 ) -> tuple[list[StepResult], bool]:
     """
     Generate multi-hop reasoning steps using knowledge graph mode.
@@ -51,6 +52,7 @@ def generate_steps_graph_mode(
         previous_final_question,
         visual_summary,
         all_edges,
+        mode=mode,
     )
     steps.append(step0)
 
@@ -95,6 +97,7 @@ def generate_steps_graph_mode(
         step0,
         path,
         all_edges,
+        mode=mode,
     )
     steps.extend(subsequent_steps)
 

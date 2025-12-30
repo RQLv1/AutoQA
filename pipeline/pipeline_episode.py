@@ -18,7 +18,7 @@ from utils.config import (
 )
 from utils.details_logger import get_details_logger
 from utils.mcq import has_valid_options
-from utils.parsing import extract_tag_optional
+from utils.parsing import extract_tag_optional, parse_option_letter_optional
 from utils.schema import EpisodeResult, StageResult, StepResult
 from utils.terminal import print_final_input, print_final_summary
 
@@ -26,7 +26,8 @@ from utils.terminal import print_final_input, print_final_summary
 def run_final(prompt: str, image_path: Path, model: str) -> StageResult:
     raw = call_vision_model(prompt, image_path, model)
     question = extract_tag_optional(raw, "question") or raw.strip()
-    answer = extract_tag_optional(raw, "answer") or ""
+    answer_raw = extract_tag_optional(raw, "answer") or ""
+    answer = parse_option_letter_optional(answer_raw) or answer_raw.strip()
     reasoning = extract_tag_optional(raw, "reasoning")
     return StageResult(question=question, answer=answer, raw=raw, reasoning=reasoning)
 
@@ -47,6 +48,7 @@ def run_episode(
         previous_final_question,
         visual_knowledge.summary,
         visual_knowledge.edges,
+        mode=mode,
     )
     stage_1, stage_2, stage_3 = derive_stage_results(steps)
 

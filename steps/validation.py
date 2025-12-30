@@ -10,6 +10,7 @@ def validate_step(
     strong_correct: bool | None,
     medium_correct: bool | None,
     text_only_correct: bool | None,
+    mode: str = "multi_select",
 ) -> tuple[bool, str]:
     visual_anchors = [
         "图中",
@@ -62,6 +63,12 @@ def validate_step(
         return True, "missing question"
     if step.answer_letter is None:
         return True, "missing answer_letter"
+
+    if mode == "single_select" and len(step.answer_letter) != 1:
+        return True, "single-select requires exactly 1 answer"
+
+    if mode != "single_select" and len(step.answer_letter) < 2:
+        return True, "multi-select requires at least 2 answers"
     if step.modal_use not in {"image", "text", "both"}:
         return True, "invalid modal_use"
     if force_cross_modal and "cross_modal_bridge" in step.raw and not step.cross_modal_bridge:

@@ -32,6 +32,7 @@ def generate_step_chain(
     step0: StepResult,
     path: list[KnowledgeEdge],
     all_edges: list[KnowledgeEdge],
+    mode: str = "multi_select",
 ) -> list[StepResult]:
     """
     Generate subsequent steps (1+) along the knowledge graph path.
@@ -133,6 +134,7 @@ def generate_step_chain(
             knowledge_source_label=source_label,
             knowledge_source_prefix=source_prefix,
             visual_summary=visual_summary,
+            mode=mode,
         )
         model = select_model_for_step(current_step_index)
         from utils.terminal import print_step_input
@@ -208,6 +210,7 @@ def generate_step_chain(
                 False,
                 visual_summary,
                 extra_requirements=extra_requirements,
+                mode=mode,
             )
             step = run_step(revise_prompt, image_path, model, current_step_index)
             step = obfuscate_step_question(step)
@@ -243,11 +246,11 @@ def generate_step_chain(
             strong_text_only_raw,
             strong_text_only_letter,
             strong_text_only_correct,
-        ) = evaluate_step_with_solvers(step, image_path, False)
+        ) = evaluate_step_with_solvers(step, image_path, False, mode=mode)
 
         # Validate and check for revision
         needs_revision, reason = validate_and_check_needs_revision(
-            step, False, strong_correct, medium_correct, strong_text_only_correct
+            step, False, strong_correct, medium_correct, strong_text_only_correct, mode=mode
         )
         revise_reason = reason if needs_revision else None
 
@@ -272,6 +275,7 @@ def generate_step_chain(
                 operate_calculation.draft,
                 False,
                 visual_summary,
+                mode=mode,
             )
             step = run_step(revise_prompt, image_path, model, current_step_index)
             step = obfuscate_step_question(step)
@@ -289,7 +293,7 @@ def generate_step_chain(
                 strong_text_only_raw,
                 strong_text_only_letter,
                 strong_text_only_correct,
-            ) = evaluate_step_with_solvers(step, image_path, False)
+            ) = evaluate_step_with_solvers(step, image_path, False, mode=mode)
 
             get_details_logger().log_event(
                 "step_result_revised",
@@ -330,6 +334,7 @@ def generate_step_chain(
                 strong_letter,
                 medium_raw,
                 strong_raw,
+                mode=mode,
             )
 
         steps.append(step)
