@@ -1,0 +1,1400 @@
+=== Page 1 ===
+RESEARCH ARTICLE
+www.afm-journal.de
+Rb Doping and Lattice Strain Synergistically Engineering
+Oxygen Vacancies in TiO for Stable High-Contrast
+2
+Photoreversible Color Switching
+Xiangyu Tian, Zixu Zeng, Yi He, Lecheng Lei, Chunlin Yu,* and Xingwang Zhang*
+pivotalroleacrossvariousfields,including
+TheutilizationofTiO 2 forthefabricationoftransparentphotochromic opticaldisplays,sensors,anddatastorage.[1]
+materialsisbothcost-effectiveandenvironmentallyfriendly.However,itstill Furthermore,impartingtransparencyprop-
+poseschallengesduetotherapidrecombinationofelectron-holepairsand erties to these materials opens up new
+avenues for numerous applications such
+poororganic-inorganiccompatibility.Oxygenvacanciesplayacrucialrolein
+as smart windows, transparent displays,
+sustainingsacrificialelectrondonorsforholescavenging,demonstrating
+and wearable devices.[2] However, the fab-
+greatpotentialinenhancingphotochromicperformance.Herein,Rbdoping
+rication of transparent photochromic ma-
+andlatticestrainareappliedtosynergisticallyengineeroxygenvacancies, terials that demonstrate significant opti-
+consideringlatticeoxygenreleaseisinfluencedbychargeneutralityand calmodulationamplitude,rapidresponse,
+oxygenatomcoordinationenvironment.Furthermore,theparticlesurfaceis and stable color-switching reversibility re-
+mains a challenge from both a techni-
+modifiedusingcompositesiloxanestoensuremonodispersionandenhance
+calandeconomicstandpoint.Althoughor-
+organic-inorganiccompatibility.Structuralanalysesandtheoretical
+ganic photochromic molecules have un-
+calculationsindicatethatRbdopingandepitaxialstrainsynergisticallyreduce dergoneextensivedevelopment,themajor-
+theoxygenvacancyformationenergyandpromotethechemicaladsorptionof ity still necessitate intricate synthesis pro-
+diethyleneglycol(DEG)ontheTiO surfaceforholescavenging.The cedures and toxic precursors and exhibit
+2
+unstable physicochemical properties.[3] In
+designedDEG-addedRb-TiO /TB-CS(TBmeansextratitaniumbutoxide,CS
+2
+contrast,photochromictransitionmetalox-
+meanscompositesiloxanes)nanodispersionexhibitsasignificantoptical
+ides have higher thermal stability, chem-
+modulationamplitudeexceeding90%at650nm,rapidresponsewithin60s, ical resistance, and strength.[4] Titanium
+andstablereversibilityincolor-switching(50cycles).Moreover,utilizing dioxide (TiO ) is considered a promising
+2
+Rb-TiO /TB-CSwithDEGligandsasaresponsivematerialenablesthe functional component for photochromic
+2
+fabricationoftransparentphotochromicpolyacrylate-basedhybridfilms, materials due to its abundant elemen-
+tal reserve, nontoxic nature, and physico-
+polyvinylalcohol-basedhydrogels,andhydroxyethylcellulose-based
+chemical stability.[5] In recent years, pho-
+rewritablepapers,showcasingitsimmensepotentialfordiverseapplications.
+tochromicsystemsincorporatingTiO and
+2
+redox dyes such as methylene blue (MB)
+have been developed to achieve reversible
+color switching through the reduction of
+1.Introduction dyes by photogenerated electrons and oxidation of dyes by
+oxidant.[6] However, such systems still suffer from low trans-
+Theutilizationofphotochromicmaterialscapableofreversible
+parency,potentialtoxicityrisks,andlimitedabilityforreversible
+colorswitchinginresponsetoexternallightstimulihasplayeda
+color-switchingduetophotocatalyticdegradationofthedyes.
+ConstructingreversiblephotochromicsystemsinwhichTiO
+2
+itselffunctionsasthecolor-changingcomponentisanticipatedto
+X.Tian,Z.Zeng,Y.He,L.Lei,C.Yu,X.Zhang
+KeyLaboratoryofBiomassChemicalEngineeringofMinistryof addresstheaforementionedissues.Toachievehightransparency
+Education ofthecompositematerials,itisnecessaryfortheparticlesizeof
+DepartmentofChemicalandBiologicalEngineering TiO to be less than 40 nm (one-tenth of the minimum wave-
+ZhejiangUniversity 2
+lengthofvisiblelight).[7]Additionally,asufficientlyelevatedcon-
+Hangzhou310027,China
+centrationofTiO withinthepolymermatrixisrequiredtoen-
+E-mail:chunlinyu@zju.edu.cn;xwzhang@zju.edu.cn 2
+surelargeopticalmodulationamplitude(highcontrast).[8]There-
+C.Yu
+InstituteofZhejiangUniversity-Quzhou fore,surfacemodificationbecomesimperativetoguaranteeparti-
+Quzhou324000,China clemonodispersityandenhanceorganic-inorganiccompatibility
+forthepreventionofRayleighscattering.Inthesesystems,there-
+TheORCIDidentificationnumber(s)fortheauthor(s)ofthisarticle
+doxbetweenTi(IV)andTi(III)drivenbyphotoinducedelectrons
+canbefoundunderhttps://doi.org/10.1002/adfm.202423514
+andoxygenenablesreversiblecolorswitchingbetweenwhiteand
+DOI:10.1002/adfm.202423514
+Adv.Funct.Mater.2025,35,2423514 2423514(1of15) ©2025Wiley-VCHGmbH
+
+=== Page 2 ===
+www.advancedsciencenews.com www.afm-journal.de
+Figure1. a)SchematicdiagramforthefabricationofRb-TiO /TB-CSnanoparticles.b)TEMimageforRb-TiO /TB-CS.c)Schematicillustrationof
+2 2
+epitaxialstrainatthecrystalline-amorphousinterface.d)ande)High-resolutionTEMimagesforRb-TiO /TB-CS(Theareasindicatedbytheyellow
+2
+arrowsaretheamorphousstructures).f)High-resolutionTEMimageandg)correspondingstrainmappingfromGPAofTiO /TB.h)High-resolution 2
+TEMimageandi)correspondingstrainmappingfromGPAofRb-TiO /TB.j)ElementalmapsforRb-TiO /TB-CS.
+2 2
+darkblue.Fundamentally,theperformanceofphotochromism, organic adsorbates. Chemisorbed alcohol ligands on TiO sur- 2
+includingresponsespeedandopticalmodulationamplitude,crit- faceshavebeenproventofunctionasSEDstoscavengeholes.[10]
+ically relies on the efficient scavenging of photoinduced holes, Thus, the photochromic performance can be substantially en-
+which allows photoinduced electrons to escape recombination hanced through oxygen vacancies engineering, while ensuring
+andreduceTi(IV). thepreservationofsurfacegroupscrucialforsubsequentmodi-
+Notably,oxygenvacancieswithlocalizedelectronsplayakey ficationandapplication.Tomodulatetheelectronicstructurefor
+role in hole scavenging. On one hand, it has been reported facilitatingthegenerationofoxygenvacancies,itispreferableto
+that oxygen vacancies directly act as sacrificial electron donors introducelow-valentmetalionsasdopantsintoTiO inorderto
+2
+(SEDs)tocapturephotoinducedholes.[9]Ontheotherhand,oxy- reducetheenergyrequiredforoxygenvacancyformation,which
+genvacanciescanserveasreactionsitesforthedissociationof isinducedbytheretentionofchargeneutrality.[11]Furthermore,
+Adv.Funct.Mater.2025,35,2423514 2423514(2of15) ©2025Wiley-VCHGmbH
+16163028,
+2025,
+28,
+Downloaded
+from
+https://advanced.onlinelibrary.wiley.com/doi/10.1002/adfm.202423514
+by
+Zhejiang
+University,
+Wiley
+Online
+Library
+on
+[10/12/2025].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License
+
+=== Page 3 ===
+www.advancedsciencenews.com www.afm-journal.de
+theformationofoxygenvacancies,whichisinfluencedbytheco- followinginvestigations.ThemicroscopicstateofmodifiedRb-
+ordinationenvironmentoftheoxygenatoms,isassociatedwith TiO -CS with various feeding molar ratios of Rb/Ti (2%, 5%,
+2
+latticeexpansionresultingfromelectronlocalizationonneigh- 10%,and20%)waspresentedinFigureS1(SupportingInforma-
+boringcations.[12]Latticestrainhasbeendemonstratedtodistort tion).WithincreasingRbdopinglevels,Rb-TiO -CSNPsgradu-
+2
+localbondingandimpacttheligandfield.[13]Additionally,tensile allygrowandagglomerate.Theheteroatomsaremoreinclinedto
+strainisconsideredtodecreasethemigrationbarrierforoxygen beenrichedintheshallowsurfaceregionoftheparticles.[15] As
+atomtransferandsurfaceexchange,indicatingastrongcorrela- thedopantconcentrationincreases,defectsandheteroatomsites
+tionbetweenlatticestrainandoxygendefectchemistry.[14]There- accommodatedinTiO crystalsbecomesaturated,causingrubid-
+2
+fore,dopinglow-valentmetalionsandengineeringlatticestrain iumoxidestoprecipitateontheTiO surface,leadingtotheag-
+2
+maysynergisticallyreducetheoxygenvacancyformationenergy, gregationofneighboringparticlesthroughbridginginteractions
+therebypromotingtheabundantgenerationofoxygenvacancies (FigureS2,SupportingInformation).[16] Basedontheabovere-
+inTiO . sults,thefeedingratioofRb/Tiisdeterminedtobe5%.Itshould
+2
+Herein, we present a novel Rb-TiO /TB-CS photochromic be mentioned that Rb-TiO -CS exhibits an unstable dispersion
+2 2
+responsive structure for the construction of reversible pho- after24h(FigureS3,SupportingInformation),whichmakesit
+tochromic systems. The synergistic strategy of rubidium (Rb) unsuitableforcomparisoninfurthercharacterizationsandper-
+dopingandlatticestraingreatlyfacilitatesthegenerationofoxy- formance tests. The morphology of TiO /TB-CS with different
+2
+gen vacancies and enhances the chemical adsorption of DEG TBOTadditionsinthesecondsolvothermalprocesswasalsoin-
+moleculesontheTiO surface,whichefficientlyactsasSEDsto vestigated(FigureS4,SupportingInformation).Astheamount
+2
+scavengeholes.Additionally,surfacemodificationusingcompos- ofthesecondadditionofTBOTincreases,theparticlescrosslink
+ite siloxanes ensures the monodispersion of nanoparticles and with each other through amorphous structure and the bound-
+improves organic-inorganic compatibility. The Rb-TiO /TB-CS ariesbecomeblurred,sotheamountofsecondTBOTadditionis
+2
+nanodispersion, with the addition of DEG, exhibits high trans- determinedtobe20%ofthefirstTBOTaddition.Thesamplepre-
+parency and can undergo rapid coloration from clear to dark paredaccordingtotheoptimalconditionsofthepre-experiments
+blueintensofsecondsunderUVirradiation.Moreover,itcon- is denoted as Rb-TiO /TB-CS. The transmission electron mi-
+2
+venientlyfadesthroughairoxidation.Notably,thisnanodisper- croscopy(TEM)imageshowninFigure1bdisplaysthemonodis-
+siondemonstratesanultrahighopticalmodulationamplitudeex- persionandnarrowsizedistributionoftheRb-TiO /TB-CSNPs.
+2
+ceeding90%at650nmandenhancedcolor-switchingreversibil- ComparedtoagglomeratedRb-TiO /TBNPswithoutmodifica-
+2
+ity (50 cycles) compared to previous studies. The polyacrylate- tion (Figure S5a, Supporting Information), the Rb-TiO /TB-CS
+2
+basedtransparentphotochromichybridfilm,fabricatedwithRb- NPsareuniformlymonodispersedandexhibitanaverageparti-
+TiO /TB-CSandpossessingexcellentflexibility,exhibitsahigh clesizeof10.5nm(FigureS5b,c,SupportingInformation).
+2
+optical contrast of 82.74% at 650 nm in photochromic process Figure 1c illustrates the epitaxial strain at the crystalline-
+andcanbephoto-printedwithcomplexpatternsandtextsinhigh amorphousinterfacemediatedbytheunevenvolumetricshrink-
+resolution. Additionally, by utilizing Rb-TiO /TB-CS with DEG age during the solvothermal process.[17] The high-resolution
+2
+ligands,polyvinylalcohol(PVA)-basedtransparentphotochromic TEM images of Rb-TiO /TB-CS shown in Figure 1d,e demon-
+2
+hydrogelsandhydroxyethylcellulose(HEC)-basedrewritablepa- strate the construction of the crystalline-amorphous interface,
+perscanalsobeprepared.Insummary,comparedwithpublished whichisformedthroughtheinsitugrowthofamorphousstruc-
+work,theRb-TiO /TB-CSasanexceptionalphotochromicstruc- ture on the well-crystallized Rb- TiO . For Rb-TiO /TB-CS, the
+2 2 2
+ture possesses high transparency, superior optical modulation lattice spacing of 1.95 Å corresponds to the (200) plane, and
+amplitude,enhancedcolor-switchingreversibility,andadaptabil- thelatticespacingof3.59Åbelongstothe(101)plane.[18]Com-
+itytovarioussystems,enablingdiverseapplicationssuchaspho- paredtothelatticespacingof1.90Å(200)and3.51Å(101)for
+tochromicwindows,transparentdisplays,wearabledevices,and pure TiO (Figure S6, Supporting Information), the increased
+2
+temporarydatastorage. lattice spacing of Rb-TiO /TB-CS indicates the successful dop-
+2
+ing of Rb, and the increased lattice spacing of Rb-TiO dis-
+2
+2.ResultandDiscussion played in Figure S7 (Supporting Information) also supports it.
+Toavoidtheinterferenceofsurfacemodifiersontheinterfacial
+2.1.PreparationandCharacterizationofRb-TiO /TB-CSStructure latticestrain,theunmodifiedTiO /TBandRb-TiO /TBarechar-
+2 2 2
+acterizedbyhigh-resolutionTEMinFigure1f,h,respectively,in
+The fabrication of the Rb-TiO /TB-CS structure is schemat- whichthecrystalline-amorphousinterfacesbothareclearlyvisi-
+2
+ically illustrated in Figure 1a. The Rb-doped TiO was pre- ble.Geometricphaseanalysis(GPA)isawidelyusedtechnique
+2
+pared by the first solvothermal process. Subsequently, the that relies on the spatial transformation of crystal phases for
+crystalline-amorphous interface was constructed to induce lat- the analysis of TEM images. GPA is based on electron diffrac-
+tice strain during the second solvothermal process with the tion theory for phase deconvolution, which is effective for in-
+extra addition of titanium butoxide (TBOT). Surface mod- vestigating local lattice strains, distortions, and defects.[19] To
+ification was performed using composite siloxanes of 3,3- quantitativelyinvestigatethedistributionofstrain,GPAisper-
+dimethoxy-2,7,10,13,16-pentaoxa-3-silaheptadecane (DPSi) and formedtoanalyzethehigh-resolutionTEMimagesofunmodi-
+3-(acryloyloxy)propyltrimethoxysilane(APSi)toenablemonodis- fiedTiO /TBandRb-TiO /TB.TheresultsofGPAinFigure1g,i 2 2
+persity of the nanoparticles (NPs) in polar solvents and pro- both demonstrate that the clear axial tensile strain (ɛ yy) is dis-
+vide cross-linking sites for hybridization, respectively. Pre- tributedalongthecrystalline-amorphousinterfacesinTiO /TB
+2
+experimentswereusedtooptimizethestructureandguidethe and Rb-TiO /TB, which should be caused by the difference of
+2
+Adv.Funct.Mater.2025,35,2423514 2423514(3of15) ©2025Wiley-VCHGmbH
+16163028,
+2025,
+28,
+Downloaded
+from
+https://advanced.onlinelibrary.wiley.com/doi/10.1002/adfm.202423514
+by
+Zhejiang
+University,
+Wiley
+Online
+Library
+on
+[10/12/2025].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License
+
+=== Page 4 ===
+www.advancedsciencenews.com www.afm-journal.de
+Figure2. a)XRDpatternsofTiO andTiO /TBwithvariousRb/Tifeedingmolarratios.b)ThenumberdistributionofparticlesizeforTiO -CS,TiO /TB-
+2 2 2 2
+CS,Rb-TiO /TB-CS,andunmodifiedRb-TiO /TBinPGMEA.c)UV–visdiffusereflectancespectra,d)SurveyXPSspectra,e)XPSspectraofO1s,f)XPS
+2 2
+spectraofTi2p,g)Ramanspectra,h)EPRspectrawithoutlightirradiation,andi)CVcurvesforTiO ,TiO /TB,andRb-TiO /TB.
+2 2 2
+volumetricshrinkagebetweencrystallineandamorphoussolid. during thesynthesis rather than tending to generate rubidium
+Furthermore,thehomogeneousdistributionsofTi,O,Rb,and oxides.
+Si elements in Rb-TiO /TB-CS are confirmed by the elemental To further investigate the crystalline structure, the X-ray
+2
+mappingsinFigure1j.ThepracticalRb/TiratiosinRb-TiO /TB- diffraction(XRD)patternsarepresentedinFigure2a.Alldiffrac-
+2
+CSmeasuredbytheenergy-dispersivespectrometer(EDS)and tion peaks of samples correspond to those of the anatase TiO
+2
+inductivelycoupledplasmaopticalemissionspectrometry(ICP- phase according to JCPDS No. 21–1272. It is noteworthy that
+OES) both are close to 2% (Figure S8 and Table S1, Support- the diffraction peak of the (004) plane shifts negatively as the
+ing Information). However, this is different from the feeding Rb/Tifeedingratioincreases,whichindicatesthatRb+ionswith
+ratio of 5%, which may be explained by the fact that only part a larger ionic radius are successfully doped into the lattice of
+of the Rb+ ions are successfully doped into TiO due to the TiO . The size distributions of nanodispersions reflect the ac-
+2 2
+large radius of Rb+ ions. Moreover, from the elemental maps tual state of the NPs. Figure 2b displays the number distribu-
+for Rb-TiO /TB-CS with a higher Rb/Ti feeding ratio of 10% tion of particle size for TiO -CS, TiO /TB-CS, Rb-TiO /TB-CS, 2 2 2 2
+shown in Figure S9 (Supporting Information), it can be seen and unmodified Rb-TiO /TB in propylene glycol monomethyl
+2
+that the Rb element is uniformly distributed without signifi- ether acetate (PGMEA). Compared to unmodified Rb-TiO /TB
+2
+cant aggregation, indicating that Rb can be uniformly doped withanaveragesizeof295nm,theRb-TiO /TB-CSexhibitsan
+2
+Adv.Funct.Mater.2025,35,2423514 2423514(4of15) ©2025Wiley-VCHGmbH
+16163028,
+2025,
+28,
+Downloaded
+from
+https://advanced.onlinelibrary.wiley.com/doi/10.1002/adfm.202423514
+by
+Zhejiang
+University,
+Wiley
+Online
+Library
+on
+[10/12/2025].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License
+
+=== Page 5 ===
+www.advancedsciencenews.com www.afm-journal.de
+average size of 11.7 nm, which is roughly consistent with the genvacancies.AsshowninFigure2iandFigureS11(Supporting
+statistics of the TEM, suggesting the monodispersion of Rb- Information),thelargeroxidationpeakareaindicatesagreater
+TiO /TB-CSNPsinPGMEA.Inaddition,althoughtheparticle numberofoxygenvacancies.[27]Inagreementwiththeresultsof
+2
+size of Rb-TiO /TB-CS is slightly increased in comparison to RamanandEPRcharacterizations,theoxygenvacanciesconcen-
+2
+TiO -CSandTiO /TB-CS,itissufficientlysmaller than40nm trationisrankedas:Rb-TiO /TB>TiO /TB>TiO .Theabove
+2 2 2 2 2
+topreventRayleighscatteringofvisiblelight.Furthermore,the resultscorroboratewitheachother,stronglydemonstratingthe
+lightabsorptionofsamplesinunexcitedstatesdirectlyaffectsthe synergisticpromotionbytensilestrainandRbdopingforthefor-
+transparencyandphotochromiccontrastofthehybridmaterials. mationofoxygenvacancies.
+TheUV–visdiffusereflectancespectra(DRS)showninFigure2c
+indicatethattheRb-TiO /TBshowsalmostnoabsorptioninthe
+2
+600–800 nm region and exhibits a slightly increasing absorp- 2.2.PhotochromismPerformanceEvaluation
+tioninthe400–600nmregionincontrasttoTiO andTiO /TB,
+2 2
+whichmaybeduetotheprecipitationofrubidiumoxidesonthe Previous studies have revealed two mechanisms of oxygen va-
+surface. canciesinholescavengingoxygenvacanciespossessinglocalized
+The X-ray photoelectron spectroscopy (XPS) was utilized to electronsthatmaydirectlyserveasSEDs,andalcoholsdissocia-
+explore the chemical environment and electronic interactions tively adsorbed at oxygen vacancy sites on the surface can also
+ofRb-TiO /TB.Allbindingenergysignalswerecalibratedwith actasSEDs.[6b,d,9]However,whenwesubjectedtheRb-TiO /TB-
+2 2
+the C 1s peak at 284.8 eV. The survey XPS spectra shown in CS PGMEA nanodispersions with and without the addition of
+Figure2ddemonstratetheexistenceofTi,Rb,O,andCelements DEGunderUVirradiation,DEG-addednanodispersionshowed
+in Rb-TiO /TB. The Rb 3D spectrum of Rb-TiO /TB shown in amuchmoreintensedarkbluecolorthantheDEG-unaddednan-
+2 2
+FigureS10(SupportingInformation)confirmstheRb+chemical odispersions (Figure S12, Supporting Information). This sug-
+state.[20]Inthehigh-resolutionO1sspectra(Figure2e),thepeak gests that chemisorbed DEG is more effective in scavenging
+at529.81 eVis attributedtothelattice oxygen, andthepeakat holesthanoxygenvacanciesthemselves.Additionally,compared
+531.26 eV is assigned to the surface -OH groups.[21] Moreover, tootherpolyols,DEGexhibitsastrongerholescavengingability
+the higher binding energy peak of O 1s can be directly related andstability,therebymakingitthesacrificialelectrondonorin
+tooxygenvacanciesorsurfacedefects.[22]Basedonthechanging oursystem(FigureS13,SupportingInformation).Furthermore,
+trend of the peak area at 531.26 eV, it can be inferred that lat- thenumberofoxygendefectsiteshasbeenreportedtodirectly
+ticestrainandRbdopingfacilitatetheformationofmoreoxygen affect the number of surface chemisorbed alcohols.[28] To con-
+vacancies,providingRb-TiO /TBwiththemostoxygendefects. firmthisidea,theFT-IRspectraofsamples,whichwereinitially 2
+Figure2fpresentsthehigh-resolutionTi2pspectra.ForTiO and unmodifiedandweresubmergedinDEGunderUVirradiation
+2
+TiO /TB,thepeaksat458.59and464.26eVareattributedtoTi followed by multiple washes and centrifugation, are shown in 2
+2p andTi2p ,respectively.[23]Intriguingly,thebindingener- Figure 3a. It can be seen that the abundance of oxygen vacan-
+3/2 1/2
+giesofTi2p andTi2p forRb-TiO /TBshiftpositivelyby0.17 ciesinsamplesispositivelycorrelatedwiththeintensityofthe
+3/2 1/2 2
+and0.11eV,respectively.ThismaybeexplainedthatRbonlypro- peaksassignedtoDEG,suggestingthatoxygenvacanciesactas
+videsonevalenceelectronandthestrongelectronegativityofO reactionsitestopromotethedissociativeadsorptionofDEG.In
+stillcontributestomaintainingtheelectrondensityonO,which addition,comparedtounmodifiedRb-TiO /TB,peaksofthecor-
+2
+furtherreducestheelectrondensityonTi,confirmingthemod- respondingmodifiers(APSiandDPSi)appearonthespectrum
+ulationofRbdopingontheelectronicstructure. ofRb-TiO /TB-CS,indicatingsuccessfulsurfacemodification.
+2
+To further understand the structure of Rb-TiO /TB, the Ra- The DEG-added Rb-TiO /TB-CSnanodispersion (volume ra-
+2 2
+manspectroscopystudywascarriedout.AsshowninFigure2g, tio,PGMEA:DEG=4:1)beforeandafterUVirradiationwassub-
+all Raman spectra show the characteristic Raman bands of the jected to EPR analysis (Figure 3b). It can be seen that a clear
+anataseTiO phasewiththestrongestE band.[24] TheE band signal appears at g = 1.941 after UV irradiation, which is at-
+2 g g
+ofTiO /TB(150.5cm−1)exhibitsashifttowardhigherwavenum- tributedtoTi3+.[27c]ThisconfirmsthattheTi4+isreducedtoTi3+
+2
+berscomparedtothatofpureTiO (143.7cm−1),andtheE band byphotogeneratedelectronsafterthescavengingofholesduring
+2 g
+ofRb-TiO /TBisfurthershiftedto152.5cm−1.Accordingtopre- the photochromism process. In addition, there is still a signal 2
+viousstudies,theblueshiftoftheRamanpeakischaracteristicof of oxygen vacancies appearing after UV irradiation, which fur-
+non-stoichiometricTiO andrepresentsthedisruptionoflattice thersuggeststhatoxygenvacanciesaredifficulttoactasSEDs
+2
+periodicityandoctahedralsymmetry,whichisdirectlyrelatedto directly.Tofurtherunderstandthecolorationmechanismofpho-
+surface oxygen defects.[25] This may indicate that tensile strain tochromism, Figure 3c shows the optical absorption of DEG-
+promotestheformationofoxygenvacancies,whichisfurtherfa- addedRb-TiO /TB-CSnanodispersionbeforeandafterUVirra-
+2
+cilitatedbyRbdopingthroughsynergisticeffects.Theelectron diation. The DEG-added Rb-TiO /TB-CS nanodispersion with-
+2
+paramagneticresonance(EPR)spectrausedtofurtherelucidate out UV irradiation almost shows no absorption in visible and
+thepresenceofoxygenvacanciesaredisplayedinFigure2h.Itis near-infraredregions,exhibitingexcellenttransparency.Notably,
+knownthattheEPRsignalatg=2.003isattributedtoelectron- the DEG-added Rb-TiO /TB-CS nanodispersion after UV irra-
+2
+trappedoxygenvacancies.[26] Rb-TiO /TBexhibitsthestrongest diation exhibits a distinct dark blue color and shows increased
+2
+EPR signal followed by TiO /TB, and TiO shows the weakest opticalabsorptionfromvisibletonear-infraredregion.Theab- 2 2
+EPRsignal,whichisconsistentwiththeorderingoftheiroxygen sorption in the visible region is attributed to the formation of
+vacancyabundances.Thecyclicvoltammetry(CV)measurement Ti3+bythereductionofphotogeneratedelectrons,whilemostof
+wasalsoperformedtovisuallycomparetheconcentrationofoxy- thephotogeneratedelectronsremainasfreecarrierswhichmay
+Adv.Funct.Mater.2025,35,2423514 2423514(5of15) ©2025Wiley-VCHGmbH
+16163028,
+2025,
+28,
+Downloaded
+from
+https://advanced.onlinelibrary.wiley.com/doi/10.1002/adfm.202423514
+by
+Zhejiang
+University,
+Wiley
+Online
+Library
+on
+[10/12/2025].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License
+
+=== Page 6 ===
+www.advancedsciencenews.com www.afm-journal.de
+Figure3. a)FT-IRspectraforRb-TiO /TB,modifiedRb-TiO /TB-CS,TiO -DEG,TiO /TB-DEG,andRb-TiO /TB-DEG.b)EPRspectraforDEG-added
+2 2 2 2 2
+Rb-TiO /TB-CSnanodispersion(volumeratio,PGMEA:DEG=4:1)beforeandafterUVirradiation.c)OpticalabsorptionofDEG-addedRb-TiO /TB-CS
+2 2
+nanodispersionbeforeandafterUVirradiation,theinsetshowstheopticalimageofthisnanodispersionandthecolordevelopmentmechanismofTi3+.
+d)Theschematicillustrationofthecolor-switchingmechanismofDEG-addedRb-TiO /TB-CSnanodispersion.e)UV–vistransmissionspectraofDEG-
+2
+addedRb-TiO /TB-CSnanodispersionduringUVirradiation.f)UV–vistransmissionspectraofcoloredDEG-addedRb-TiO /TB-CSnanodispersioninair. 2 2
+g)Theplotsofthetransmittanceat650nmofDEG-addedTiO -CS,TiO /TB-CS,andRb-TiO /TB-CSnanodispersionsincyclictestsforphotochromism
+2 2 2
+anddiscoloration.
+causelocalizedsurfaceplasmonresonance(LSPR)leadingtothe tendedvisibleabsorptionandnear-infraredabsorptiontogether
+absorptioninthenear-infraredregion.[29]Asshownintheinset resultinanabsorptionminimumintheblueregion,whichex-
+ofFigure3b,therearetwoexplanationsforthecolorationcaused plainsthedarkbluecolorofthesamples.
+byTi3+.Onthe onehand,Ti3+ introducesintermediateenergy Figure 3d displays the schematic illustration of the color-
+levels in the bandgap of TiO , leading to the absorption of vis- switching mechanism of DEG-added Rb-TiO /TB-CS nanodis-
+2 2
+ible and partial near-infrared light. On the other hand, density persion.ElectronsandholesareproducedbyUVexcitation.For
+functionaltheory(DFT)calculationscombinedwithtwo-photon physisorbed DEG on the particle surface, hole scavenging in-
+photoemissionspectroscopy(2PPE)haverevealedthatthe3Dor- volvestwoprocesses:thetrappingofthehole(step1,≈fs)andthe
+bitals of Ti3+ are split into a wide occupied band gap state and abstractionofhydrogenfromphysisorbedDEG(step2,≈ns).[31]
+an empty excited state by Jahn-Teller induced splitting.[30] The TheholeisfirsttrappedbythelatticeoxygentoformtheTi4+-
+d-dtransitionsfromthewideoccupiedstatetotheexcitedstate •O− radical, while the abstraction of hydrogen from DEG by
+enhancetheabsorptioninthevisibleregion.Therefore,theex- that radical is too slow to compete with the recombination of
+Adv.Funct.Mater.2025,35,2423514 2423514(6of15) ©2025Wiley-VCHGmbH
+16163028,
+2025,
+28,
+Downloaded
+from
+https://advanced.onlinelibrary.wiley.com/doi/10.1002/adfm.202423514
+by
+Zhejiang
+University,
+Wiley
+Online
+Library
+on
+[10/12/2025].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by the
+applicable
+Creative
+Commons
+License
+
+=== Page 7 ===
+www.advancedsciencenews.com www.afm-journal.de
+electron-hole pairs (step 5, ≈ps). Hence, the physisorbed DEG 50cycles, demonstratingtheconsumptionofoxygen vacancies
+canhardlyserveasaneffectiveSEDtoscavengeholes.Fordisso- inphotoreversiblecolor-switchingprocess.
+ciativelyadsorbedDEG,theholecanbedirectlytrappedina2por- Furthermore, to study the long-term stable color-switching
+bitalbythebridgingoxygen(step4,≈fs),andafastdeprotonation performanceofRb-TiO /TB-CS,thechangesinmorphologyand
+2
+processisperformedtoformarelativelystableketylradicalTi4+- surfacestructurebeforeandafterthecolor-switchingcycletest
+O-•CH-R.[32]Duetothefasterholescavengingthanrecombina- deservefurtherinvestigation.Rb-TiO /TB-CSfromDEG-added
+2
+tionofcarriers,theelectroncanbelocalizedonTi4+toformTi3+ nanodispersionexhibitsnoapparentchangeinthemorphology
+(step3),allowingforthecolorationofphotochromism.Thedecol- andgrainstructureafter50color-switchingcycles(FigureS17,
+orationiscarriedoutbytheoxidationofO .Detailedmechanis- SupportingInformation).Itcannotbeignoredthatalthoughthe
+2
+ticequationsarepresentedinsupportinginformation.Thecolor- slowelectroninjectionleadstotheinhibitionofthedecomposi-
+switchingperformanceandreversiblestabilityofDEG-addedRb- tionoftheketoradicalTi4+-O-•CH-RtoformR-CHOduetothe
+TiO /TB-CSnanodispersionarefurtherinvestigated.Themass breakingofthestrongTi-Obond,theDEGmaydecomposeaf-
+2
+fractionofRb-TiO /TB-CSinthenanodispersion(volumeratio, terscavengingholesinthecolor-switchingcycles.Theanalysis
+2
+PGMEA:DEG=4:1)is9.2%.AsshowninFigure3e,thetransmit- basedontheXPSspectraofC1sdemonstratesthatthepartial
+tanceofthenanodispersiongraduallydecreaseswiththeincreas- DEGligandundergoesdecompositionafterscavengingholesand
+ingtimeofUVirradiationandreachestheminimumin60s,in- newDEGmoleculeswouldbeligandedtotheparticlesurface(see
+dicatingtherapidresponseofthisphotochromismsystem.No- detaileddataanddiscussioninFigureS18,SupportingInforma-
+tably,alargeopticalmodulationamplitudeisdisplayed,whichis tion).SufficientDEGinthesolventenvironmentensuresalong-
+ashighas91.54%at650nm.Thephotochromismperformance termsupplyofsacrificialelectrondonorsontheparticlesurface
+ofthenanodispersionundersunlightisalsoinvestigated.Therel- tocounteractthedecompositionofDEG.Thethermogravimet-
+evantdataandexperimentdetailsareshowninFigureS14(Sup- ric analysis (TGA) of DEG-liganded Rb-TiO /TB nanoparticles
+2
+portingInformation).Thetransmittanceofthenanodispersion is performed to determine the surface content of chemisorbed
+decreaseswiththeincreasingsunlightexposuretimeandgrad- DEG, and the coverage of the DEG before and after 50 color-
+uallyapproachestheminimumafter150min.Theopticalmod- switchingcyclesiscalculatedtobe5.76and5.19nm−2,respec-
+ulationamplitudeismeasuredtobe79.5%at650nm,andthe tively(seedetaileddataanddiscussioninFigureS19,Support-
+nanodispersionstillcanpresentclearphotochromiccolorswitch- ingInformation).SinceDEGisadded inexcess inthesystem,
+ing (FigureS15, SupportingInformation).Figure 3fshows the thedecreaseinchemisorbedDEGcontentshouldbeattributed
+transmittanceofthissystemduringthedecolorationprocessin to the depletion of oxygen vacancies. Moreover, a longer test
+air.Thetransmittanceofcolorednanodispersionincreaseswith of150color-switchingcyclesisusedtoverifythelong-termre-
+thegradualoxidationofTi3+byoxygenandrecoverstoitsinitial versibilityofRb-TiO /TB-CSfromDEG-addednanodispersion.
+2
+stateafter120min.ThephysicaladsorptionlayerofDEGonthe TheRb-TiO /TB-CSexhibitsrelativelystablereversibilityinlong- 2
+particlesurfacemaystabilizethecoloringstatebyblockingO . term color switching and the optical modulation amplitude at
+2
+Inaddition,rapiddecolorationinsecondscanbeachievedbyin- 650nmgraduallystabilizesat≈65%over150color-switchingcy-
+jectingairdirectlyintothenanodispersionrepeatedly(VideoS1, cles (Figure S20, Supporting Information). It is still enough to
+SupplementaryVideo1). perform a clear photochromic contrast and the dark blue color
+Thecolor-switchingreversibilityofthreesamplesiscompared (highopticalmodulationamplitude)canbeobtainedbyincreas-
+in Figure 3g. The initial response time is used as the UV ir- ing the UV irradiation time (Figure S21, Supporting Informa-
+radiation time in color-switching cycle tests. DEG-added TiO - tion).Insummary,thenumberofoxygenvacanciesdetermines
+2
+CSandTiO /TB-CSnanodispersionsexhibitopticalmodulation thelong-termstabilityofthesystemandcanreachasteadystate
+2
+amplitudes less than 70% after 21 and 35 color-switching cy- in150color-switchingcycles,whichmaybeattributedtothesyn-
+cles, respectively. The hole scavenging rate is positively corre- ergisticeffectofRbdopingandlatticestrainonbalancingoxygen
+latedwiththenumberofDEGchemisorbedontheparticlesur- vacancies.
+face. It can be found that the initial optical modulation ampli- Due to the variety of environmental conditions in practical
+tudeofRb-TiO /TB-CSishigherthanothersinthesameirradi- applications,itisessentialtostudytheperformanceandstabil-
+2
+ationtime.Furthermore,theabundantoxygenvacanciesofRb- ityofmaterialsunderdifferentconditions.Theopticalmodula-
+TiO /TB-CSenablethenanodispersionstablecolor-switchingre- tionamplitude,responsetime,andcolor-switchingreversibility
+2
+versibility,whoseopticalmodulationamplitudeisstillmorethan ofDEG-addedRb-TiO /TB-CSnanodispersionatdifferenttem-
+2
+80% after 50 cycles. These results demonstrate oxygen vacan- peratures,humidities,andUVlightintensitiesarefurtherstud-
+ciesengineeringsignificantlyenhancesthephotochromicperfor- ied. The data and details are shown in Figures S22–S24 (Sup-
+manceincludingopticalmodulationamplitude,responsespeed, portingInformation),andthefollowingconclusionscanbeob-
+andcolor-switchingreversibility.Thereductioninphotochromic tained.Temperaturehaslittleeffectonopticalmodulationam-
+performanceafter multiple cycles may be caused by the inacti- plitudeandcolor-switchingreversibility,buthighertemperature
+vation of a minor part of oxygen vacancies. The inactivation of significantlyacceleratestheoxidationofTi3+,therebyshortening
+oxygenvacanciesisattributedtotheadsorptionanddissociation therecoverytime(FigureS22,SupportingInformation).Humid-
+ofO andthedissociativeadsorptionofH Otoformsurfacehy- ity only exhibits an effect on color-switching reversibility. With
+2 2 droxyl groups.[33] The EPR spectra of DEG-added Rb-TiO /TB- increasing humidity, the color-switching reversibility weakens, 2
+CSnanodispersionbeforeandafter50color-switchingcyclesin which is attributed to the increased dissociative adsorption of
+FigureS16(SupportingInformation)displaythattheintensityof H O on oxygen vacancies, reducing the hole scavenging abil-
+2
+thesignalbelongedtooxygenvacancyisslightlydecreasedafter ity(FigureS23,SupportingInformation).TheUVlightintensity
+Adv.Funct.Mater.2025,35,2423514 2423514(7of15) ©2025Wiley-VCHGmbH
+16163028,
+2025,
+28,
+Downloaded
+from
+https://advanced.onlinelibrary.wiley.com/doi/10.1002/adfm.202423514
+by
+Zhejiang
+University,
+Wiley
+Online
+Library
+on
+[10/12/2025].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by the
+applicable
+Creative
+Commons
+License
+
+=== Page 8 ===
+www.advancedsciencenews.com www.afm-journal.de
+onlyaffectstheresponsetimeduringthecoloringstage,which andoxygenvacanciesarespontaneouslyformedbyachargecom-
+decreasesastheUVlightintensityincreases(FigureS24,Sup- pensationmechanism,whichreleaseselectronstofilltheformed
+portingInformation).Further,thepracticalapplicationsofDEG- holes,thusmaintainingthechargeneutralityofthematerial.[11]
+addedRb-TiO /TB-CSnanodispersiondeservetobeinvestigated. Thefirstmaingroupelementswiththelowestpositivevalence
+2
+Consideringthehightransparencyandlargeopticalmodulation state(+1)aretheoptimalchoicetosignificantlyreducetheoxy-
+amplitude, it can be applied to a photochromic window, which genvacancyformationenergythroughthechargecompensation
+is composed of two quartz glasses and nanodispersion sealed mechanism.Amongthecommonfirstmaingroupelements(Li,
+inthemiddle(FigureS25a,SupportingInformation).Thepho- Na, K, and Rb), Rb has a larger ionic radius, which may cause
+tochromicwindowexhibitshightransparencyintheabsenceof latticedistortionstherebyalteringthecoordinationenvironment
+UVirradiationandshowsadarkbluecolortoserveasanoptical todecreasethemigrationbarrierforoxygenatomtransferand
+shieldafterbeingfullyirradiatedwithUVlight(FigureS25b,c, surface exchange. It has also been reported that Rb doping ex-
+SupportingInformation).Moreover,thephotochromicresponse hibits the most significant reduction in oxygen vacancy forma-
+of the nanodispersion to sunlight inspires the application po- tionenergycomparedtoLi,Na,andK.[11] Correspondingly,Rb
+tentialofthisphotochromicwindowforsolarheatandsunlight dopingbasedona3%latticestrainfurtherreducestheoxygen
+management.[34] When exposed to sunlight, the photochromic vacancyformationenergytoanegativevalue,ensuringthespon-
+window absorbs the UV light in sunlight and transforms to a taneousformationofoxygenvacancies(Figure4a).Therefore,lat-
+tintedstate,therebyreducingsunlightandsolarheatenteringthe ticestrainandRbdopingsynergisticallyandsignificantlyreduce
+room.Importantly,thewindowisabletoadjustitssunlighttrans- ΔG, which leads to an exponential increase in oxygen vacancy
+mittanceandheatabsorptioncapacityinresponsetochangesin concentrationaccordingtoEquation(2).
+sunlight intensity. Figure S26 (Supporting Information) shows
+howthecolorofthisphotochromicwindowchangesovertimeon K⋅C C
+asunnyday,dynamicallyadjustingindoorlighttoprovidegood C TiO2−x = C T 1 i x O2 = C TiO 1 2 x e(−Δ RT G) (2)
+sunlightcomfort.Especiallyinsummer,thesolarheatgaininside O2 2 O2 2
+theroomisreducedbyadjustingthetransmittanceofsunlight,
+whichreducesthecoolingenergyconsumptionofthebuilding. whereC ArepresentstheconcentrationofA,Kistheequilibrium
+Overall,thisphotochromicwindow,whichissimpleinstructure, constant,andRisthegasconstant.Theincreasedoxygenvacan-
+easytouse,andcapableofbeingactivatedbylow-powerUVand ciesfacilitatethedissociativeadsorptionofDEGservingasSED
+sunlight,isofpracticalsignificanceandopensupnewavenues toscavengeholes.
+forthedesignofphotochromicdevices. SincetheadsorptionstateofDEGontheparticlesurfaceiscru-
+cialfortheholescavengingrate,theadsorptionenergiesoftwo
+physisorbedconfigurationsandonedissociativelyadsorbedcon-
+2.3.DensityFunctionalTheory(DFT)Calculations
+figurationofDEGonTiO andRb-TiO /TB(3%)werecalculated
+2 2
+(Figure4b).ForTiO ,thedissociativeadsorptionenergyofDEG
+To further reveal the synergistic effect of epitaxial lattice strain 2
+ismorepositivethanthephysicaladsorptionenergy,indicating
+andRbdopingonoxygenvacancyformationaswellasthead-
+that the intact DEG physical adsorption configuration is more
+sorptionstateofDEGontheparticlesurface,DFTcalculations
+stable.Notably,thedissociativeadsorptionenergyofDEGonRb-
+wereperformedtoanalyzetheevolutionoftheoxygenvacancy
+TiO /TB(3%)atoxygenvacancyismorenegativethanthephysi-
+formationenergyandtheDEGadsorptionenergy.Accordingto 2
+caladsorptionenergy,indicatingthatDEGpreferstobedissocia-
+thequasiharmonicapproximation,thechangeintheGibbsfree
+tively adsorbed at oxygen vacancy in Rb-TiO /TB(3%). In addi-
+energyofoxygenvacancyformation(ΔG)hasbeenshownthatit 2
+tion,comparedtoTiO ,thephysicaladsorptionanddissociative
+canbedescribedasafunctionofepitaxialstrain(𝜂)andtemper- 2
+adsorptionenergiesofDEGonRb-TiO /TB(3%)exhibitasignifi-
+ature(T)asEquation(1):[35] 2
+cantdecrease,suggestingthatbothadsorptionsarepromotedon
+Rb-TiO /TB(3%). This facilitates the rapid scavenging of holes
+ΔG=ΔE(𝜂)+ΔF(𝜂,T)+ 1x𝜇 O (T) (1) andstab 2 ilizesthecoloringstatebyblockingO throughtheph-
+2 2
+ysisorptionlayerofDEG.Figure4cshowsthedensityofstatesof
+whereΔEaccountsforthezerotemperaturecontributiontothe Rb-TiO /TB(3%).TheO2porbitalscontributethemosttothetop
+2 freeenergy,ΔFrepresentsthethermalcontributiontothefree ofthevalenceband(VB),andTi3dorbitalscontributethemostto
+energy,and𝜇 O representstheoxygenchemicalpotential.More- thebottomoftheconductionband(CB).Possiblyduetothepres-
+over,ΔGhasbeendescribedasdecreasingwithincreasingepi- enceofonlyonevalenceelectronandsmalldopingamount,the
+taxialstrainatconstanttemperaturebyChen,[35b]suggestingthat orbitalsofRbcontributelittletoCBandVB,withouttheintroduc-
+strainisaneffectivemeansofincreasingoxygenvacancyconcen- tionofintermediateenergylevelsinthebandgap.Afterphysical
+tration.Heretensilestrainfrom0to3%wasperformedalongthe orchemicaladsorption,thedensityofstatesofRb-TiO /TB(3%)
+2
+x,y,andzdirectionsofthecrystal,denotedasTiO /TB(X),with shows no noticeable change (Figure S27, Supporting Informa- 2
+Xrepresentingthestrainlevel.AsshowninFigure4a,theoxy- tion),whichindicatesthattheDEGadsorbedonthesurfacehas
+genvacancyformationenergygraduallydecreaseswithincreas- no detrimental effect on the electronic structure of the crystal.
+ing lattice strain, implying that the lattice strain effectively re- ThedensityofstatesofDEGbeforeandafteradsorptionisdis-
+ducestheenergybarrierfortheformationofoxygenvacancy.Fur- playedinFigure4d.ThebondingorbitalenergiesofDEGintwo
+thermore,thedopingofthelow-valentmetalionsgeneratesan adsorption states are both shifted in the negative direction, in-
+effectivepositivecharge(holestate)attheanionlatticeposition, dicatingthestronginteractionbetweenDEGandthesurfaceof
+Adv.Funct.Mater.2025,35,2423514 2423514(8of15) ©2025Wiley-VCHGmbH
+16163028,
+2025,
+28,
+Downloaded
+from
+https://advanced.onlinelibrary.wiley.com/doi/10.1002/adfm.202423514
+by
+Zhejiang
+University,
+Wiley
+Online
+Library
+on [10/12/2025].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License
+
+=== Page 9 ===
+www.advancedsciencenews.com www.afm-journal.de
+Figure 4. DFT calculations: a) Oxygen vacancy formation energy of TiO , TiO /TB with different lattice strain levels (1%, 2%, and 3%), and Rb-
+2 2
+TiO /TB(3%).b)AdsorptionenergyofDEGonTiO andRb-TiO /TB(3%).c)DensityofstatesofRb-TiO /TB(3%).d)DensityofstatesofDEG,physically
+2 2 2 2
+adsorbedDEG,anddissociativelyadsorbedDEGonRb-TiO /TB(3%).
+2
+Rb-TiO /TB(3%).[36] It is noteworthy that the two adsorption electrons of TiO , MB can also be reduced by these electrons
+2 2
+statescorrespondtodifferentreductionsinbondingorbitalen- toformthecolorlessleuco-methyleneblue(LMB).[37] Thecolor-
+ergy,suggestingthatthedissociativelyadsorbedsurfacecanbet- lessLMBcansubsequentlybeoxidizedbacktothecoloredMB
+terstabilizetheDEG,whichisconsistentwiththeresultsofthe byO ,enablingreversiblecoloring.Therefore,thecolorchange
+2
+reductioninadsorptionenergy.Moreover,comparedtophysically trend of the MB solution with the addition of Rb-TiO /TB-CS
+2
+adsorbedDEG,theO2porbitalontheleftsideoftheFermilevel after UV irradiation can provide insights into the behavior of
+ofdissociativelyadsorbedDEGisshiftedtowardhigherenergies, holesinthephotocatalyticprocess.AsshowninFigureS28(Sup-
+whichismainlycontributedbythedissociativehydroxyloxygens. portingInformation),theMBsolutionwithRb-TiO /TB-CScom-
+2
+Additionally,toverifythatitisthechemisorbedDEGthatscav- pletelyfadesafter120sunderUVirradiation,followedbygrad-
+engesholesratherthanthehydroxylradicalsformedbyoxygena- ual color recovery in the dark within 24 h. This indicates that
+tion of adsorbed water or solvent, MB was used as the probe MB is reduced to colorless LMB by photogenerated electrons
+moleculetostudythemechanism.ItiswellknownthatMBcan andoxidizedbacktoMBbyO intheair,demonstratingeffec-
+2
+bedegradedbyoxidativespecies(suchasholes,hydroxylradicals, tiveholescavenging.However,MBsolutioncontainingcommer-
+etc.)duringthephotocatalyticprocess,leadingtoirreversibledis- cialP25exhibitsminimalcolorchangeafter120sofUVirradi-
+coloration.However,itisimportanttonotethatsincethereduc- ationandcompletelyfadesafter70minofUVirradiation,fail-
+tion potential of MB is lower than that of the photogenerated ing to recover its color in the dark. It can be attributed to the
+Adv.Funct.Mater.2025,35,2423514 2423514(9of15) ©2025Wiley-VCHGmbH
+16163028,
+2025,
+28,
+Downloaded
+from
+https://advanced.onlinelibrary.wiley.com/doi/10.1002/adfm.202423514
+by
+Zhejiang
+University,
+Wiley
+Online
+Library
+on
+[10/12/2025].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License
+
+=== Page 10 ===
+www.advancedsciencenews.com www.afm-journal.de
+irreversibledegradationbyoxidativespeciesgeneratedviaholes hybridfilmwith40wt.%Rb-TiO /TB-CS,thedeepdarkbluecol-
+2
+inMBsolutioncontainingcommercialP25.Moreover,theDEG’s orationcanbeaccomplishedwithin30sofUVirradiation.Ad-
+roleasasacrificialelectrondonorforscavengingholesisfurther ditionally,theopticaltransmittanceofthehybridfilminthecol-
+confirmed by fluorescence spectroscopy analysis (Figure S29, orlessstateisalsoanimportantperformanceindexforitsappli-
+SupportingInformation).Furthermore,thegaschromatography cation(Figure5e).ThepolyacrylatefilmwithoutRb-TiO /TB-CS
+2
+(GC)analysisisappliedtodemonstratetheexistenceofoxidative exhibitsavisiblelighttransmittancegreaterthan90%,indicating
+dissociationproductsofDEG,referringtothereportedanalytical excellentvisibletransparency.AstheRb-TiO /TB-CScontentin-
+2
+approach.[38] Asthedataandexperimentstepsarepresentedin creases,thevisibletransmittanceofthehybridfilmsgraduallyde-
+FigureS30(SupportingInformation),theoxidativedissociation creases,whiletheUV-shieldingabilityincreases.Thedecreasein
+productsfromDEGaresuccessfullydetected,andthepercentage visibletransmittanceisattributedtothecombinationofthelone
+of oxidative dissociation products of polyols from solvent envi- pairelectronsoftheacrylatewiththeLewisacidsitesontheTiO
+2
+ronmentsincreaseswithincreasingcolor-switchingcycles.This surfacetoformadipolelayertowardtheinnerTiO ,whichsig-
+2
+demonstrates the role of DEG as the sacrificial electron donor nificantlyenhancestheexcitonbindingenergy,leadingtoared-
+toscavengeholesandthesubstitutionofnewligandsfromthe shiftingoftheabsorptionbandedges.[39]Thehybridfilmwith20
+environment. wt.%Rb-TiO /TB-CSstillshowsthetransmittanceofmorethan
+2
+85%at650nmandachievesadeepdarkbluecolorationafter70s
+ofUVirradiation,soitischosenforfurtherstudies.
+2.4.PhotochromicCompositeMaterialsConstructedwith The color-switching performance and reversible stability of
+Rb-TiO /TB-CS thishybridfilmarealsofurtherinvestigated.AsseeninFigure5f,
+2
+the transmittance of hybrid film with 20 wt.% Rb-TiO /TB-CS
+2
+Theaboveadvancedcolor-switchingsystemwasusedasthere- gradually decreases with the increasing time of UV irradiation
+sponsive material for transparent photochromic display appli- andreachestheminimumin70s,exhibitinganopticalmodu-
+cations. We designed a polyacrylate-based hybrid material with lationamplitudeof82.74%at650nm,whichdemonstratesthe
+DEG chemisorbed Rb-TiO /TB-CS as the functional compo- rapidresponseandhighcontrastofthisphotochromicsystem.
+2
+nent,asillustratedinFigure5a.Poly(ethyleneglycol)diacrylate Thephotochromismperformanceofthehybridfilmundersun-
+(PEGDA) and methyl methacrylate (MMA) as monomers and lightisalsoinvestigatedanddisplayedinFigureS34(Support-
+pentaerythritoltriacrylate(PETA)asa3Dcrosslinkerprovidethe ingInformation).Thetransmittanceofhybridfilmgraduallyap-
+polymermatrixwithgoodstrengthandflexibility.TheDPSion proachestheminimumafter150minofsunlightirradiationand
+the Rb-TiO /TB-CS surface ensures the monodispersity of the theopticalmodulationamplitudeisreducedto60.7%at650nm. 2
+nanoparticles, and APSi which possesses the acrylate structure Nevertheless,thecomplexpatternsandtextscanstillbephoto-
+actsasthesiteforthehybridizationcross-linkingreaction,facili- printedonhybridfilmthroughaphotomaskundersunlightex-
+tating the construction of a homogeneous and transparent Rb- posure(FigureS35,SupportingInformation).Thedeepdarkblue
+TiO /TB-CS/acrylate photochromic hybrid film by UV curing. hybridfilmleftintheairatroomtemperaturetakes24htofully
+2
+TheRb-TiO /TB-CS/acrylatehybridfilmcanbebentextensively recoverthetransparentstate.Toacceleratethedecolorationpro-
+2
+andrecovered,demonstratingexcellenttoughnessandflexibility cess,thehybridfilmcanbeheatedinairat70°C,whichreduces
+(FigureS31,SupportingInformation).Thescanningelectronmi- therecoveryprocessto70min(Figure5g).Thecolor-switching
+croscopy(SEM)imageandelementalmapsofthishybridfilmare reversibilitywasalsoevaluatedbystudyingthetransmittanceof
+showninFigureS32(SupportingInformation),indicatingaflat hybrid film for coloration and decoloration in 20 repetitive cy-
+surfaceanduniformelementaldistributionofthehybridfilm.It cles (Figure 5h). The transmittance of the hybrid films shows
+canbeseenfromFigure5bthattheRb-TiO /TB-CS/acrylatehy- nonoticeablechangeaftersuccessivecoloration-decolorationcy-
+2
+bridfilmshowsexcellenttransparencyinthecolorlessstateand cles and still exhibits an optical modulation amplitude exceed-
+exhibitshighcontrastafterUVirradiation.Transparentandcol- ing 75% after 20 cycles, indicating the stable reversibility of
+oredstatescanbeeasilyswitchedbyUVirradiationandheatoxi- the hybrid films dominated by Rb-TiO /TB-CS. Therefore, Rb-
+2
+dation.Inaddition,customizedcontentscanbeclearlydisplayed TiO /TB-CS/acrylatephotochromichybridfilmexhibitinglarge
+2
+onthehybridfilmbyUVirradiationusingaphotomask,whichis optical modulation amplitude, rapid response, and stable re-
+easilypreparedbyinkjetprintingonatransparentplasticsheet. versibilityhasthepotentialtoserveasanadaptablebasematerial.
+AsshowninFigure5c,theexposedareasofthephotomaskturn Forinstance,itcanbeusedtoconstructindoortransparentdis-
+darkblueafterlightprinting,whiletheunexposedareasremain playdevices.FigureS36a(SupportingInformation)illustratesthe
+transparent,makingiteasytolight-printcomplexshapesandtext potentialapplicationscenario,suchasthetransparentglassfor
+withhighresolution.Photo-printedcontentshowsgoodstability advertisinganddisplayingcontentsinconferencerooms.Figure
+andremainsreadableafter14hatroomtemperature(FigureS33, S36b(SupportingInformation)depictsthatthetransparentdis-
+SupportingInformation). playglassiscomposedoftwoquartzglassesandaRb-TiO /TB-
+2
+Thephotochromicresponserateofhybridfilmswithdifferent CS/acrylate hybrid film sandwiched in between. The transpar-
+Rb-TiO /TB-CS contents is further investigated. The thickness ent display glass exhibits good transparency to clearly present
+2
+of the photochromic hybrid films is measured to be 0.8 mm. the scene behind the glass (Figure S36c, Supporting Informa-
+As seen in Figure 5d, the hybrid films with low Rb-TiO /TB- tion). The photo-printed contents can be clearly displayed with 2
+CScontent(5wt.%,10wt.%)onlyexhibitslightcolorationafter high contrast on the transparent base (Figure S36d,e, Support-
+70sofUVirradiation.WiththeincreaseofRb-TiO /TB-CScon- ingInformation).Inaddition,photo-printingcanbeperformed
+2
+tent, the coloration process is significantly accelerated. For the directly with a programmable UV laser without the use of a
+Adv.Funct.Mater.2025,35,2423514 2423514(10of15) ©2025Wiley-VCHGmbH
+16163028,
+2025,
+28,
+Downloaded
+from
+https://advanced.onlinelibrary.wiley.com/doi/10.1002/adfm.202423514
+by
+Zhejiang
+University,
+Wiley
+Online
+Library
+on
+[10/12/2025].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License
+
+=== Page 11 ===
+www.advancedsciencenews.com www.afm-journal.de
+Figure5. Rb-TiO /TB-CS/acrylatephotochromichybridfilms:a)Schematicdiagramofthecompositionandpreparationprocessofthehybridfilm.
+2
+b)Reversiblecolorswitchingofhybridfilms.c)Schematicillustrationofdisplayingcustomizedcontentonthehybridfilmthroughaphotomaskandan
+opticalimageofthehybridfilmwithaphoto-printedlogopattern.d)PhotographsofphotochromicbehaviorofhybridfilmswithdifferentRb-TiO /TB-CS 2
+contentsasafunctionofUVirradiationtime.e)OpticaltransmittanceofhybridfilmswithdifferentRb-TiO /TB-CScontents.f)UV–vistransmission
+2
+spectraofthehybridfilmwith20wt.%Rb-TiO /TB-CSduringUVirradiation.g)UV–vistransmissionspectraofthecoloredhybridfilmwith20wt.%
+2
+Rb-TiO /TB-CSheatinginairat70°C.h)Theplotsofthetransmittanceat650nmofthehybridfilmwith20wt.%Rb-TiO /TB-CSincyclictestsfor
+2 2
+photochromismanddiscoloration.
+Adv.Funct.Mater.2025,35,2423514 2423514(11of15) ©2025Wiley-VCHGmbH
+16163028,
+2025,
+28,
+Downloaded
+from
+https://advanced.onlinelibrary.wiley.com/doi/10.1002/adfm.202423514
+by
+Zhejiang
+University,
+Wiley
+Online
+Library
+on
+[10/12/2025].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License
+
+=== Page 12 ===
+www.advancedsciencenews.com www.afm-journal.de
+Figure6. a)SchematicillustrationofthedispersionmechanismofRb-TiO /TB-CSinaqueoussolution.b)SchematicdiagramofthestructureofRb-
+2
+TiO /TB-CS/PVAphotochromichydrogel.c)Twistability,d)stretchability,ande)adhesivenessoftheRb-TiO /TB-CS/PVAhydrogelunderdifferentcolor
+2 2
+states.Lightprintingoff)textandg)graphicsonRb-TiO /TB-CS/HECcompositerewritablefilms.
+2
+photomask. The utilization of Rb-TiO /TB-CS/acrylate hybrid AsshowninFigureS37(SupportingInformation),after90days
+2
+filmtoconstructthetransparentdisplaydeviceissimpleandfea- of storage the aqueous nanodispersion (10 wt.%) still exhibits
+sible,representingalow-costandadvancedsolutionfortranspar- noprecipitationandmaintainsexcellenttransparency.Consider-
+entdisplays. ingthetransparencymaintainedbyelectrostaticinteractionsin
+Moreover,Rb-TiO /TB-CSalsoexhibitssurprisingapplication aqueous-basedconditions,thehydrogelcontainingRb-TiO /TB-
+2 2
+potentialinaqueoussubstrates,showinggoodtransparencyand CSissuitableforfurtherapplications.Asschematicallyshownin
+photochromicproperties.AsshowninFigure6a,surface-grafted Figure6b,PVAservesasthehydrogelmatrixwithwaterandam-
+long-chain siloxane (DPSi) can adjust the surface properties to moniatoensurethemonodispersionofparticlesbyelectrostatic
+accommodate organic solvents and acrylate systems. However, repulsion.TheDEGchemisorbedontheparticlesurfacenotonly
+intheaqueoussolution,themodifiersmayrotateandadhereto acts as the SED to scavenge holes but also enhances the me-
+the surface without providing steric hindrance.[40] Correspond- chanicalpropertiesofthehydrogelthroughhydrogenbondswith
+ingly,byaddingammoniatoadjusttheDEG-addedRb-TiO /TB- thePVAmatrix.[41]Notably,thetransparentRb-TiO /TB-CS/PVA
+2 2
+CSaqueoussolutiontoaweakbase(pH10),thezetapotential hydrogel can be significantly twisted and stretched (250%) in
+is measured to be −42.7 mV to prove the wide electric double different color states (Figure 6c,d), demonstrating good me-
+layerofparticles,suggestingthattheparticlescanbemonodis- chanicalproperties.Furthermore,thehydrogelcanbeeasilyad-
+persed by mutual repulsion through electrostatic interactions. heredtothematerialsurface(Figure6e),showingflexibilityand
+Adv.Funct.Mater.2025,35,2423514 2423514(12of15) ©2025Wiley-VCHGmbH
+16163028,
+2025,
+28,
+Downloaded
+from
+https://advanced.onlinelibrary.wiley.com/doi/10.1002/adfm.202423514
+by
+Zhejiang
+University,
+Wiley
+Online
+Library
+on
+[10/12/2025].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License
+
+=== Page 13 ===
+www.advancedsciencenews.com www.afm-journal.de
+convenienceinapplication,whichrevealsitspotentialinapplica- Mw ≈ 575), polyvinyl alcohol (PVA, Mw ≈195000), and hydroxyethyl
+tionssuchasoxygenindicatorsandwearabledevices.Addition- cellulose (HEC, 250–450 mPa·s) were provided by Shanghai Macklin
+ally,theconstructionofphotochromicrewritablepaperisanother
+BiochemicalCo.,Ltd.Methylmethacrylate(MMA,≥99%),pentaerythritol
+triacrylate(PETA,≥96%),anddiphenyl(2,4,6-trimethylbenzoyl)phosphine
+attractiveapplicationwell-suitedforRb-TiO /TB-CS.Bypouring
+2 oxide(TPO,≥97%)wereobtainedfromShanghaiAladdinBiochemical
+and evaporating a mixed aqueous solution of Rb-TiO 2 /TB-CS, TechnologyCo.,Ltd.Aceticacid(HAc,≥99.5%),ethanol(EtOH,≥99.7%),
+DEG, and HEC on cardboard, Rb-TiO 2 /TB-CS/HEC composite n-heptane(C 7 H 16 ,≥98.5%),ammoniumhydroxide(NH 3 ·H 2 O,28%)and
+filmwasobtainedforphotochromicreversiblewriting.Itcanbe acetone (DMK, AR) were obtained from Sinopharm Chemical Reagent
+seen clearly from Figure 6f that the high-resolution text in 10- Co.,Ltd.
+pointfontsizecanbeeasilyphoto-printedthroughaphotomask, Synthesis of Rb-TiO 2 /TB Nanoparticles: Typically, 0.2 mL of HAc,
+0.8mLofH O,0.18gofRbNO ,and6mLofTBOTweresequentially
+which exhibits excellent readability. Complex and delicate pat- 2 3
+dissolvedin25mLofBnOHunderstirring.Theaboveprecursorsolution
+ternscanalsobeprinted(UVlight)anderased(heat)reversibly wastransferredtoaTeflon-linedautoclaveandheatedat200°Cfor2h.
+asshowninFigure6g,andphoto-printedcontentcanremainvis- Thenthe1.2mLofTBOTand30μLofH Oweresuccessivelyaddedtothe
+2
+ibleforupto6hinroomcondition(FigureS38,SupportingIn- abovereactionsystemunderstirring,andthemixturesolutionwassealed
+formation).Therefore,Rb-TiO /TB-CS/HECcompositefilmcan andheatedat300°Cfor1h.Theproductswereseparatedbycentrifu-
+2
+beusedasreversibleprintingpaperforshort-termreading,such gationandwashedwithPGMEA3times.Theprecipitatewasheatedat
+astemporarylabelsandconfidentialdocumentsinconferences. 80°Cfor12htoobtainthedrypowdernotedasRb-TiO 2 /TB.Additionally,
+thepureTiO waspreparedwithoutthesecondaryadditionofTBOTand
+2
+H O,andtheTiO /TBwaspreparedwithouttheadditionofRbNO .
+2 2 3
+PreparationofRb-TiO /TB-CSNanoparticlesandNanodispersions: The
+2
+3.Conclusion 1.5gofundriedRb-TiO /TBprecipitateand0.25gofDPSiwereaddedto
+2
+10mLofPGMEAat130°Cwithstirringfor50min,andthen0.05gofAPSi
+Inconclusion,ahighlyefficientandstableRb-TiO /TB-CSstruc- wasaddedtothemixturewithstirringforanother10mintoformatrans-
+2
+ture is designed for constructing reversible photochromic sys- parentdispersion.Thedispersionwasprecipitatedbyaddingn-heptane
+tems.Theoxygenvacanciesengineeringdrasticallyenhancesthe asanti-solventandaftercentrifugationtheprecipitatewasre-dispersedin
+acetone.Afterrepeatingthebackwashingoperation3times,theprecipi-
+photochromicperformanceofTiO .StructuralanalysesandDFT
+2 tatewasplacedunderavacuumfor2htoobtainthedrypowdernotedas
+calculationsindicatethatRbdopingandtensilestrainsynergis- Rb-TiO /TB-CS.The1gofRb-TiO /TB-CSpowderwasaddedto8mLof
+2 2
+ticallypromotethegenerationofoxygenvacanciesandfacilitate PGMEAand2mLDEGunderstirringtoformthetransparentRb-TiO /TB-
+2
+theDEGadsorptionontheTiO surface.ChemisorbedDEGacts CSphotochromicnanodispersion(volumeratio,PGMEA:DEG=4:1).The
+2
+astheefficientSEDtorapidlyscavengeholes,andphysisorbed 1gofRb-TiO 2 /TB-CSpowder,and0.5mLofNH 3 ·H 2 Owereaddedto
+DEGmayblockO tostabilizethecoloringstate.Theengineered 10mLofH 2 OunderstirringtoformthetransparentRb-TiO 2 /TB-CSaque- 2 ousnanodispersion.Additionally,TiO -CSandTiO /TB-CSnanoparticles
+DEG-addedRb-TiO /TB-CSnanodispersionshowsasignificant 2 2
+2 andnanodispersionswerealsopreparedinthesameway.
+opticalmodulationamplitudeexceeding90%at650nm,rapidre-
+Preparation of Rb-TiO /TB-CS/Acrylate Photochromic Hybrid Films:
+2
+sponsewithin60s,andstablereversibility,whichcanbeusedto The1gofRb-TiO /TB-CSpowder,1.5mLofMMA,2.5mLofPEGDA,
+2
+constructphotochromicwindows.Additionally,theRb-TiO /TB- 0.2mLofDEG,0.4gofPETA,and35mgofTPOwereaddedto10mLof
+2
+CSnanoparticlesaremodifiedusingcompositesiloxanestobe acetoneunderstirringtoformthehomogeneousprecursorsolution.After
+monodispersedwithanaveragesizeof11.7nmandimprovethe evaporatingthesolvent(acetone)at80°C,thetransparentRb-TiO 2 /TB-
+CS/acrylatephotochromichybridfilmwasobtainedbyUVcuringthemix-
+organic-inorganic compatibility, which enables the high trans-
+tureinaglassmold.
+parency of photochromic composite materials. The transpar-
+PreparationofRb-TiO /TB-CS/PVAPhotochromicHydrogels: Theaque-
+entRb-TiO 2 /TB-CS/acrylatephotochromichybridfilmpossesses ousgluewaspreparedb 2 ydissolving3gPVAin30mLH 2 Oat100°C.The
+goodflexibilityandshowsanopticalcontrastof82.74%at650nm 10mLofaqueousglue,5mLofRb-TiO /TB-CSaqueousnanodispersion,
+2
+beforeandafterUVirradiation,whichenablesphoto-printingof and0.5mLofDEGweremixedtoformahomogeneousglue,andthen
+complexcontents,showinggreatpotentialfortransparentdisplay
+thegluewascastontoaglassmoldandheatedat60°Ctofabricatea
+applications. The Rb-TiO /TB-CS/PVA photochromic hydrogel transparenthydrogel.
+2 PreparationofRb-TiO /TB-CS/HECRewritableFilms: TheHECstock
+shows great transparency, stretchability, twistability, and adhe- 2
+solutionwaspreparedbydissolving2gHECin30mLH Oat80°Cfor
+siveness,indicatingtheapplicationpotentialinwearabledevices. 2
+2h.The10mLofRb-TiO /TB-CSaqueousnanodispersion,2mLofDEG,
+2
+In addition, the Rb-TiO 2 /TB-CS/HEC rewritable films can be and15mLofHECstocksolutionweremixedandstirredfor1hbefore
+usedasreversibleprintingpaperforshort-termreading.There- filmdeposition.Themixturewascastontoacardboardmoldandheated
+fore,theRb-TiO /TB-CSstructure,whichiscompatible,low-cost, at70°Cfor12htoformacompositephotochromicfilm.
+2
+stable,andnontoxic,isanexcellentversatileresponsivematerial CyclicTestsforPhotochromismandDiscoloration: TheLEDdevice(18
+W,𝜆=365nm)wasusedastheUVlightsourcewithalightintensityof
+for photochromic systems and opens up new opportunities in 70mWcm−2.ForthetestingofRb-TiO /TB-CSphotochromicnanodis- variouscolor-switchingapplications. persion(volumeratio,PGMEA:DEG=4:1 2 ),thevisiblelighttransmittance
+ofthesolutionwasmeasuredafter60sofUVirradiation,thenairwasin-
+jectedintothesolutionforcompletediscolorationandthetransmittance
+4.ExperimentalSection wasmeasuredagain.Theaboveoperationiscountedasonecycle.Forthe
+testingofRb-TiO /TB-CS/acrylatehybridphotochromicfilms,theUVirra- 2
+Materials: Benzyl alcohol (BnOH, ≥99%), titanium bu- diationtimewas70sandthediscolorationconditionwasdarktreatment
+toxide (TBOT, ≥99%), rubidium nitrate (RbNO , ≥99%), 3- for24h. 3
+(acryloyloxy)propyltrimethoxysilane (APSi, ≥99%), 3,3-dimethoxy- ElectrochemicalMeasurements: Electrochemicalmeasurementswere
+2,7,10,13,16-pentaoxa-3-silaheptadecane (DPSi, ≥97%), methylene blue carriedoutusingaBio-LogicVSPelectrochemicalworkstation.TheO 2 -
+(MB,AR),propyleneglycolmonomethyletheracetate(PGMEA,≥99.5%), saturated 0.5 M H
+2
+SO
+4
+was used as the electrolyte. The Hg/Hg
+2
+SO
+4
+diethyleneglycol(DEG,≥99%),poly(ethyleneglycol)diacrylate(PEGDA, (K
+2
+SO
+4
+saturated)electrodeandtheplatinumcolumnwereusedasthe
+Adv.Funct.Mater.2025,35,2423514 2423514(13of15) ©2025Wiley-VCHGmbH
+16163028,
+2025,
+28,
+Downloaded
+from
+https://advanced.onlinelibrary.wiley.com/doi/10.1002/adfm.202423514
+by
+Zhejiang
+University,
+Wiley
+Online
+Library
+on
+[10/12/2025].
+See
+the Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules of use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License
+
+=== Page 14 ===
+www.advancedsciencenews.com www.afm-journal.de
+reference electrode and counter electrode, respectively. To prepare the [2] a)K.Li,Y.Xiang,X.Wang,J.Li,R.Hu,A.Tong,B.Z.Tang,J.Am.
+workingelectrode,10mgofnanoparticlepowderwasaddedinamixtureof Chem.Soc.2014,136,1643;b)Y.Zhu,Y.Yao,Z.Chen,Z.Zhang,
+0.5mLofH 2 Oand0.5mLofEtOH.Afterbeingsonicatedfor5h,0.5mLof P.Zhang,Z.Cheng,Y.Gao,Sol.EnergyMater.Sol.Cells.2022,239,
+thesuspensionwasdrop-castontocarbonpaper(effectivearea1cm2)on 111664;c)Y.Wu,Y.Xie,Q.Zhang,H.Tian,W.Zhu,A.D.Q.Li,Angew.
+aheatedplateat80°C.Cyclicvoltammetry(CV)measurementswereper-
+Chem.,Int.Ed.2014,53,2090;d)L.García-Fernández,C.Herbivo,V.
+formedinthenon-Faradaypotentialregionwithvariousscanrates(20,50, S.M.Arranz,D.Warther,L.Donato,A.Specht,A.delCampo,Adv.
+100,150,and200mVs−1).Allpotentialswerereferencedtothereversible
+Mater.2014,26,5012;e)W.Meng,J.Wang,L.Jiang,ResponsiveMater.
+hydrogenelectrode(RHE)asfollows:
+2024,2,20240001.
+[3] a) S. Fredrich, R. Göstl, M. Herder, L. Grubert, S. Hecht, Angew.
+E(RHE)=E(Hg∕Hg SO )+0.059pH+0.643 (3)
+2 4 Chem.,Int.Ed.2016,55,1208;b)H.Dong,H.Zhu,Q.Meng,X.Gong,
+W.Hu,Chem.Soc.Rev.2012,41,1754;c)R.Pardo,M.Zayat,D.Levy,
+Characterizations: TheX-raydiffraction(XRD)patternswereobtained
+fromBrukerD8Advancediffractometer(CuK𝛼=1.5406Å).Thetrans- Chem.Soc.Rev.2011,40,672.
+[4] A.B.A.Kayani,S.Kuriakose,M.Monshipouri,F.A.Khalid,S.Walia,
+missionelectronmicroscopy(TEM)imageswerecapturedwithJEOLJEM-
+S.Sriram,M.Bhaskaran,Small.2021,17,2100621.
+F200equippedwithadual-probeenergy-dispersivespectrometer(EDS).
+[5] a)W.Wang,L.Liu,J.Feng,Y.Yin,SmallMethods.2018,2,1700273;
+Theinductivelycoupledplasmaopticalemissionspectrometry(ICP-OES)
+measurementsweredoneonThermoFisheriCAPPRO.TheUV–vistrans- b)X.Tian,X.Cai,Z.Zeng,Y.He,X.Xu,L.Lei,C.Xu,X.Xu,Y.Xu,P.
+mittance,absorbance,anddiffusereflectancespectra(DRS)weretested Li,X.Zhang,Chem.Eng.J.2024,498,155304;c)X.Tian,W.Han,Z.
+onAgilentCary5000.TheFouriertransforminfrared(FT-IR)spectrawere Zeng,Y.He,L.Lei,X.Xu,X.Xu,Y.Xu,P.Li,X.Zhang,Chem.Eng.J.
+obtainedfromThermoFisherNicoletiS50.Thesizedistributionofnan- 2023,477,146962.
+odispersions was analyzed with Malvern Zetasizer Nano-ZS. Electron [6] a)W.Wang,J.Feng,Y.Ye,F.Lyu,Y.Liu,J.Guo,Y.Yin,NanoLett.2017,
+paramagneticresonance(EPR)measurementswereperformedonBruker 17,755;b)W.Wang,M.Ye,L.He,Y.Yin,NanoLett.2014,14,1681;
+E500.TheX-rayphotoelectronspectroscopy(XPS)spectrawereacquired c)W.Wang,N.Xie,L.He,Y.Yin,Nat.Commun.2014,5,5459;d)Y.
+fromThermoScientificK-Alpha.Thescanningelectronmicroscopy(SEM) Zhang,Y.Dou,Z.Ye,W.Xue,F.Liu,M.Yan,W.Wang,Y.Yin,Small.
+imageswereacquiredfromHitachiSU-8010. 2023,20,2310962.
+[7] a) Y. Yin, A. P. Alivisatos, Nature. 2005, 437, 664; b) H.
+Althues, J. Henle, S. Kaskel, Chem. Soc. Rev. 2007, 36,
+SupportingInformation 1454.
+[8] W.Meng,A.J.J.Kragt,Y.Gao,E.Brembilla,X.Hu,J.S.vanderBurgt,
+SupportingInformationisavailablefromtheWileyOnlineLibraryorfrom
+A.P.H.J.Schenning,T.Klein,G.Zhou,E.R.vandenHam,L.Tan,L.
+theauthor.
+Li,J.Wang,L.Jiang,Adv.Mater.2023,36.
+[9] a)D.Han,B.Jiang,J.Feng,Y.Yin,W.Wang,Angew.Chem.,Int.Ed.
+2017,129,7900;b)W.Wang,Y.Ye,J.Feng,M.Chi,J.Guo,Y.Yin,
+Acknowledgements
+Angew.Chem.,Int.Ed.2015,54,1321.
+[10] a)S.Yamazaki,H.Ishida,D.Shimizu,K.Adachi,ACSAppl.Mater.In- This study was financially supported by the City Science and Technol-
+terfaces.2015,7,26326;b)C.DiValentin,D.Fittipaldi,J.Phys.Chem.
+ogy Research Project of Quzhou (2022K11, 2023K008), the Research
+Lett.2013,4,1901;c)A.T.Smith,H.Ding,A.Gorski,M.Zhang,P.A.
+Funds of Institute of Zhejiang University-Quzhou (IZQ2021RCZX038,
+IZQ2022RCZX017),andtheCompetitiveScienceandTechnologyProgram Gitman,C.Park,Z.Hao,Y.Jiang,B.L.Williams,S.Zeng,A.Kokkula,
+ofZhejiangUniversity-Quzhou(IZQ2023KJ1012). Q.Yu,G.Ding,H.Zeng,L.Sun,Matter.2020,2,680;d)S.Yamazaki,
+D.Shimizu,S.Tani,K.Honda,M.Sumimoto,K.Komaguchi,ACS
+Appl.Mater.Interfaces.2018,10,19889.
+ConflictofInterest [11] J.J.Carey,M.Nolan,J.Mater.Chem.A.2017,5,15613.
+[12] C.BalajiGopal,M.García-Melchor,S.C.Lee,Y.Shi,A.Shavorskiy,
+Theauthorsdeclarenoconflictofinterest. M.Monti,Z.Guan,R.Sinclair,H.Bluhm,A.Vojvodic,W.C.Chueh,
+Nat.Commun.2017,8,15360.
+[13] U.Aschauer,R.Pfenninger,S.M.Selbach,T.Grande,N.A.Spaldin,
+DataAvailabilitystatement Phys.Rev.B.2013,88,054111.
+[14] a)X.Liu,L.Zhang,Y.Zheng,Z.Guo,Y.Zhu,H.Chen,F.Li,P.Liu,B.
+The data that support the findings of this study are available from the Yu,X.Wang,J.Liu,Y.Chen,M.Liu,Adv.Sci.2019,6,1801898;b)M.
+correspondingauthoruponreasonablerequest. Kubicek,Z.Cai,W.Ma,B.Yildiz,H.Hutter,J.Fleig,ACSNano.2013,
+7,3276;c)J.R.Petrie,H.Jeen,S.C.Barron,T.L.Meyer,H.N.Lee,
+J.Am.Chem.Soc.2016,138,7252;d)J.R.Petrie,C.Mitra,H.Jeen,
+Keywords W.S.Choi,T.L.Meyer,F.A.Reboredo,J.W.Freeland,G.Eres,H.N.
+Lee,Adv.Funct.Mater.2016,26,1564.
+latticestrain,oxygenvacancies,photochromiccompositematerials,Rb
+[15] Y.Liu,X.Wang,X.Li,Z.Ye,T.-K.Sham,P.Xu,M.Cao,Q.Zhang,Y.
+doping,titaniumdioxide
+Yin,J.Chen,Nat.Commun.2024,15,9357.
+[16] a)C.Adán,A.Bahamonde,M.Fernández-García,A.Martínez-Arias,
+Received:December1,2024 Appl.Catal.B.2007,72,11;b)K.Wilke,H.D.Breuer,J.Photochem.
+Revised:February6,2025
+Photobiol.A.1999,121,49.
+Publishedonline:February21,2025
+[17] a)S.Liang,X.Wang,R.Qi,Y.-J.Cheng,Y.Xia,P.Müller-Buschbaum,
+X.Hu,Adv.Funct.Mater.2022,32,2201675;b)J.Zhao,B.Chen,F.
+Wang,Adv.Mater.2020,32,2004142.
+[18] a)S.Zhou,H.Jang,Q.Qin,L.Hou,M.G.Kim,S.Liu,X.Liu,J.Cho,
+[1] a)M.I.Khazi,W.Jeong,J.-M.Kim,Adv.Mater.2018,30,1705310;b) Angew.Chem.,Int.Ed.2022,61,202212196;b)L.Yang,C.Wang,Y.
+J.Zhang,Q.Zou,H.Tian,Adv.Mater.2013,25,378;c)L.Wang,Q. Li,W.Ge,L.Tang,J.Shen,Y.Zhu,C.Li,Adv.Funct.Mater.2024,34,
+Li,Chem.Soc.Rev.2018,47,1044. 2401094.
+Adv.Funct.Mater.2025,35,2423514 2423514(14of15) ©2025Wiley-VCHGmbH
+16163028,
+2025,
+28,
+Downloaded
+from
+https://advanced.onlinelibrary.wiley.com/doi/10.1002/adfm.202423514
+by
+Zhejiang
+University,
+Wiley
+Online
+Library
+on
+[10/12/2025].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License
+
+=== Page 15 ===
+www.advancedsciencenews.com www.afm-journal.de
+[19] M. J. Hÿtch, E. Snoeck, R. Kilaas, Ultramicroscopy. 1998, 74, [30] a)B.Wen,Q.Hao,W.-J.Yin,L.Zhang,Z.Wang,T.Wang,C.Zhou,A.
+131. Selloni,X.Yang,L.-M.Liu,Phys.Chem.Chem.Phys.2018,20,17658;
+[20] S.Cui,J.Wang,H.Xie,Y.Zhao,Z.Li,S.Luo,L.Ke,Y.Gao,K.Meng, b)Z.Wang,B.Wen,Q.Hao,L.-M.Liu,C.Zhou,X.Mao,X.Lang,W.-J.
+L.Ding,Y.Yuan,Adv.Sci.2020,7,2002445. Yin,D.Dai,A.Selloni,X.Yang,J.Am.Chem.Soc.2015,137,9146.
+[21] T.Ji,Q.Liu,R.Zou,Y.Sun,K.Xu,L.Sang,M.Liao,Y.Koide,L.Yu,J. [31] O.I.Micic,Y.Zhang,K.R.Cromack,A.D.Trifunac,M.C.Thurnauer,
+Hu,Adv.Funct.Mater.2016,26,1400. J.Phys.Chem.1993,97,7277.
+[22] A.Sinhamahapatra,J.-P.Jeon,J.-S.Yu,EnergyEnviron.Sci.2015,8, [32] a)I.A.Shkrob,M.C.Sauer,D.Gosztola,J.Phys.Chem.B.2004,108,
+3539. 12512;b)M.-H.Du,J.Feng,S.B.Zhang,Phys.Rev.Lett.2007,98,
+[23] Y.Zhang,Z.Ding,C.W.Foster,C.E.Banks,X.Qiu,X.Ji,Adv.Funct. 066102.
+Mater.2017,27,1700856. [33] a)E.Lira,S.Wendt,P.Huo,J.Ø.Hansen,R.Streber,S.Porsgaard,Y.
+[24] M.-C.Tsai,T.-T.Nguyen,N.G.Akalework,C.-J.Pan,J.Rick,Y.-F.Liao, Wei,R.Bechstein,E.Lægsgaard,F.Besenbacher,J.Am.Chem.Soc.
+W.-N.Su,B.-J.Hwang,ACSCatal.2016,6,6551. 2011,133,6529;b)O.Bikondoa,C.L.Pang,R.Ithnin,C.A.Muryn,
+[25] a) A. Naldoni, M. Allieta, S. Santangelo, M. Marelli, F. Fabbri, S. H.Onishi,G.Thornton,Nat.Mater.2006,5,189;c)S.Wendt,P.T.
+Cappelli,C.L.Bianchi,R.Psaro,V.DalSanto,J.Am.Chem.Soc.2012, Sprunger,E.Lira,G.K.H.Madsen,Z.Li,J.Ø.Hansen,J.Matthiesen,
+134,7600;b)Q.Wu,Q.Zheng,R.vandeKrol,J.Phys.Chem.C.2012, A.Blekinge-Rasmussen,E.Lægsgaard,B.Hammer,F.Besenbacher,
+116,7219;c)L.Hou,M.Zhang,Z.Guan,Q.Li,J.Yang,Appl.Surf. Science.2008,320,1755.
+Sci.2018,428,640. [34] W.Meng,A.J.J.Kragt,X.Hu,J.S.vanderBurgt,A.P.H.J.Schenning,
+[26] a)R.Jia,Y.Wang,C.Wang,Y.Ling,Y.Yu,B.Zhang,ACSCatal.2020, Y.Yue,G.Zhou,L.Li,P.Wei,W.Zhao,Y.Li,J.Wang,L.Jiang,Adv.
+10,3533;b)S.Zhang,W.Li,Z.Jin,J.Yang,J.Zhang,Z.Du,Z.Zhang, Funct.Mater.2024,34,2402494.
+J.SolidStateChem.2004,177,1365. [35] a)S.Baroni,P.Giannozzi,E.Isaev,Rev.Mineral.Geochem.2010,71,
+[27] a)Y.Zhang,N.Cao,H.Cheng,X.Zhao,L.Qiu,Y.Fang,J.Liao,X.Cai, 39;b)W.Zhang,L.Cai,S.Cao,L.Qiao,Y.Zeng,Z.Zhu,Z.Lv,H.Xia,
+X.Tian,L.Lei,P.Xie,X.Zhang,Appl.Catal.B.2024,355,124171;b) L.Zhong,H.Zhang,X.Ge,J.Wei,S.Xi,Y.Du,S.Li,X.Chen,Adv.
+G.Zhu,W.Zhu,Y.Lou,J.Ma,W.Yao,R.Zong,Y.Zhu,Nat.Commun. Mater.2019,31,1906156.
+2021,12,4152;c)T.R.Gordon,M.Cargnello,T.Paik,F.Mangolini, [36] S.Hou,D.Fang,Q.Jin,Y.Ye,Q.Li,F.He,J.Xie,Appl.Surf.Sci.2022,
+R.T.Weber,P.Fornasiero,C.B.Murray,J.Am.Chem.Soc.2012,134, 605,154645.
+6751. [37] A.Mills,J.Wang,J.Photochem.Photobiol.A.1999,127,123.
+[28] a)E.Farfan-Arribas,R.J.Madix,J.Phys.Chem.B.2002,106,10680; [38] Y.Liu,C.Zhang,J.Feng,X.Wang,Z.Ding,L.He,Q.Zhang,J.Chen,
+b)T.Tachikawa,Y.Takai,S.Tojo,M.Fujitsuka,H.Irie,K.Hashimoto, Y.Yin,Angew.Chem.,Int.Ed.2023,62.
+T.Majima,J.Phys.Chem.B.2006,110,13158. [39] N.Nakayama,T.Hayashi,ColloidsSurf.,A.2008,317,543.
+[29] a) U. Joost, A. Šutka, M. Oja, K. Smits, N. Döbelin, A. Loot, M. [40] Y.Liu,N.Peng,Y.Yao,X.Zhang,X.Peng,L.Zhao,J.Wang,L.Peng,Z.
+Järvekülg, M. Hirsimäki, M. Valden, E. Nõmmiste, Chem. Mater. Wang,K.Mochizuki,M.Yue,S.Yang,Nat.Commun.2022,13,3581.
+2018,30,8968;b)C.J.Dahlman,A.Agrawal,C.M.Staller,J.Adair, [41] P.Liu,B.Wang,C.Wang,L.Ma,W.Zhang,E.Hopmann,L.Liu,A.Y.
+D.J.Milliron,Chem.Mater.2019,31,502. Elezzabi,H.Li,Adv.Funct.Mater.2024,34,2400760.
+Adv.Funct.Mater.2025,35,2423514 2423514(15of15) ©2025Wiley-VCHGmbH
+16163028,
+2025,
+28,
+Downloaded
+from
+https://advanced.onlinelibrary.wiley.com/doi/10.1002/adfm.202423514
+by
+Zhejiang
+University,
+Wiley
+Online
+Library
+on
+[10/12/2025].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

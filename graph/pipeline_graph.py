@@ -25,8 +25,32 @@ class KnowledgeEdge:
 _EDGE_CACHE: dict[str, list[KnowledgeEdge]] = {}
 _DEBUG_GRAPH = os.getenv("GRAPH_DEBUG", "false").lower() in {"1", "true", "yes"}
 _DISK_CACHE_VERSION = 3
-_DISK_CACHE_PATH = Path(os.getenv("GRAPH_CACHE_PATH", "data/graph_cache.json"))
 _DISK_CACHE: dict[str, dict[str, Any]] | None = None
+
+
+def _resolve_disk_cache_path() -> Path:
+    env_path = os.getenv("GRAPH_CACHE_PATH")
+    if env_path:
+        return Path(env_path)
+
+    extracted_path = os.getenv("EXTRACTED_TEXT_PATH") or os.getenv("CONTEXT_PATH")
+    if extracted_path:
+        return Path(extracted_path).expanduser().resolve().parent / "graph_cache.json"
+
+    output_dir = os.getenv("OUTPUT_DIR")
+    if output_dir:
+        return Path(output_dir).expanduser() / "graph_cache.json"
+
+    repo_root = Path(__file__).resolve().parents[1]
+    output_base = repo_root / "output"
+    extracted_candidates = list(output_base.glob("*/extracted.txt"))
+    if len(extracted_candidates) == 1:
+        return extracted_candidates[0].parent / "graph_cache.json"
+    if extracted_candidates:
+        newest = max(extracted_candidates, key=lambda p: p.stat().st_mtime)
+        return newest.parent / "graph_cache.json"
+
+    return repo_root / "data" / "graph_cache.json"
 
 
 def _debug_log(message: str) -> None:
@@ -38,11 +62,12 @@ def _load_disk_cache() -> dict[str, dict[str, Any]]:
     global _DISK_CACHE
     if _DISK_CACHE is not None:
         return _DISK_CACHE
-    if not _DISK_CACHE_PATH.exists():
+    cache_path = _resolve_disk_cache_path()
+    if not cache_path.exists():
         _DISK_CACHE = {}
         return _DISK_CACHE
     try:
-        payload = json.loads(_DISK_CACHE_PATH.read_text(encoding="utf-8"))
+        payload = json.loads(cache_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         _debug_log(f"[Graph Mode][Knowledge] disk cache read failed: {exc}")
         _DISK_CACHE = {}
@@ -59,9 +84,10 @@ def _load_disk_cache() -> dict[str, dict[str, Any]]:
 
 def _save_disk_cache(items: dict[str, dict[str, Any]]) -> None:
     try:
-        _DISK_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        cache_path = _resolve_disk_cache_path()
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
         payload = {"version": _DISK_CACHE_VERSION, "items": items}
-        _DISK_CACHE_PATH.write_text(json.dumps(payload, ensure_ascii=True), encoding="utf-8")
+        cache_path.write_text(json.dumps(payload, ensure_ascii=True), encoding="utf-8")
     except OSError as exc:
         _debug_log(f"[Graph Mode][Knowledge] disk cache write failed: {exc}")
 
