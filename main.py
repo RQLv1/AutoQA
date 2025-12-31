@@ -143,6 +143,7 @@ def _process_image(
                 target_path,
                 {
                     "source": "final",
+                    "image_path": str(image_path),
                     "question": episode.stage_final.question,
                     "answer": episode.stage_final.answer,
                     "reasoning": episode.stage_final.reasoning,
