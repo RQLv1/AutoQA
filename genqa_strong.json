@@ -336,5 +336,31 @@
     },
     "review_decision": "correct",
     "review_raw": "<review>correct</review>"
+  },
+  {
+    "source": "step",
+    "step_k": 2,
+    "question": "The provided image features a dominant high-brightness white background and a specific interface element in the upper right corner. Establishing the visual rule that the \"pure white\" background corresponds to the **Fresh** state of the SAPO-34 catalyst (prior to reaction exposure), while dark or shadowed regions would represent the Spent state, calculate the **Framework Stoichiometry Sum (FSS)** for the catalyst in this identified state. The FSS is defined as the sum of the Al/Si and P/Si atomic ratios derived from the sample's EDS characterization data. Furthermore, select the description of the zeolite's physical morphology corresponding to this specific state and the functionality indicated by the text on the visible interface icon.\nA. FSS = 6.1\nB. FSS = 10.3\nC. FSS = 14.9\nD. Zeolite particles present as shattered irregular fragments\nE. Zeolite particles maintain a complete cubic crystallite shape\nF. Zeolite particles show significant surface Indium migration without shattering\nG. The icon serves to verify the availability of software updates\nH. The icon indicates a warning for catalyst deactivation",
+    "answer": "CEG",
+    "reasoning": "1. **Visual State Identification**: The question defines the \"pure white\" background as representing the **Fresh** state of the SAPO-34 catalyst.\n2. **Data Retrieval**: According to Table 1 in the reference text, the EDS data for the **Fresh** SAPO-34 sample is Al/Si = 7.3 and P/Si = 7.6.\n3. **Calculation**: The Framework Stoichiometry Sum (FSS) is calculated as 7.3 + 7.6 = 14.9. This matches option C. (Distractors A and B correspond to the sums for Spent CB and Spent MM states, respectively).\n4. **Morphology Identification**: The text describes the Fresh SAPO-34 (Fig 6A) as showing \"cubic crystallites\" with an average dimension of about 5 μm. This matches option E. (Distractor D describes the Spent CB state, and F describes the Spent MM state).\n5. **Interface Element Analysis**: The icon in the top right corner of the image contains the text \"Check for updates\". This corresponds to the function of verifying software updates, matching option G.",
+    "difficulty_metrics": {
+      "medium_correct": false,
+      "strong_correct": false,
+      "strong_text_only_correct": false,
+      "strong_no_image_correct": false,
+      "difficulty_score": 1.0,
+      "cross_modal_used": false,
+      "num_hops": 2,
+      "medium_pred": "BEG",
+      "strong_pred": "AEG",
+      "strong_text_only_pred": "BEG",
+      "strong_no_image_pred": "BEG",
+      "medium_raw": "<answer>BEG</answer>",
+      "strong_raw": "<answer>AEG</answer>",
+      "strong_text_only_raw": "<answer>BEG</answer>",
+      "strong_no_image_raw": "<answer>BEG</answer>"
+    },
+    "review_decision": "correct",
+    "review_raw": "<review>correct</review>"
   }
 ]

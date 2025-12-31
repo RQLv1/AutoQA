@@ -700,5 +700,31 @@
     },
     "review_decision": "correct",
     "review_raw": "<review>correct</review>"
+  },
+  {
+    "source": "step",
+    "step_k": 1,
+    "question": "The image presents a predominantly white background. Define this visual feature as representing the **fresh catalyst state** (Time on Stream, ToS = 0 h), which is characterized as a \"white solid\" before the accumulation of carbonaceous deposits. For a **Mechanical Mixture (MM)** configuration operating at 380 °C and 38 barg, determine the CO selectivity ($S_{CO}$) at this reaction initiation point. Additionally, select the accurate morphological description of the SAPO-34 crystallites in this fresh condition, contrasting them with the fractured particles found in the spent Consecutive Bed (CB) configuration.\nA. The CO selectivity is 90%\nB. The SAPO-34 crystallites exhibit a cubic morphology\nC. The CO selectivity is 60%\nD. The SAPO-34 particles are fractured into irregular fragments\nE. The CO selectivity exceeds 95%\nF. The SAPO-34 phase shows significant indium migration",
+    "answer": "AB",
+    "reasoning": "1. **Visual Anchor & Definition**: The question defines the white background of the image as the \"fresh catalyst state\" (ToS = 0 h), linking it to the text description of the fresh catalyst as a \"white solid\".\n2. **Condition**: The query focuses on the **Mechanical Mixture (MM)** configuration at 380 °C and 38 barg at this specific time point (ToS = 0 h).\n3. **CO Selectivity Retrieval**: According to Section 3.2 and Fig. 1A description, for the MM configuration, \"CO... showing a decreasing trend in the first hours from **90% at ToS = 0 h** to 60% at ToS = 20 h\". Thus, the selectivity at ToS = 0 h is 90% (Option A is correct; Option C corresponds to ToS = 20 h).\n4. **Morphology Retrieval**: According to Section 3.4, \"The **fresh zeolite** (Fig. 6A) shows **cubic crystallites**\". The text contrasts this with the spent Consecutive Bed (CB) configuration, where \"significant shattering\" occurs (Option D). The spent MM retains the shape, but the question asks for the fresh state, which is definitely cubic (Option B is correct).\n5. **Distractors**: Option E (>95%) refers to the Consecutive Bed (CB) configuration. Option F (Indium migration) refers to the spent state of the MM/IM configurations, not the fresh state.",
+    "difficulty_metrics": {
+      "medium_correct": true,
+      "strong_correct": null,
+      "strong_text_only_correct": false,
+      "strong_no_image_correct": false,
+      "difficulty_score": 0.0,
+      "cross_modal_used": false,
+      "num_hops": 1,
+      "medium_pred": "AB",
+      "strong_pred": null,
+      "strong_text_only_pred": "BE",
+      "strong_no_image_pred": "BE",
+      "medium_raw": "<answer>AB</answer>",
+      "strong_raw": null,
+      "strong_text_only_raw": "<answer>BE</answer>",
+      "strong_no_image_raw": "<answer>BE</answer>"
+    },
+    "review_decision": "correct",
+    "review_raw": "<review>correct</review>"
   }
 ]
