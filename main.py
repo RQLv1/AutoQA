@@ -194,6 +194,12 @@ def _parse_args() -> argparse.Namespace:
         default=3,
         help="每张图片目标生成的 strong 题目数量（默认: 3）",
     )
+    parser.add_argument(
+        "--start-pdf-index",
+        type=int,
+        default=1,
+        help="从第几个 PDF 开始处理（1-based，默认: 1）",
+    )
     return parser.parse_args()
 
 
@@ -218,8 +224,14 @@ def main() -> None:
         f"每张图片目标: {args.target_strong_per_image} Strong Questions) ==="
     )
 
+    start_index = args.start_pdf_index
+    if start_index < 1 or start_index > len(pdf_files):
+        raise ValueError(
+            f"--start-pdf-index 超出范围: {start_index} (总数: {len(pdf_files)})"
+        )
+
     # 遍历每个 PDF 文件
-    for pdf_idx, pdf_path in enumerate(pdf_files, 1):
+    for pdf_idx, pdf_path in enumerate(pdf_files[start_index - 1 :], start_index):
         print(f"\n{'='*80}")
         print(f"正在处理 PDF {pdf_idx}/{len(pdf_files)}: {pdf_path.name}")
         print(f"{'='*80}")
