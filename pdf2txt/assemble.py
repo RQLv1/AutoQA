@@ -2,11 +2,15 @@
 从 PDF 中裁剪 image, chart, figure_title 等元素，并按原始位置组合成新图。
 """
 import json
+import os
 from pathlib import Path
 from typing import Any
 
 import pdfplumber
 from PIL import Image
+
+# 导入图片过滤模块
+from .image_filter import is_junk_image, llm_check_image_validity
 
 # 配置路径
 PDF_PATH = Path(
@@ -110,7 +114,7 @@ def assemble_page_elements(
     render_size: tuple[int, int]
 ) -> Image.Image:
     """
-    将裁剪的元素按原始位置组合到新画布上。
+    将裁剪的元素按原始位置组合，并裁剪出最小包含区域。
 
     Args:
         elements: [(裁剪的图片, (x0, y0, x1, y1), label), ...]
@@ -121,12 +125,37 @@ def assemble_page_elements(
     """
     render_w, render_h = render_size
 
-    # 创建白色画布
+    # 1. 创建全尺寸画布 (保持是为了定位准确)
     canvas = Image.new("RGB", (render_w, render_h), color="white")
 
-    # 按照原始位置粘贴每个元素
-    for crop_img, (x0, y0, _x1, _y1), _label in elements:
+    if not elements:
+        return canvas
+
+    # 初始化包围盒坐标
+    min_x, min_y = render_w, render_h
+    max_x, max_y = 0, 0
+
+    # 2. 粘贴并更新包围盒
+    for crop_img, (x0, y0, x1, y1), _label in elements:
         canvas.paste(crop_img, (x0, y0))
+
+        # 更新有效区域的边界
+        min_x = min(min_x, x0)
+        min_y = min(min_y, y0)
+        max_x = max(max_x, x1)
+        max_y = max(max_y, y1)
+
+    # 3. 增加一点 Padding (边距)，避免切得太死
+    padding = 10
+    crop_x0 = max(0, min_x - padding)
+    crop_y0 = max(0, min_y - padding)
+    crop_x1 = min(render_w, max_x + padding)
+    crop_y1 = min(render_h, max_y + padding)
+
+    # 4. 裁剪画布，只保留有内容的部分
+    # 如果坐标无效（比如没有元素），则返回原图或空白图
+    if crop_x1 > crop_x0 and crop_y1 > crop_y0:
+        return canvas.crop((crop_x0, crop_y0, crop_x1, crop_y1))
 
     return canvas
 
@@ -217,9 +246,31 @@ def assemble_elements_from_res(
             pdf_stem = Path(input_path).stem if input_path else pdf_path.stem
             out_path = images_dir / f"{pdf_stem}_page_{page_index}_assembled.png"
             assembled_img.save(out_path)
-            count += 1
 
-            print(f"页面 {page_index}: 组合了 {len(elements)} 个元素 → {out_path.name}")
+            # === 新增过滤逻辑 ===
+            # 使用推荐参数：过滤小图标和空白图
+            is_junk, reason = is_junk_image(
+                str(out_path),
+                min_size=(150, 150),
+                max_white_ratio=0.92,
+                min_entropy=3.0
+            )
+
+            if is_junk:
+                print(f"  ✗ 过滤无效图片: {reason}")
+                os.remove(out_path)  # 删除无效图片
+                # 不增加计数，跳过此图片
+            else:
+                count += 1
+                print(f"  ✓ 页面 {page_index}: 组合了 {len(elements)} 个元素 → {out_path.name}")
+                # (可选) 如果需要更严格的LLM检查，可以取消下面的注释
+                # 使用配置文件中的 MODEL_SOLVE_MEDIUM (gemini-3-flash-preview)
+                # api_key = os.getenv("API_KEY")
+                # if api_key and not llm_check_image_validity(str(out_path), api_key):
+                #     print(f"  ✗ LLM判定为无效图片")
+                #     os.remove(out_path)
+                #     count -= 1
+            # ===================
 
     return count
 

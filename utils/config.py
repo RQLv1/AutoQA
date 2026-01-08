@@ -4,13 +4,13 @@ import os
 # 模型配置 (Model Configuration)
 # =============================================================================
 # 生成阶段使用的模型
-MODEL_STAGE_1 = os.getenv("MODEL_STAGE_1", "gemini-3-pro-preview")  # 阶段1：通常用于初始分析 "gpt-51-1113-global"
+MODEL_STAGE_1 = os.getenv("MODEL_STAGE_1", "gpt-51-1113-global")  # 阶段1：通常用于初始分析 "gpt-51-1113-global"
 MODEL_STAGE_2 = os.getenv("MODEL_STAGE_2", MODEL_STAGE_1)  # 阶段2：通常用于深入推理
 MODEL_STAGE_3 = os.getenv("MODEL_STAGE_3", MODEL_STAGE_1)  # 阶段3：通常用于最终生成
 # 视觉理解与知识抽取使用的模型
 MODEL_VISION_KNOWLEDGE = os.getenv("MODEL_VISION_KNOWLEDGE", "gemini-3-pro-preview")
 # 汇总和通用任务使用的模型
-MODEL_SUM = os.getenv("MODEL_SUM", os.getenv("MODEL_STAGE_SUM", "gemini-3-pro-preview"))
+MODEL_SUM = os.getenv("MODEL_SUM", os.getenv("MODEL_STAGE_SUM", "claude_sonnet4_5"))
 MODEL_OBFUSCATE = os.getenv("MODEL_OBFUSCATE", MODEL_SUM)  # 题干改写(隐去细节)模型
 
 # 操作代理使用的模型
@@ -19,8 +19,8 @@ MODEL_OPERATE_DISTINCTION = os.getenv("MODEL_OPERATE_DISTINCTION", MODEL_OPERATE
 MODEL_OPERATE_CALCULATION = os.getenv("MODEL_OPERATE_CALCULATION", MODEL_OPERATE)  # 计算任务
 
 # 求解器模型 (Solver Models) - 用于评估题目难度
-MODEL_SOLVE_MEDIUM = os.getenv("MODEL_SOLVE_MEDIUM", "gpt-5-mini-0807-global")  # 中等能力模型 (用于检测题目是否过简单)
-MODEL_SOLVE_STRONG = os.getenv("MODEL_SOLVE_STRONG", "claude_sonnet4_5")  # 强能力模型 (用于确保题目可解)
+MODEL_SOLVE_MEDIUM = os.getenv("MODEL_SOLVE_MEDIUM", "gemini-3-flash-preview")  # 中等能力模型 (用于检测题目是否过简单)
+MODEL_SOLVE_STRONG = os.getenv("MODEL_SOLVE_STRONG", "gemini-3-pro-preview")  # 强能力模型 (用于确保题目可解)
 # 评审模型 (Review Model) - 用于审核题目质量
 MODEL_REVIEW = os.getenv("MODEL_REVIEW", "gemini-3-flash-preview")
 

@@ -1,129 +1,237 @@
+### 图片大面积空白解决方案
 
-### 修改方案：支持多选模式 (Multiple Select) 与 A-H 选项
+### 1.计算“最小包围盒”并裁剪
 
-#### 1. 修改 Prompt 生成 (提示词)
+我们需要修改 `assemble_page_elements` 函数。在粘贴完所有元素后，计算这些元素的 **并集包围盒（Union Bounding Box）** ，然后将画布裁剪到这个范围。
 
- **目标** ：明确告知模型生成多选题，支持 A-H 选项范围，并移除互斥限制。
+请修改 `rqlv1/autoqa/AutoQA-rqlv/pdf2txt/assemble.py` 中的该函数：
 
-* **文件** : `rqlv1/autoqa/AutoQA-rqlv/prompts/final.py`
-* **函数** : `build_final_compress_prompt`, `build_final_revise_prompt`, `build_final_harden_prompt`, `build_final_targeted_revise_prompt`
-* **修改点** :
-  *  **题型定义** : 将 `单选题(MCQ)` 修改为 `多选题(Multiple Select Question)`。
-  *  **选项范围** : 明确指示 `选项范围为 A-H (至少4个，最多8个)`。
-  *  **答案格式** : 修改 `<answer>` 说明，允许输出如 `AC`, `A,C,E` 等组合。
-  *  **生成约束** :
-  * 删除“四个数值选项”的硬性数量限制，改为“选项数量 4-8 个”。
-  * 删除“互斥”相关暗示，明确“可能有一个或多个正确选项”。
-  * 保留“干扰项设计”逻辑，但需适配多选（例如：漏选、多选包含干扰项）。
-* **文件** : `rqlv1/autoqa/AutoQA-rqlv/prompts/solver.py`
-* **函数** : `build_solver_prompt`, `build_solver_prompt_text_only`
-* **修改点** :
-  *  **任务说明** : 增加 `这是一道多选题，请选择所有正确的选项`。
-  *  **输出格式** : 允许 `<answer>A,C</answer>` 或 `<answer>AC</answer>`。
+**Python**
 
-#### 2. 修改答案解析逻辑 (Parsing)
+```
+def assemble_page_elements(
+    elements: list[tuple[Image.Image, tuple[int, int, int, int], str]],
+    render_size: tuple[int, int]
+) -> Image.Image:
+    """
+    将裁剪的元素按原始位置组合，并裁剪出最小包含区域。
+    """
+    render_w, render_h = render_size
 
- **目标** ：正确提取形如 "A, C" 或 "AC" 的多选答案，并标准化为 "AC"。
+    # 1. 创建全尺寸画布 (保持是为了定位准确)
+    canvas = Image.new("RGB", (render_w, render_h), color="white")
 
-* **文件** : `rqlv1/autoqa/AutoQA-rqlv/utils/parsing.py`
-* **修改全局常量/正则** (如有): 确保所有涉及选项的正则支持 `[A-H]` 而非仅 `[A-D]`。
-* **函数** : `parse_option_letter_optional`, `_find_option_letter`, `extract_option_text`
-* **修改点** :
-  *  **正则扩展** : 将 `r"[A-D]"` 扩展为 `r"[A-H]"`。
-  *  **提取逻辑** : 不再只返回匹配到的最后一个字母，而是提取所有出现的字母， **去重并按字母顺序排序** 。
-  *  **代码示例** :
-  **Python**
+    if not elements:
+        return canvas
 
-  ```
-  def parse_option_letters(text: str) -> str:
-      # 提取 A-H 的所有字母，忽略大小写
-      matches = re.findall(r"[A-H]", text.upper())
-      if not matches:
-          return ""
-      # 去重并排序，例如: "C, A" -> "AC"
-      return "".join(sorted(set(matches)))
-  ```
+    # 初始化包围盒坐标
+    min_x, min_y = render_w, render_h
+    max_x, max_y = 0, 0
 
-    ***兼容性** : 替换原有的 `parse_option_letter` 逻辑，确保单选答案 (如 "A") 也能通过此逻辑变为 "A"。
+    # 2. 粘贴并更新包围盒
+    for crop_img, (x0, y0, x1, y1), _label in elements:
+        canvas.paste(crop_img, (x0, y0))
+  
+        # 更新有效区域的边界
+        min_x = min(min_x, x0)
+        min_y = min(min_y, y0)
+        max_x = max(max_x, x1)
+        max_y = max(max_y, y1)
 
-#### 3. 修改求解与判题逻辑 (Solver & Grading)
+    # 3. 增加一点 Padding (边距)，避免切得太死
+    padding = 10 
+    crop_x0 = max(0, min_x - padding)
+    crop_y0 = max(0, min_y - padding)
+    crop_x1 = min(render_w, max_x + padding)
+    crop_y1 = min(render_h, max_y + padding)
 
- **目标** ：实现集合判题（全对才算对），并支持“部分正确”的特殊标记。
+    # 4. 裁剪画布，只保留有内容的部分
+    # 如果坐标无效（比如没有元素），则返回原图或空白图
+    if crop_x1 > crop_x0 and crop_y1 > crop_y0:
+        return canvas.crop((crop_x0, crop_y0, crop_x1, crop_y1))
+  
+    return canvas
+```
 
-* **文件** : `rqlv1/autoqa/AutoQA-rqlv/pipeline/pipeline_solvers.py`
-* **函数** : `grade_answer`
-* **修改点** : 使用集合比较实现严格匹配。
-* **代码示例** :
-  **Python**
+### 2.图片过滤解决方案
 
-    ``    def grade_answer(standard: str, prediction: str | None) -> bool:         if not standard or not prediction:             return False         # 严格全等：标准答案 "ABC" vs 预测 "ABC" -> True; "AC" -> False         return set(standard) == set(prediction)    ``
+### 修改代码方案
 
-* **新增函数** : `grade_partial_answer` (用于支持你的校验需求)
-* **功能** : 判断是否“部分答对且未选错”。
-* **代码示例** :
-  **Python**
+建议在 `pdf2txt` 目录下创建一个新的工具文件 `image_filter.py`，然后在 `assemble.py` 中调用它。模型采用"gemini3-flash"
 
-    ``    def grade_partial_answer(standard: str, prediction: str | None) -> bool:         if not standard or not prediction:             return False         std_set = set(standard)         pred_set = set(prediction)         # 预测集是标准集的真子集 (Partial) 且 非空         # 例如 Std=ABC, Pred=AC -> True; Pred=AD -> False (D错); Pred=ABC -> False (全对, 非Partial)         return pred_set.issubset(std_set) and len(pred_set) > 0 and pred_set != std_set    ``
+#### 第一步：创建过滤工具 `pdf2txt/image_filter.py`
 
-* **函数** : `evaluate_difficulty`
-* **修改点** :
-  * 在返回的字典 `metrics` 中，增加 `medium_partial_correct` 字段。
-  * 调用 `grade_partial_answer(final.answer, medium_letter)` 赋值给该字段。
-  * 保持原有的 `medium_correct` 为严格全对判定。
+在 `rqlv1/autoqa/AutoQA-rqlv/pdf2txt/` 下新建 `image_filter.py`，写入以下代码。这包含规则过滤和大模型过滤两种实现。
 
-#### 4. 修改主流程路由 (Main)
+**Python**
 
- **目标** ：落实“若部分答对...则加入 genqa_medium.json”的业务规则。
+```
+import numpy as np
+from PIL import Image
+import math
+import base64
+import os
+import requests
 
-* **文件** : `rqlv1/autoqa/AutoQA-rqlv/main.py`
-* **函数** : `main` (循环内部)
-* **修改点** : 调整结果保存的分流逻辑。
-* **逻辑调整** :
-  **Python**
+# === 1. 规则过滤 (快速、免费) ===
 
-    ```
-    # 获取 metrics
-    medium_correct = metrics.get("medium_correct", False)
-    medium_partial = metrics.get("medium_partial_correct", False) # 新增
-    strong_correct = metrics.get("strong_correct", False)
+def get_image_entropy(img_pil):
+    """计算图片香农熵 (衡量信息丰富度)"""
+    # 转换为灰度
+    img_gray = img_pil.convert('L')
+    histogram = img_gray.histogram()
+    histogram_length = sum(histogram)
+    samples_probability = [float(h) / histogram_length for h in histogram]
+    return -sum([p * math.log(p, 2) for p in samples_probability if p != 0])
 
-    if review_passed:
-        if medium_correct:
-            # Medium 模型全对 -> Simple
-            target_path = genqa_simple_path
-            # ...
-        elif medium_partial:
-            # Medium 模型部分正确 (无错选) -> Medium
-            # 符合需求：若部分答对且没选择非正确答案... 加入 genqa_medium
-            target_path = genqa_medium_path
-            # ...
-        elif strong_correct:
-            # Medium 全错或有错选，但 Strong 全对 -> Medium (原逻辑)
-            target_path = genqa_medium_path
-            # ...
-        else:
-            # 均为错 -> Strong / Hard
-            target_path = genqa_strong_path
-    ```
+def is_junk_image(image_path, min_size=(100, 100), max_white_ratio=0.95, min_entropy=3.5):
+    """
+    判断是否为垃圾图片
+    :param image_path: 图片路径
+    :param min_size: 最小宽/高 (过滤图标)
+    :param max_white_ratio: 最大空白比例 (过滤只有Caption或空白图)
+    :param min_entropy: 最小信息熵 (过滤简单图形)
+    :return: (True/False, reason)
+    """
+    try:
+        with Image.open(image_path) as img:
+            width, height = img.size
+          
+            # 1. 尺寸过滤 (过滤 Check for updates 等小图标)
+            if width < min_size[0] or height < min_size[1]:
+                return True, f"Too small: {width}x{height}"
+          
+            # 2. 长宽比过滤 (过滤极细长的分割线)
+            aspect_ratio = width / height
+            if aspect_ratio > 10 or aspect_ratio < 0.1:
+                return True, f"Extreme aspect ratio: {aspect_ratio:.2f}"
 
-#### 5. 修改质量检查与辅助工具 (Judge & Utils)
+            # 3. 空白占比过滤
+            img_gray = img.convert('L')
+            np_img = np.array(img_gray)
+            # 认为大于240的像素点是“白色”背景
+            white_pixels = np.sum(np_img > 240)
+            total_pixels = np_img.size
+            white_ratio = white_pixels / total_pixels
+          
+            if white_ratio > max_white_ratio:
+                return True, f"Too much whitespace: {white_ratio:.2%}"
 
- **目标** ：适配 A-H 选项解析，防止因选项增多导致的解析错误。
+            # 4. 信息熵过滤 (可选，针对只有少量文字的空白图)
+            # 复杂的科学图表通常 entropy > 4.5
+            entropy = get_image_entropy(img)
+            if entropy < min_entropy:
+                return True, f"Low entropy (simple image): {entropy:.2f}"
 
-* **文件** : `rqlv1/autoqa/AutoQA-rqlv/pipeline/pipeline_judge.py`
-* **函数** : `_extract_options`, `judge_mcq`
-* **修改点** :
-  * 将 `_OPTION_MARKER` 正则中的 `[A-D]` 修改为 `[A-H]`。
-  * **禁用或调整** `flags["correct_option_longest"]`：多选题通常不适用此规则（可能有多个正确项，长度不一），建议直接移除或仅当只有一个正确选项时才启用。
-  * `missing_options`: 检查标准由 `< 4` 保持不变，但要能识别 A-H。
-* **文件** : `rqlv1/autoqa/AutoQA-rqlv/utils/mcq.py`
-* **函数** : `has_abcd_options` (建议重命名为 `has_valid_options`)
-* **修改点** :
-  * 正则 `_OPTION_RE` 支持 `[A-H]`。
-  * 逻辑更新为：检查是否存在至少 4 个连续的选项（如 A,B,C,D...）。
+            return False, "Pass"
+    except Exception as e:
+        print(f"Error checking image {image_path}: {e}")
+        return True, "Error reading file"
 
-#### 6. 总结检查清单
+# === 2. 大模型过滤 (精准、成本高) ===
 
-1. **范围** : 确认所有正则 `[A-D]` 均替换为 `[A-H]`。
-2. **排序** : 确认 Parsing 模块输出的答案是字母排序的（如 "CA" -> "AC"），否则集合比较外的字符串日志会乱。
-3. **路由** : 确认 `main.py` 中优先处理 `medium_correct` (Simple)，其次处理 `medium_partial` (Medium)。
+def llm_check_image_validity(image_path, api_key, model="gpt-4o"):
+    """
+    使用大模型 Vision 能力判断图片是否有效。
+    需要设置 OPENAI_API_KEY 环境变量或传入 api_key。
+    """
+    def encode_image(image_path):
+        with open(image_path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode('utf-8')
+
+    base64_image = encode_image(image_path)
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"
+    }
+
+    payload = {
+        "model": model,
+        "messages": [
+            {
+                "role": "system",
+                "content": "You are a scientific image filter. You determine if an image extracted from a PDF is a valid, useful scientific figure (charts, diagrams, microscopy, molecules). Returns JSON: {'valid': bool, 'reason': str}."
+            },
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "Is this a valid scientific figure? Reject if it is just text captions, a logo (like 'Check for updates'), a page header/footer, or almost blank."
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{base64_image}"
+                        }
+                    }
+                ]
+            }
+        ],
+        "max_tokens": 100
+    }
+
+    try:
+        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+        result = response.json()
+        content = result['choices'][0]['message']['content']
+        # 简单解析返回结果
+        if "true" in content.lower() or "yes" in content.lower():
+            return True
+        return False
+    except Exception as e:
+        print(f"LLM Check Failed: {e}")
+        return True # 如果LLM失败，默认保留以免误删
+```
+
+#### 第二步：集成到 `assemble.py`
+
+找到你的 rqlv1/autoqa/AutoQA-rqlv/pdf2txt/assemble.py。
+
+在文件顶部导入：
+
+**Python**
+
+```
+import os
+# 假设 image_filter.py 在同一目录下
+from .image_filter import is_junk_image, llm_check_image_validity 
+```
+
+找到保存图片的地方（通常是一个循环，最后调用 `image.save(...)` 或 `cv2.imwrite(...)`）。在保存 **之后** 或者保存 **之前** 加入检查。
+
+建议的集成逻辑如下：
+
+**Python**
+
+```
+# 假设 img_path 是你刚刚生成的图片路径
+# ... 图片保存代码 ...
+image.save(img_path) 
+
+# === 新增过滤逻辑 ===
+is_junk, reason = is_junk_image(img_path)
+
+if is_junk:
+    print(f"Removing junk image {img_path}: {reason}")
+    os.remove(img_path) # 删除无效图片
+    # 并且可以在这里从你的最终数据列表中移除该条目
+else:
+    # (可选) 如果规则检查通过，但你想更严格，可以开启 LLM 检查
+    # 注意：这会增加成本和时间
+    # api_key = os.getenv("OPENAI_API_KEY")
+    # if api_key and not llm_check_image_validity(img_path, api_key):
+    #     print(f"LLM rejected image {img_path}")
+    #     os.remove(img_path)
+    pass
+# ===================
+```
+
+### 推荐参数设置
+
+对于你的需求（过滤 "Check for updates" 和空白 Caption）：
+
+* **`min_size=(150, 150)`** : 很多 logo 或 header 都在 100px 以下。
+* **`max_white_ratio=0.92`** : 科学图表通常有较多内容，如果超过 92% 都是白色，大概率是只有一行 Caption 的截图。
+* **`min_entropy=3.0`** : "Check for updates" 这种图标颜色单一，熵值很低。复杂的电镜图或曲线图熵值通常 > 5.0。
