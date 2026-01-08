@@ -38,8 +38,10 @@ def _load_module(name: str, path: Path):
 def _configure_modules(pdf_path: Path) -> tuple[Path, object, object]:
     base_dir = Path(__file__).parent
     repo_root = base_dir.parent
-    pdf2txt_module = _load_module("pdf2txt_module", base_dir / "pdf2txt.py")
-    assemble_module = _load_module("assemble_module", base_dir / "assemble.py")
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    pdf2txt_module = _load_module("pdf2txt.pdf2txt", base_dir / "pdf2txt.py")
+    assemble_module = _load_module("pdf2txt.assemble", base_dir / "assemble.py")
     output_dir = repo_root / "output" / pdf_path.stem
     images_dir = output_dir / "images"
 

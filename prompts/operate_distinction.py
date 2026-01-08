@@ -37,7 +37,7 @@ def build_operate_distinction_prompt(
           参考信息给出相近概念/条件；题干要求根据图中视觉证据区分并推断结论。
         - {cross_modal}
         - 只描述“下一步要怎么问/怎么设选项/依赖哪些视觉证据”，不要直接生成完整题干。
-        - 草稿中不得出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”等字样。
+        - 草稿中不得出现“文献”“文档”“上下文”“context”“结合文献”“依据文献”“文中”“原文”“文本内容”“参考信息”等字样，也不得出现图号/图表编号（如“图1”“图2”“图10”“图X”“图表1”“如图X”）。
         {forbidden_note}
         {extra}
 
@@ -48,4 +48,3 @@ def build_operate_distinction_prompt(
         <draft>用要点描述：视觉证据→参考信息中的相近概念/条件→区分点→结论与选项设计(含Hard Negatives)</draft>
         """
     ).strip()
-
