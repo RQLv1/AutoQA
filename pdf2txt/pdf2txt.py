@@ -15,7 +15,9 @@ OUTPUT_DIR = Path(__file__).resolve().parents[1] / "output" / PDF_PATH.stem
 TEXT_PATH = OUTPUT_DIR / "extracted.txt"
 IMAGES_DIR = OUTPUT_DIR / "images"
 MIN_SHORT_SIDE = 256
-RENDER_SCALE = 2.0
+RENDER_SCALE = 4.0
+DEFAULT_RENDER_DPI = 72 * RENDER_SCALE
+MAX_RENDER_DPI = 600
 
 
 def run_layout_detection(pdf_path: Path, out_dir: Path) -> None:
@@ -68,11 +70,11 @@ def render_pdf_page(
 ) -> tuple[Image.Image, tuple[int, int], tuple[float, float]]:
     if detect_size:
         det_w, det_h = detect_size
-        dpi_x = det_w * 72 / page.width if page.width else 72
-        dpi_y = det_h * 72 / page.height if page.height else 72
-        resolution = max(dpi_x, dpi_y, 72)
+        dpi_x = det_w * 72 / page.width if page.width else DEFAULT_RENDER_DPI
+        dpi_y = det_h * 72 / page.height if page.height else DEFAULT_RENDER_DPI
+        resolution = min(max(dpi_x, dpi_y, DEFAULT_RENDER_DPI), MAX_RENDER_DPI)
     else:
-        resolution = 72 * RENDER_SCALE
+        resolution = DEFAULT_RENDER_DPI
         det_w, det_h = (page.width, page.height)
 
     page_image = page.to_image(resolution=resolution)
