@@ -176,6 +176,34 @@ python main.py --mode single_select
 
 运行时会在每次尝试打印过程信息：step 链路（题目/答案字母/答案短语/evidence）、最终题、以及各求解器输出；Medium 通过的题会被直接丢弃，直到筛出目标数量的难题为止。
 
+---
+
+## PDF 解析与图片预览（pdf2txt/）
+
+用于从 PDF 解析版面并裁切图片元素，输出到 `output/<pdf_stem>/images`，支持生成 HTML 预览页。
+
+### 快速使用
+
+```bash
+# 解析 PDF，并输出裁切图片 + 组合图（默认取 data/pdf 下最新文件）
+python pdf2txt/run_pipeline.py
+
+# 指定 PDF
+python pdf2txt/run_pipeline.py data/pdf/xxx.pdf
+
+# 生成图片预览页（输出 preview_images.html）
+python pdf2txt/preview_images.py data/pdf/xxx.pdf
+```
+
+### 脚本说明
+
+- `pdf2txt/pdf2txt.py`：版面检测 + 提取文本 + 裁切 figure 图片。
+- `pdf2txt/assemble.py`：从 res_*.json 中裁切 image/chart/figure_title 并按原位置组合成新图。
+- `pdf2txt/run_pipeline.py`：串联运行上述脚本，并清理中间产物。
+- `pdf2txt/preview_images.py`：扫描图片目录生成 HTML 网格预览页（`preview_images.html`）。
+
+> 预览页默认输出在 `output/<pdf_stem>/preview_images.html`。脚本也支持直接传入 `output/<pdf_stem>/images` 或 `output/<pdf_stem>`。
+
 ## 配置（环境变量覆盖，兼容你当前变量名）
 
 你当前已有：
