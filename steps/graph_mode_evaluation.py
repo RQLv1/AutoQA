@@ -183,6 +183,7 @@ def review_and_save_step(
                 {
                     "source": "step",
                         "step_k": step_index,
+                        "image_path": str(image_path),
                         "question": step.question,
                         "answer": step.answer_letter,
                         "reasoning": step.reasoning,

@@ -370,6 +370,7 @@ def generate_steps_prompt_driven(
                         {
                             "source": "step",
                             "step_k": k,
+                            "image_path": str(image_path),
                             "question": step.question,
                             "answer": step.answer_letter,
                             "reasoning": step.reasoning,
